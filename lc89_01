@@ -16,8 +16,8 @@
 class Solution {
 public:
     //check wiki, n = 2, gray code is 00, 01, 11, 10
-    // n=3, gray code is 110, 111, 101, 100
-    //n=3 gray code is: first get mirror image of n=2 result, then add most significant bit 1
+    // n=3, gray code is 000, 001,011, 010, 110, 111, 101, 100
+    //n=3 the second part of gray code is: first get mirror image of n=2 result, then add most significant bit 1
     //eg. first reverse n=2 result we have: 10, 11, 01, 00
     //then add MSB we have 110, 111, 101, 100
     vector<int> grayCode(int n) {
