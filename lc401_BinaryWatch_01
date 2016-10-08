@@ -1,0 +1,87 @@
+//A binary watch has 4 LEDs on the top which represent the hours (0-11), 
+//and the 6 LEDs on the bottom represent the minutes (0-59).
+
+//Each LED represents a zero or one, with the least significant bit on the right.
+
+//Given a non-negative integer n which represents the number of LEDs 
+//that are currently on, return all possible times the watch could represent.
+
+//Example:
+
+//Input: n = 1
+//Return: ["1:00", "2:00", "4:00", "8:00", "0:01", "0:02", "0:04", "0:08", "0:16", "0:32"]
+//Note:
+//The order of output does not matter.
+//The hour must not contain a leading zero, for example "01:00" is not valid, it should be "1:00".
+//The minute must be consist of two digits and may contain a leading zero, 
+//for example "10:2" is not valid, it should be "10:02".
+
+//Question: why 12:00 is not valid??????
+
+//This is a backtracking practice
+
+
+class Solution {
+public:
+    //从str数组中取出n个数，记录下他们的和，
+    //返回条件，n==0,
+    //similar to combination
+    void dfs(vector<string>& str, int n, int start, vector<string>& res, int& sum)
+    {
+        if(n == 0)
+        {
+            string ans = to_string(sum);
+            //cout << "ans=" << ans<<endl;
+            res.push_back(to_string(sum));
+            return;
+        }
+        
+        
+        for(int i = start; i <= str.size()-n; i++)
+        {
+            sum += stoi(str[i]); 
+            //cout << "sum=" << sum << endl;
+            dfs(str, n-1, i+1, res, sum);
+            sum -= stoi(str[i]);
+        }
+    }
+    vector<string> getDigit(vector<string>& str, int n)
+    {
+        if(n == 0) return vector<string>{"0"};
+        if(n > str.size()) return vector<string>();
+        vector<string> res;
+        int sum = 0;
+        dfs(str, n, 0, res, sum);
+        //cout << "done\n";
+        return res;
+    }
+    vector<string> readBinaryWatch(int num) {
+        //backtracking idea,
+        vector<string> hour = {"8", "4", "2","1" };
+        vector<string> minute = {"32", "16", "8", "4", "2" ,"1"};
+        vector<string> res;
+        //从hour数组中去一个，从minute数组中取num-i个，然后combine
+        for(int i = 0; i <=num; i++)
+        {
+            vector<string> h = getDigit(hour, i);
+            vector<string> min = getDigit(minute, num-i);
+            
+            for(int j = 0; j < h.size(); j++)
+            {
+                for(int k = 0; k < min.size(); k++)
+                {
+                    if(stoi(h[j]) >=12 || stoi(min[k]) >=60) continue;
+                    string ans = h[j] + ":";
+                    if(stoi(min[k]) < 10)
+                    {
+                        ans += "0";
+                    }
+                    ans +=min[k];
+                    res.push_back(ans);
+                }
+            }
+        }
+        
+        return res;
+    }
+};
