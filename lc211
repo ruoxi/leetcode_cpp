@@ -1,0 +1,95 @@
+//Design a data structure that supports the following two operations:
+
+//void addWord(word)
+//bool search(word)
+//search(word) can search a literal word or a regular expression string containing only letters a-z or .. A . means it can represent any one letter.
+
+//For example:
+
+//addWord("bad")
+//addWord("dad")
+//addWord("mad")
+//search("pad") -> false
+//search("bad") -> true
+//search(".ad") -> true
+//search("b..") -> true
+//Note:
+//You may assume that all words are consist of lowercase letters a-z.
+
+//Trie + DFS
+class WordDictionary {
+public:
+    class TrieNode
+    {
+    public:
+        vector<TrieNode*> children; //here use a vector of size 26 because it says words only consists of lowercase letter.
+        bool isword;
+        TrieNode():isword(false) { children.resize(26, NULL);}
+    };
+    WordDictionary()
+    {
+        root = new TrieNode();
+    }
+    // Adds a word into the data structure.
+    void addWord(string word) {
+        TrieNode* cur = root;
+        int n = word.size();
+        for(int i = 0; i < n; i++)
+        {
+            if(cur->children[word[i]-'a'] == NULL)
+            {
+                cur->children[word[i]-'a'] = new TrieNode();
+                
+            }
+            cur = cur->children[word[i] -'a'];
+            if(i == n -1) cur->isword = true;
+        }
+    }
+
+
+    bool helper(string& word, int start, TrieNode* cur)
+    {
+        if(start == word.length())
+        {
+            return cur->isword;
+        }
+        
+        if(word[start] != '.' && cur->children[word[start]-'a'] == NULL) return false;
+        
+        if(word[start] == '.')
+        {
+            for(int i = 0; i < 26; i++)
+            {
+                if(cur->children[i] == NULL) continue;
+                if(helper(word, start+1, cur->children[i]))
+                    return true;
+            }
+            return false;
+        }
+        else
+        {
+            return helper(word, start+1, cur->children[word[start]-'a']);
+        }
+        
+    }
+    // Returns if the word is in the data structure. A word could
+    // contain the dot character '.' to represent any one letter.
+    bool search(string word) {
+        TrieNode* cur = root;
+        //DFS
+        int n = word.size();
+        return helper(word, 0, cur);
+        
+        
+    }
+    
+private:
+    
+    
+    TrieNode* root;
+};
+
+// Your WordDictionary object will be instantiated and called as such:
+// WordDictionary wordDictionary;
+// wordDictionary.addWord("word");
+// wordDictionary.search("pattern");
