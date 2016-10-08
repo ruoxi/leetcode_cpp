@@ -1,0 +1,46 @@
+//Given a digit string, return all possible letter combinations that the number could represent.
+//Input:Digit string "23"
+//Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+
+class Solution {
+public:
+    //bfs solution
+    //use queue
+    vector<string> letterCombinations(string digits) {
+        if(digits.empty()) return vector<string>();
+        
+        vector<string> numDigit = {"", "", "abc", "def","ghi", "jkl","mno", "pqrs", "tuv", "wxyz"};
+        
+        queue<string> q;
+        q.push("");
+        
+        vector<string> res;
+        for(int i = 0; i < digits.size(); i++)
+        {
+            int size = q.size();
+            for(int j =0; j < size;j++)
+            {
+                string cur = q.front(); q.pop();
+                
+                string letter = numDigit[digits[i]-'0'];
+                
+                for(int k = 0; k < letter.size(); k++)
+                {
+                    string next = cur + letter[k];
+                    q.push(next);
+                }
+            }
+            
+        }
+        
+        while(!q.empty())
+        {
+            res.push_back(q.front());
+            q.pop();
+        }
+        
+        return res;
+        
+        
+    }
+};
