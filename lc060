@@ -1,0 +1,57 @@
+//60. Permutation Sequence  QuestionEditorial Solution  My Submissions
+//Total Accepted: 66369
+//Total Submissions: 250985
+//Difficulty: Medium
+//The set [1,2,3,…,n] contains a total of n! unique permutations.
+
+//By listing and labeling all of the permutations in order,
+//We get the following sequence (ie, for n = 3):
+//
+//"123"
+//"132"
+//"213"
+//"231"
+//"312"
+//"321"
+//Given n and k, return the kth permutation sequence.
+
+//Note: Given n will be between 1 and 9 inclusive.
+
+
+class Solution {
+public:
+
+    //思路：当n=3的时候，以1开头的有2！个， 以2开头的有2！个
+    //(k-1)/(n-1)!可以找到第k个数是以哪个数字开头，注意：此处k-1是因为{1，2，3} index是从0开始
+    //然后用同样的思路计算第二位数
+    string getPermutation(int n, int k) {
+        //first calculate factorial
+        vector<int> factorial(n+1, 1);
+        for(int i = 1; i <= n; i++)
+        {
+            factorial[i] = factorial[i-1]*i;
+        }
+        
+        //generate an array of n numbers
+        vector<int> nums(n, 0);
+        for(int i = 0; i < n; i++)
+        {
+            nums[i] = i+1;
+        }
+        
+        //now calculate kth number
+        string res;
+        for(int i = 1; i <=n; i++)
+        {
+            int idx = (k-1)/factorial[n-i];
+            int digit = nums[idx];
+            res += '0'+digit;
+            //note: when update k number, do not use k%factorial[n-i];
+            k = k-factorial[n-i]*idx;
+            nums.erase(nums.begin()+idx);
+            
+        }
+        
+        return res;
+    }
+};
