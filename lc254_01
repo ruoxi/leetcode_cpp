@@ -37,6 +37,7 @@ output:
 class Solution {
 public:
     void getResult(vector<vector<int>>& res, vector<int>& record, int n){
+        //这里只需要算到sqrt(n),所以不需要考虑{12}的情况  
         int i = record.empty() ? 2 : record.back();
         for(; i <= n / i; i++) {
             if(n % i == 0) {
