@@ -34,27 +34,40 @@ output:
 ]
 */
 
+
+////similar to 39. Combination Sum
+//given a array nums = {1,2, 3, 4} find all combinations for sum = 12, and same number can be used unlimited times
+//这类题same number can be used unlimited times, 在call下一层dfs的时候，start index 不变，代表当前num[start]可以被重复取
+
+
 class Solution {
 public:
-    void getResult(vector<vector<int>>& res, vector<int>& record, int n){
-        //这里只需要算到sqrt(n),所以不需要考虑{12}的情况  
-        int i = record.empty() ? 2 : record.back();
-        for(; i <= n / i; i++) {
-            if(n % i == 0) {
-                record.push_back(i);
-                record.push_back(n / i);
-                res.push_back(record);
-                record.pop_back();
-                getResult(res, record, n/i);
-                record.pop_back();
-            }
+
+    void dfs(int n, vector<int>& sol, vector<vector<int>>& res, int start)
+    {
+        //这里只需要算到sqrt(n),所以不需要考虑{12}的情况   
+        for(int i = start; i <=sqrt(n); i++)
+        {
+            if(n%i != 0) continue;
+
+            //add i and n/i to res
+            sol.push_back(i);
+            sol.push_back(n/i);
+            res.push_back(sol);
+            //here pop out n/i, and call dfs again to see if we can get more factor from n/i
+            sol.pop_back();
+            dfs(n/i, sol, res, i);
+            sol.pop_back();
         }
     }
-
     vector<vector<int>> getFactors(int n) {
+        if(n <2) return vector<vector<int>>();
+        
+        vector<int> sol;
         vector<vector<int>> res;
-        vector<int> record;
-        getResult(res, record, n);
+        
+        dfs(n, sol, res, 2);
+        
         return res;
     }
 };
