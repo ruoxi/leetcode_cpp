@@ -1,0 +1,111 @@
+//51. N-Queens  QuestionEditorial Solution  My Submissions
+//Total Accepted: 64362
+//Total Submissions: 229689
+//Difficulty: Hard
+//The n-queens puzzle is the problem of placing n queens on an n×n chessboard such that no two queens attack each other.
+
+//Given an integer n, return all distinct solutions to the n-queens puzzle.
+
+//Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space respectively.
+
+//For example,
+//There exist two distinct solutions to the 4-queens puzzle:
+
+//[
+// [".Q..",  // Solution 1
+//  "...Q",
+//  "Q...",
+//  "..Q."],
+
+// ["..Q.",  // Solution 2
+//  "Q...",
+//  "...Q",
+//  ".Q.."]
+//]
+
+class Solution {
+public:
+    //sol:用一个一维数组vector<int>可以表示每一行里q被放在第几个col上
+    //eg vector<int>{1, 3, 0, 2} 表示row 0, q 放在col 1 上
+    //每放一个，check是否valid
+    bool isvalid(vector<int>& sol, int col)
+    {
+        if(sol.empty()) return true;
+        //check if in same col
+        //对角线
+        //只需要check最新加的一个跟之前的
+        int n = sol.size();
+        for(int i = 0; i < n; i++)
+        {
+            if(sol[i] == col) return false;
+        }
+        
+        //对角线
+        for(int i = 0; i < n; i++)
+        {
+            if(i+sol[i] == n + col) return false;
+        }
+
+        for(int i = 0; i < n; i++)
+        {
+            if(i-sol[i] == n - col) return false;
+        }
+        
+        return true;
+    }
+    
+    
+    void dfs(int n, vector<int>& sol, vector<vector<int>>& res, int start, vector<int>& visited)
+    {
+        if(n == start)
+        {
+            res.push_back(sol);
+            return;
+        }
+        
+        for(int i = 0; i < n; i++)
+        {
+            if(!isvalid(sol, i) || visited[i]) continue;
+  
+            visited[i] = 1;
+            sol.push_back(i);
+            
+            dfs(n, sol, res, start+1, visited);
+
+            sol.pop_back();
+            visited[i] = 0;
+        }
+    }
+    
+    vector<vector<string>> drawboard(vector<vector<int>>& res)
+    {
+        int n = res.size(), m = res.at(0).size();
+        vector<vector<string>> board;
+        for(int i = 0; i < n; i++)
+        {
+            vector<int> sol = res[i];
+            vector<string> solstr(m, string(m, '.'));
+            
+            for(int j = 0; j < m; j++)
+            {
+                solstr[j][sol[j]] = 'Q';
+            }
+            board.push_back(solstr);
+            
+        }
+        
+        return board;
+    }
+    vector<vector<string>> solveNQueens(int n) {
+        vector<int> sol;
+        vector<vector<int>> res;
+        vector<int> visited(n, 0);
+  
+        
+        dfs(n, sol, res,0, visited);
+        if(res.empty()) return vector<vector<string>>();
+
+        return drawboard(res);
+        
+    }
+};
