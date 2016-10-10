@@ -1,0 +1,84 @@
+//267. Palindrome Permutation II  QuestionEditorial Solution  My Submissions
+//Total Accepted: 8740
+//Total Submissions: 29081
+//Difficulty: Medium
+//Given a string s, return all the palindromic permutations (without duplicates) of it. Return an empty list if no palindromic permutation could be form.
+//
+//For example:
+
+//Given s = "aabb", return ["abba", "baab"].
+
+//Given s = "abc", return [].
+
+
+class Solution {
+public:
+    //idea is: find the first half of the palindrome
+    // 1st: create a map of all chars and counts in the string, if there are more than two chars appear odd times, no palindromes can be generated
+    //2nd: get an array of half of the chars int the map
+    //3rd: get permutation of the half of the chars and the result will be half + mid + half_reverse
+    // mid is "" if there is no char appear odd times, otherwise it is the char that appear odd times
+    vector<string> generatePalindromes(string s) {
+        if(s.empty()) return vector<string>();
+        
+        vector<string> res;
+     
+        unordered_map<char, int> cnt;
+        int odd=0;
+        
+        //first create a map of all chars in string
+        for(int i = 0; i < s.length(); i++)
+        {
+            cnt[s[i]]++;
+            if(cnt[s[i]]%2 != 0) odd++;
+            else odd--;
+        }
+        
+        if(odd > 1) return res;
+        //generate a list of half of the chars
+        vector<char> list;
+        string mid = "";
+        for(auto element: cnt)
+        {
+            int value = element.second;
+            if(value %2 !=0) mid += element.first;
+            
+            for(int i = 0; i < value/2; i++)
+            {
+                list.push_back(element.first);
+            }
+        }
+        
+        vector<bool> visited(list.size(), false);
+        string half;
+        //now generate permuation of the chars in list and the final result
+        dfs(list, mid, half, res, visited);
+        
+        return res;
+    }
+    
+    
+    void dfs(vector<char>& list, string mid, string& half, vector<string>& res, vector<bool>& visited)
+    {
+        if(half.length() == list.size())
+        {
+            string rhalf(half.rbegin(), half.rend());
+            string sol = half + mid + rhalf;
+            res.push_back(sol);
+            return;
+        }
+        
+        for(int i = 0; i < list.size(); i++)
+        {
+            if(i > 0 && list[i] == list[i-1] && !visited[i-1] ) continue;
+            if(visited[i]) continue;
+            visited[i] = true;
+            
+            half.push_back(list[i]);
+            dfs(list, mid, half, res, visited);
+            half.pop_back();
+            visited[i] = false;
+            
+        }
+    }
+};
