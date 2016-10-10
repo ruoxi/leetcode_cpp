@@ -1,0 +1,48 @@
+//320. Generalized Abbreviation  QuestionEditorial Solution  My Submissions
+//Total Accepted: 12015
+//Total Submissions: 28625
+//Difficulty: Medium
+//Write a function to generate the generalized abbreviations of a word.
+
+//Example:
+//Given word = "word", return the following list (order does not matter):
+//["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+
+
+class Solution {
+public:
+    //idea: for each level, you have a choice to add word[i] to result or increase the count
+    //Note:here sol we do not pass by reference because it's hard to erase the last few char we add to sol in the level
+    void dfs(string word, int pos, string sol, vector<string>& res, int count)
+    {
+        if(pos == word.length())
+        {
+            if(count > 0)
+            {
+                sol +=to_string(count);
+            }
+            res.push_back(sol);
+            return;
+        }
+
+        //skip current char, increase count
+        dfs(word, pos+1, sol, res, count+1);
+
+        //add count to sol and add current char, reset it to 0
+        if(count > 0)
+        {
+            sol += to_string(count);
+        }
+        
+        sol +=word[pos];
+
+        dfs(word,pos+1, sol, res, 0);
+    }
+    vector<string> generateAbbreviations(string word) {
+        string sol;
+        vector<string> res;
+        
+        dfs(word, 0, sol, res, 0);
+        return res;
+    }
+};
