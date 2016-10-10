@@ -1,0 +1,154 @@
+//411. Minimum Unique Word Abbreviation  QuestionEditorial Solution  My Submissions
+//Total Accepted: 630
+//Total Submissions: 2309
+//Difficulty: Hard
+//A string such as "word" contains the following abbreviations:
+
+//["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+//Given a target string and a set of strings in a dictionary, find an abbreviation of this target string with the smallest possible length such that it does not conflict with abbreviations of the strings in the dictionary.
+
+//Each number or letter in the abbreviation is considered length = 1. For example, the abbreviation "a32bc" has length = 4.
+
+//Note:
+//In the case of multiple answers as shown in the second example below, you may return any one of them.
+//Assume length of target string = m, and dictionary size = n. You may assume that m ≤ 21, n ≤ 1000, and log2(n) + m ≤ 20.
+//Examples:
+//"apple", ["blade"] -> "a4" (because "5" or "4e" conflicts with "blade")
+
+//"apple", ["plain", "amber", "blade"] -> "1p3" (other valid answers include "ap3", "a3e", "2p2", "3le", "3l1").
+
+class Solution {
+public:
+    //bit manipulation
+    //idea: target = abcde dictionary = {abedg, acdef}
+    //把target和dict中每一个单词字母做比较得出对应的bit sequence(相同为0，不同为1) = {00101, 01111}
+    //最短的abbrevation就是找最短的mask 能使得 mask&bit sequence >0, eg.这里就是00001
+    vector<int> dict;
+    int candidate;
+    int minLen;
+    int bmax;
+    int minMask;
+    //给一个mask,求出对应的abbrevation最小长度
+    //eg. 10101最小长度是5，eg, a1b1c
+    //eg. 11100最小长度是4，eg abc2
+    //思路是看到1长度增加，看到连续的0算一位
+    int getabbrLen(int mask)
+    {
+        int count = 0;
+        for(int bit = 1; bit <bmax;)
+        {
+            //cout << "getabbrlen bit=" <<bit << " mask=" << mask << endl;
+            //当前位是0，
+            if((mask&bit) == 0)
+            {
+                while((mask&bit) == 0 && bit < bmax)
+                {   
+                    bit <<=1;
+                }
+                //cout << "bit=" << bit << endl;
+            }
+            else
+            {
+                bit<<=1;
+            }
+            count++;
+            
+        }
+        
+        return count;
+    }
+    
+    
+    void dfs(int bit, int mask)
+    {
+        int len = getabbrLen(mask);
+        //cout << "mask=" << mask << " len=" << len << endl;
+        if(len >= minLen) return;
+        
+        bool match = true;
+        //check if this mask (abbrevation is the same with anyone in dictionary)
+        for(int i = 0; i < dict.size(); i++)
+        {
+            if((dict[i]&mask) == 0)
+            {
+                match = false;
+                break;
+            }
+        }
+        
+        if(match)
+        {
+            minLen = len;
+            minMask = mask;
+        }
+        else
+        {
+            for(int b = bit; b<bmax; b<<=1)
+            {
+                if(candidate&b)
+                {
+                    dfs(b<<1, mask|b);
+                }
+            }
+        }
+    }
+    
+    string minAbbreviation(string target, vector<string>& dictionary) 
+    {
+        int n = target.length();
+        bmax = 1<<n;
+        minLen = INT_MAX;
+        //这一步是把字典中每一个word和target作比较，得出用bit表示的不同的字符位置
+        //eg{00101, 01111}
+        candidate = 0;
+        //cout << "n=" << n << endl;
+        for(int i = 0; i < dictionary.size(); i++)
+        {
+            //对于每一个word跟target对比，找出不同的char位置
+            if(dictionary[i].length() != target.length()) continue;
+            string cur = dictionary[i];
+            int curBit = 0;
+        
+            for(int j = n-1, bit = 1; j >=0 && bit < bmax ; j--, bit<<=1)
+            {
+                //cout << "begin j=" << j << "target j=" << target[j] << "cur j=" << cur[j] << endl;
+                if(target[j] == cur[j]) continue;
+                //cout << "bit=" << bit << endl;
+                curBit = bit + curBit;
+            }
+            //cout << "curBit=" << curBit << endl;
+            dict.push_back(curBit);
+            candidate |= curBit;
+               
+        }
+        
+        
+        //接下来是找出所有bit sequence中最短的mask能使mask&bit_sequence>0
+        dfs(1, 0);
+        cout << "minMask=" << minMask << endl;
+        cout << "minlen=" << minLen << endl;
+        //now try to get abbrevation from minMask
+        string res;
+        int cnt = 0;
+        for(int i = n-1, bit = 1; bit < bmax; bit<<=1, i--)
+        {
+            if(bit&minMask)
+            {
+                //cout << "cnt=" << cnt << endl;
+                if(cnt>0)
+                {
+                    res = to_string(cnt) + res;
+                    cnt = 0;
+                }
+                res = target[i] + res;
+            }
+            else
+            {
+                cnt++;
+            }
+        }
+        if(cnt>0) res = to_string(cnt)+res;
+        
+        return res;
+    }
+};
