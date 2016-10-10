@@ -1,0 +1,56 @@
+//22. Generate Parentheses  QuestionEditorial Solution  My Submissions
+//Total Accepted: 110157
+//Total Submissions: 273926
+//Difficulty: Medium
+//Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.
+//
+//For example, given n = 3, a solution set is:
+
+//[
+//  "((()))",
+//  "(()())",
+//  "(())()",
+//  "()(())",
+//  "()()()"
+//]
+
+//考虑的点是已经有了n=2的solution,怎么样推导出n=3的solution
+class Solution {
+public:
+
+    vector<string> dfs(int n)
+    {
+        if(n == 0)
+        {
+            return vector<string>{""};   
+        }
+        
+        //for each level, eg, add one more pair to all the previous res
+        vector<string> prev = dfs(n-1);
+        
+        set<string> visited;
+        vector<string> res;
+        for(int i = 0; i < prev.size(); i++)
+        {
+            string cur = prev[i];
+            int len = cur.length();
+            
+            for(int j = 0; j <= len; j++)
+            {
+                string next = cur;
+                next.insert(j, "()");
+                if(visited.find(next) != visited.end()) continue;
+                res.push_back(next);
+                visited.insert(next);
+            }
+        }
+        
+        return res;
+        
+    }
+    vector<string> generateParenthesis(int n) {
+        if(n==0) return vector<string>();
+        
+        return dfs(n);
+    }
+};
