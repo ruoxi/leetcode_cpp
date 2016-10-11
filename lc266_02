@@ -1,0 +1,27 @@
+//266. Palindrome Permutation  QuestionEditorial Solution  My Submissions
+//Total Accepted: 19300
+//Total Submissions: 35932
+//Difficulty: Easy
+//Given a string, determine if a permutation of the string could form a palindrome.
+
+//For example,
+//"code" -> False, "aab" -> True, "carerac" -> True.
+
+class Solution {
+public:
+    //use bitset, treat each char as one bit
+    //finally check if number of bit been set is larger than one
+    bool canPermutePalindrome(string s) {
+        
+        bitset<256> chars;
+        for(auto c : s)
+        {
+            chars.flip(c);
+        }
+        
+        if (chars.count() > 1) return false;
+        return true;
+        
+        
+    }
+};
