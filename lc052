@@ -1,0 +1,53 @@
+//52. N-Queens II
+
+//Follow up for N-Queens problem.
+
+//Now, instead outputting board configurations, return the total number of distinct solutions.
+
+
+
+
+class Solution {
+public:
+
+    void dfs(int n, int row, set<int>& visitedCol, set<int>& forward, set<int>& backward, int& res )
+    {
+        for(int col = 0; col < n; col++)
+        {
+            if(visitedCol.find(col) != visitedCol.end()) continue;
+            
+            int sum = row+col;
+            if(forward.find(sum) != forward.end()) continue;
+            
+            int diff = col - row;
+            if(backward.find(diff) != backward.end()) continue;
+            
+            if(row == n-1)
+            {
+                res++; 
+                return;
+            }
+            
+            //add to visited
+            visitedCol.insert(col);
+            forward.insert(sum);
+            backward.insert(diff);
+            
+            dfs(n, row+1, visitedCol, forward, backward, res);
+            
+            visitedCol.erase(col);
+            forward.erase(sum);
+            backward.erase(diff);
+        }
+    }
+    int totalNQueens(int n) {
+        set<int> visitedCol;
+        set<int> forward;
+        set<int> backward;
+        
+        int res = 0;
+        dfs(n, 0, visitedCol, forward, backward, res);
+        
+        return res;
+    }
+};
