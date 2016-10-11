@@ -1,0 +1,47 @@
+//205. Isomorphic Strings  QuestionEditorial Solution  My Submissions
+//Total Accepted: 77606
+//Total Submissions: 245058
+//Difficulty: Easy
+//Given two strings s and t, determine if they are isomorphic.
+
+//Two strings are isomorphic if the characters in s can be replaced to get t.
+
+//All occurrences of a character must be replaced with another character while preserving the order of characters. No two characters may map to the same character but a character may map to itself.
+
+//For example,
+//Given "egg", "add", return true.
+
+//Given "foo", "bar", return false.
+
+//Given "paper", "title", return true.
+
+//Note:
+//You may assume both s and t have the same length.
+
+
+class Solution {
+public:
+    bool isIsomorphic(string s, string t) {
+        
+        //idea is use a vector to note done the position of s[i]
+        //use another vector to note done the position of t[i]
+        //if nums1[s[i]] != nums2[t[i]] 表示s[i] 对应得char在之前map到其他char上了，
+        
+        vector<int> index1(256, 0);
+        vector<int> index2(256, 0);
+        for(int i = 0 ; i < s.length(); i++)
+        {
+            if(index1[s[i]] != index2[t[i]])
+            {
+                return false;
+            }
+            else
+            {
+                index1[s[i]] = i+1;
+                index2[t[i]] = i+1;
+            }
+        }
+        
+        return true;
+    }
+};
