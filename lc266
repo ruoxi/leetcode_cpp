@@ -1,0 +1,31 @@
+//266. Palindrome Permutation
+//Given a string, determine if a permutation of the string could form a palindrome.
+
+//For example,
+//"code" -> False, "aab" -> True, "carerac" -> True.
+
+//Show Hint 
+//Show Company Tags
+//Show Tags
+//Show Similar Problems
+
+class Solution {
+public:
+    //basically, for all the chars in s, only one char can appear odd times
+    bool canPermutePalindrome(string s) {
+        
+        unordered_map<char, int> cnt;
+        int odd = 0;
+        for(auto c : s)
+        {
+            cnt[c]++;
+            if(cnt[c]%2 == 1) odd++;
+            else odd--;
+        }
+        
+        if(odd > 1) return false;
+        return true;
+        
+        
+    }
+};
