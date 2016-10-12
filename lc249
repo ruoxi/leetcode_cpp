@@ -1,0 +1,53 @@
+//249. Group Shifted Strings
+//Given a string, we can "shift" each of its letter to its successive letter, for example: "abc" -> "bcd". We can keep "shifting" which forms the sequence:
+
+//"abc" -> "bcd" -> ... -> "xyz"
+//Given a list of strings which contains only lowercase alphabets, group all strings that belong to the same shifting sequence.
+
+//For example, given: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"], 
+//A solution is:
+
+//[
+//  ["abc","bcd","xyz"],
+//  ["az","ba"],
+//  ["acef"],
+//  ["a","z"]
+//]
+
+
+
+class Solution {
+public:
+    //sol:相同长度的
+    //每一个string都根据第一个字母算出int representation, eg: "abc"=>"012", "bcd"=>"012"
+    vector<vector<string>> groupStrings(vector<string>& strings) {
+        if(strings.empty()) return vector<vector<string>>();
+        
+        unordered_map<string, vector<string>> map;
+        
+        for(int i = 0 ;i<strings.size(); i++)
+        {
+            string cur = strings[i];
+            string key = "";
+            if(cur.empty()) continue;
+            char base = cur[0];
+            for(auto c: cur)
+            {
+                int offset = c-base < 0? 26+c-base : c-base;
+                key += 'a'+offset;
+                
+            }
+            //cout << "key=" << key << endl;
+            map[key].push_back(cur);
+        }
+        
+        vector<vector<string>> res;
+        
+        for(auto elem: map)
+        {
+            res.push_back(elem.second);
+        }
+        
+        return res;
+    }
+};
