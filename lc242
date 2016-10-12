@@ -1,0 +1,40 @@
+
+//242. Valid Anagram  QuestionEditorial Solution  My Submissions
+//Total Accepted: 114516
+//Total Submissions: 260354
+//Difficulty: Easy
+//Given two strings s and t, write a function to determine if t is an anagram of s.
+
+//For example,
+//s = "anagram", t = "nagaram", return true.
+//s = "rat", t = "car", return false.
+
+//Note:
+//You may assume the string contains only lowercase alphabets.
+
+//Follow up:
+//What if the inputs contain unicode characters? How would you adapt your solution to such case?
+
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        if(s.empty() && t.empty()) return true;
+        if(s.length() != t.length()) return false;
+        
+        int n = s.length();
+        vector<int> map(26, 0);
+        
+        for(int i = 0; i < n; i++)
+        {
+            map[s[i]-'a']++;
+            map[t[i]-'a']--;
+        }
+        
+        for(int i = 0; i < 26; i++)
+        {
+            if(map[i] != 0) 
+                return false;
+        }
+        return true;
+    }
+};
