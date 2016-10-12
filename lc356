@@ -1,0 +1,59 @@
+//356. Line Reflection  QuestionEditorial Solution  My Submissions
+//Total Accepted: 4753
+//Total Submissions: 16497
+//Difficulty: Medium
+//Given n points on a 2D plane, find if there is such a line parallel to y-axis that reflect the given points.
+
+//Example 1:
+//Given points = [[1,1],[-1,1]], return true.
+
+//Example 2:
+//Given points = [[1,1],[-1,-1]], return false.
+
+//Follow up:
+//Could you do better than O(n2)?
+
+//Hint:
+
+//Find the smallest and largest x-value for all points.
+//If there is a line then it should be at y = (minX + maxX) / 2.
+//For each point, make sure that it has a reflected point in the opposite side.
+
+
+class Solution {
+public:
+
+    bool isReflected(vector<pair<int, int>>& points) {
+        if(points.empty()) return true;
+        
+        int n = points.size();
+        //first get maxX and minX
+        int maxX = INT_MIN;
+        int minX = INT_MAX;
+        unordered_set<string> map;
+        for(int i = 0; i < n; i++)
+        {
+            maxX = max(maxX, points[i].first);
+            minX = min(minX, points[i].first);
+            string key = to_string(points[i].first) + "+" + to_string(points[i].second);
+            map.insert(key);
+        }
+        
+        //position of reflection line
+        int reflection = minX + maxX;
+        
+        for(int i = 0; i < n; i++)
+        {
+            int curx = points[i].first;
+            int mirrorX = reflection-curx;
+            string mirrorKey = to_string(mirrorX) + "+"+ to_string(points[i].second);
+            if(map.find(mirrorKey) == map.end())
+            {
+                return false;
+            }
+        }
+        
+        
+        return true;
+    }
+};
