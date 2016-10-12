@@ -1,0 +1,61 @@
+//187. Repeated DNA Sequences  QuestionEditorial Solution  My Submissions
+//Total Accepted: 57022
+//Total Submissions: 201235
+//Difficulty: Medium
+//All DNA is composed of a series of nucleotides abbreviated as A, C, G, and T, for example: "ACGAATTCCG". When studying DNA, it is sometimes useful to identify repeated sequences within the DNA.
+
+//Write a function to find all the 10-letter-long sequences (substrings) that occur more than once in a DNA molecule.
+
+//For example,
+
+//Given s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT",
+
+//Return:
+//["AAAAACCCCC", "CCCCCAAAAA"].
+
+
+class Solution {
+public:
+    //思路：这里只有4个char, A, C, G, T, 可以用两个bit来encode 这四个char
+    // A->00, C->01, G->10, T->11
+    //这样10个char长度的string可以用20个bit表示
+    //这里需要两个set来记录，出现一次和出现两次的值，是因为防止同一个sequence被加入结果两次，也可用map记录key和cnt
+    vector<string> findRepeatedDnaSequences(string s) {
+        if(s.empty() || s.length() <= 10) return vector<string>();
+        
+        int n = s.length();
+        
+        map<int, int> table;
+        table['A'-'A'] = 0;
+        table['C'-'A'] = 1;
+        table['G'-'A'] = 2;
+        table['T'-'A'] = 3;
+        
+        //words only appear once
+        unordered_set<int> words;
+        //words appear twice
+        unordered_set<int> twowords;
+        vector<string> res;
+        for(int i = 0; i <n-9; i++ )
+        {
+            int key = 0;
+            
+            for(int j = i; j < i+10; j++)
+            {
+                //对于每一个char,找出对应的bit
+                int cur = table[s[j]-'A'];
+                key <<=2;
+                key |= cur;
+            }
+            
+            if(words.find(key) != words.end() && twowords.find(key) == twowords.end())
+            {
+                res.push_back(s.substr(i, 10));
+                twowords.insert(key);
+            }
+            words.insert(key);
+        }
+        
+        return res;
+    }
+};
