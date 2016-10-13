@@ -1,0 +1,57 @@
+/*340. Longest Substring with At Most K Distinct Characters   QuestionEditorial Solution  My Submissions
+Total Accepted: 8675
+Total Submissions: 22195
+Difficulty: Hard
+Contributors: Admin
+Given a string, find the length of the longest substring T that contains at most k distinct characters.
+
+For example, Given s = “eceba” and k = 2,
+
+T is "ece" which its length is 3.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+*/
+
+//这类题都是用一个数组记录之前出现的chars的次数，用sliding window
+//需要注意的是res需要在最后update
+//如果在while loop里update, s="a" k =1 的例子将fail
+//如果在while loop前update, s="eceba" k =2的例子将fail
+
+class Solution {
+public:
+    int lengthOfLongestSubstringKDistinct(string s, int k) {
+        if(s.empty()) return 0;
+        
+        //unordered_map<char, int> visited;
+        vector<int> chars(256, 0);
+        int start = 0;
+        int res = 0;
+        int cnt = 0;
+        for(int i = 0; i < s.length(); i++)
+        {
+            if(chars[s[i]]++== 0)
+            {
+                cnt++;
+            }
+            //cout << "cnt=" << cnt << endl;
+
+            while(cnt > k)
+            {
+                chars[s[start]]--;
+                if(chars[s[start]] == 0)
+                {
+                    cnt--;
+                }
+                    
+                start++;
+            }
+
+            res = max(res, i-start+1);
+        }
+        
+        return res;
+        
+    }
+};
