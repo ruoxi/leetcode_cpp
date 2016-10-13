@@ -1,0 +1,61 @@
+/*244. Shortest Word Distance II   QuestionEditorial Solution  My Submissions
+Total Accepted: 12783
+Total Submissions: 36425
+Difficulty: Medium
+Contributors: Admin
+This is a follow up of Shortest Word Distance. The only difference is now you are given the list of words and your method will be called repeatedly many times with different parameters. How would you optimize it?
+
+Design a class which receives a list of words in the constructor, and implements a method that takes two words word1 and word2 and return the shortest distance between these two words in the list.
+
+For example,
+Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+
+Given word1 = “coding”, word2 = “practice”, return 3.
+Given word1 = "makes", word2 = "coding", return 1.
+
+Note:
+You may assume that word1 does not equal to word2, and word1 and word2 are both in the list.
+*/
+
+//这里因为map里存的是sorted array,我们可以用merge sort中，merge的思路，
+//Runtime: shortest:O(n+m) constructor:O(n);
+//Space: unordered_map # of key is distinct words.
+
+class WordDistance {
+public:
+    WordDistance(vector<string>& words) {
+        for(int i = 0; i < words.size(); i++)
+        {
+            map[words[i]].push_back(i);
+        }
+    }
+
+    int shortest(string word1, string word2) {
+        vector<int> idx1 = map[word1];
+        vector<int> idx2 = map[word2];
+        
+        int s1 = 0, s2 = 0;
+        int mindiff = INT_MAX; 
+        while(s1 != idx1.size() && s2 != idx2.size())
+        {
+            mindiff = min(mindiff, abs(idx1[s1] - idx2[s2]));
+            if(idx1[s1] < idx2[s2])
+            {
+                s1++;
+            }
+            else
+            {
+                s2++;
+            }
+        }
+        return mindiff;
+    }
+    
+    unordered_map<string, vector<int>> map;
+};
+
+
+// Your WordDistance object will be instantiated and called as such:
+// WordDistance wordDistance(words);
+// wordDistance.shortest("word1", "word2");
+// wordDistance.shortest("anotherWord1", "anotherWord2");
