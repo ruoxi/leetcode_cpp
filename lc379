@@ -35,7 +35,10 @@ directory.release(2);
 directory.check(2);
 */
 
-
+//这里比较关键的是用数组来存available number 一开始available[i] = i，并且用index来记录目前available的index是哪个
+//之后release一个数num的时候,index--, 然后把available[i] = num;
+//要注意的是，因为之后available中index 不一定等于存的num==> available[index] != index
+//所以used vector 是以num来作为index的，used[number] = true/false;
 
 
 class PhoneDirectory {
