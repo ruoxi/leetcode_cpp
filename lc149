@@ -1,0 +1,73 @@
+/*149. Max Points on a Line   QuestionEditorial Solution  My Submissions
+Total Accepted: 66957
+Total Submissions: 441269
+Difficulty: Hard
+Contributors: Admin
+Given n points on a 2D plane, find the maximum number of points that lie on the same straight line.
+*/
+
+//对于在一条直线上的点(y2-y1)/(x2-x1) =(y3-y1)/(x3-x1) = y0/x0
+//注意这里要求出y0,x0的最大公约数，保证y0,x0互质
+//注意计算overlap的情况
+
+/**
+ * Definition for a point.
+ * struct Point {
+ *     int x;
+ *     int y;
+ *     Point() : x(0), y(0) {}
+ *     Point(int a, int b) : x(a), y(b) {}
+ * };
+ */
+class Solution {
+public:
+    int getgcd(int x, int y)
+    {
+        if(y == 0) return x;
+        return getgcd(y, x%y);
+    }
+    int maxPoints(vector<Point>& points) {
+        if(points.empty()) return 0;
+        if(points.size() <=2) return points.size();
+        
+        int n = points.size();
+        //key is x, key of value is y, value of value is count
+        unordered_map<int, unordered_map<int, int>> table;
+        int res = 0;
+        for(int i = 0; i < n; i++)
+        {
+            //以points[i]为固定点，与其他点的斜率
+            table.clear();
+            int overlap = 0;
+            int maxcnt = 0;
+            for(int j = i+1; j < n; j++)
+            {
+                int x = points[j].x-points[i].x;
+                int y = points[j].y-points[i].y;
+                
+                //check if overlap
+                if(x==0 && y == 0)
+                {
+                    overlap++;
+                    continue;
+                }
+                
+                int gcd = getgcd(x, y);
+                
+                if(gcd !=0)
+                {
+                    x /=gcd;
+                    y /=gcd;
+                }
+                
+                table[x][y]++;
+                maxcnt = max(maxcnt, table[x][y]); 
+            }
+            
+            res = max(res, maxcnt+overlap+1);
+            
+        }
+        
+        return res;
+    }
+};
