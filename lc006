@@ -1,0 +1,56 @@
+/*6. ZigZag Conversion   QuestionEditorial Solution  My Submissions
+Total Accepted: 114512
+Total Submissions: 449556
+Difficulty: Easy
+Contributors: Admin
+The string "PAYPALISHIRING" is written in a zigzag pattern on a given number of rows like this: (you may want to display this pattern in a fixed font for better legibility)
+
+P   A   H   N
+A P L S I I G
+Y   I   R
+And then read line by line: "PAHNAPLSIIGYIR"
+Write the code that will take a string and make this conversion given a number of rows:
+
+string convert(string text, int nRows);
+convert("PAYPALISHIRING", 3) should return "PAHNAPLSIIGYIR".*/
+
+//Runtime:O(n)
+//Space:O(n) n length of string s
+
+
+
+class Solution {
+public:
+    string convert(string s, int numRows) {
+        if(s.empty()) return "";
+        
+        vector<string> resvec(numRows, "");
+        int n = s.length();
+        
+        int i = 0;
+        while(i < n)
+        {
+            //vertical down
+            for(int idx = 0; idx< numRows && i < n; idx++)
+            {
+                resvec[idx].push_back(s[i]);
+                i++;
+            }
+            
+            //up
+            for(int idx = numRows-2; idx> 0 && i < n; idx--)
+            {
+                resvec[idx].push_back(s[i]);
+                i++;
+            }
+        }
+        
+        string res;
+        for(int j = 0; j < numRows; j++)
+        {
+            res+=resvec[j];
+        }
+        
+        return res;
+    }
+};
