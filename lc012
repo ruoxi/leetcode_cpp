@@ -1,0 +1,25 @@
+/*12. Integer to Roman   QuestionEditorial Solution  My Submissions
+Total Accepted: 80373
+Total Submissions: 192479
+Difficulty: Medium
+Contributors: Admin
+Given an integer, convert it to a roman numeral.
+
+Input is guaranteed to be within the range from 1 to 3999.
+*/
+
+class Solution {
+public:
+    string intToRoman(int num) {
+        //I（1）、V（5）、X（10）、L（50）、C（100）、D（500）、M（1000）
+        vector<string> hundred = {"", "C", "CC", "CCC","CD", "D", "DC","DCC","DCCC", "CM"};
+        vector<string> digit = {"","I","II","III","IV","V","VI", "VII","VIII","IX"};
+        vector<string> tens = {"", "X", "XX", "XXX", "XL", "L", "LX","LXX", "LXXX", "XC"};
+        vector<string> thousand = {"", "M", "MM", "MMM"};
+        
+        string res;
+        res = thousand[num/1000] + hundred[(num%1000)/100] + tens[(num%100)/10] + digit[num%10];
+        return res;
+        
+    }
+};
