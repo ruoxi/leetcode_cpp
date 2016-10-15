@@ -1,0 +1,51 @@
+/*43. Multiply Strings   QuestionEditorial Solution  My Submissions
+Total Accepted: 77620
+Total Submissions: 308110
+Difficulty: Medium
+Contributors: Admin
+Given two numbers represented as strings, return multiplication of the numbers as a string.
+
+Note:
+The numbers can be arbitrarily large and are non-negative.
+Converting the input string to integer is NOT allowed.
+You should NOT use internal library such as BigInteger.*/
+
+//sol:这里需要注意的是a[i]*b[j]的个位数是放在res[i+j+1], 十位数放在res[i+j]上，
+//Runtime: O(nm)
+//Space: O(n+m)
+
+class Solution {
+public:
+    string multiply(string num1, string num2) {
+        if(num1.empty() || num2.empty()) return "";
+        
+        int n = num1.length();
+        int m = num2.length();
+        
+        int k = n+m;
+        
+        string res(k, '0');
+  
+        for(int i = n-1; i>=0; i--)
+        {
+            for(int j = m-1; j>=0; j--)
+            {
+                int cur = (num1[i]-'0')*(num2[j]-'0') + res[i+j+1] - '0';
+                int carry = cur/10;
+                cur = cur%10;
+                //cout << "i=" <<i << " j=" << j << " res[" << i+j << "]=" << res[i+j] << " cur=" <<cur << endl;
+                res[i+j+1] =cur+'0';
+                res[i+j] += carry;
+            }
+        }
+        //cout << "res=" << res << endl;
+        //check if carry is 0
+        
+        //remove leading zeros
+        while(res[0] == '0' && res.size() > 1)
+        {
+            res.erase(0, 1);
+        }
+        return res;
+    }
+};
