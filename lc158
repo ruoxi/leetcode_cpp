@@ -1,0 +1,65 @@
+/*158. Read N Characters Given Read4 II - Call multiple times   QuestionEditorial Solution  My Submissions
+Total Accepted: 15088
+Total Submissions: 62227
+Difficulty: Hard
+Contributors: Admin
+The API: int read4(char *buf) reads 4 characters at a time from a file.
+
+The return value is the actual number of characters read. For example, it returns 3 if there is only 3 characters left in the file.
+
+By using the read4 API, implement the function int read(char *buf, int n) that reads n characters from the file.
+
+Note:
+The read function may be called multiple times.
+*/
+
+//Difference between call once and call multiple times:
+//It reads 4 bytes and if call multiple times, you don't want to restart from beginning
+//eg [a, b, c, d] read(1), read(2), read(1) will return [a], [b,c], [d]
+
+// Forward declaration of the read4 API.
+int read4(char *buf);
+
+class Solution {
+public:
+    /**
+     * @param buf Destination buffer
+     * @param n   Maximum number of characters to read
+     * @return    The number of characters read
+     */
+    int read(char *buf, int n) {
+        
+        int len = 0;
+        
+        while(len < n)
+        {
+            //needs to read from file
+            if(buffPtr == 0)
+            {
+                buffCnt = read4(buffer);
+            }
+            
+            //move the buffer chars to buf
+            while(len < n && buffPtr < buffCnt)
+            {
+                buf[len] = buffer[buffPtr];
+                len++; buffPtr++;
+            }
+            
+            //now check if end of file
+            if(buffCnt < 4) return len;
+            
+            //if used up all chars in buff, need to read new chars from file
+            if(buffPtr == buffCnt) 
+            {
+                buffPtr = 0;
+            }
+        }
+        
+        return len;
+    }
+    
+    char buffer[4];
+    int buffCnt = 0;//gives the #of chars in buffer
+    int buffPtr = 0;//points to the cur index in buffer
+};
