@@ -1,0 +1,90 @@
+/*241. Different Ways to Add Parentheses   QuestionEditorial Solution  My Submissions
+Total Accepted: 32189
+Total Submissions: 81029
+Difficulty: Medium
+Contributors: Admin
+Given a string of numbers and operators, return all possible results from computing all the different possible ways to group numbers and operators. The valid operators are +, - and *.
+
+
+Example 1
+Input: "2-1-1".
+
+((2-1)-1) = 0
+(2-(1-1)) = 2
+Output: [0, 2]
+
+
+Example 2
+Input: "2*3-4*5"
+
+(2*(3-(4*5))) = -34
+((2*3)-(4*5)) = -14
+((2*(3-4))*5) = -10
+(2*((3-4)*5)) = -10
+(((2*3)-4)*5) = 10
+Output: [-34, -14, -10, -10, 10]
+*/
+
+//思路：分治 + memorization 
+//当看到+,-,*的时候就可以把input分成first part和second part,分别算出结果
+//当前的input的解就是first part result 和second part result 的结合
+//这道题注意当input只是数字的时候，只需要check res vector是否是空就可以
+
+class Solution {
+public:
+    //divide to smaller problem
+    //memorization
+    //key is a string in input, eg 2-1-1, and value is the result {2, 0}
+    unordered_map<string, vector<int>> visited;
+    
+    vector<int> diffWaysToCompute(string input) {
+        
+        if(input.empty()) return vector<int>();
+
+        if(visited.find(input) != visited.end()) return visited[input];
+    
+        int n = input.length();
+        vector<int> res;
+        for(int i = 0; i < n; i++)
+        {
+            if(input[i] == '+' || input[i] == '-' || input[i] == '*')
+            {
+                string firstp = input.substr(0, i);
+                string secondp = input.substr(i+1, n-i-1);
+                
+                vector<int> firstres = diffWaysToCompute(firstp);
+                vector<int> secondres = diffWaysToCompute(secondp);
+                
+                for(int j = 0; j < firstres.size(); j++)
+                {
+                    for(int k = 0; k < secondres.size(); k++)
+                    {
+                        int ans = 0;
+                        if(input[i] == '+')
+                        {
+                            ans = firstres[j] + secondres[k];
+                        }
+                        else if(input[i] == '-')
+                        {
+                            ans = firstres[j] - secondres[k];
+                        }
+                        else
+                        {
+                            ans = firstres[j]*secondres[k];
+                        }
+                        
+                        res.push_back(ans);
+                    }
+                }
+            }
+        }
+        
+        //this means if input is only digits eg: 1234
+        if(res.empty())
+        {
+            res.push_back(stoi(input));
+        }
+        visited[input] = res;
+        return res;
+    }
+};
