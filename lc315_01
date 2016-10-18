@@ -1,0 +1,80 @@
+/*315. Count of Smaller Numbers After Self   QuestionEditorial Solution  My Submissions
+Total Accepted: 20212
+Total Submissions: 61684
+Difficulty: Hard
+Contributors: Admin
+You are given an integer array nums and you have to return a new counts array. The counts array has the property where counts[i] is the number of smaller elements to the right of nums[i].
+
+Example:
+
+Given nums = [5, 2, 6, 1]
+
+To the right of 5 there are 2 smaller elements (2 and 1).
+To the right of 2 there is only 1 smaller element (1).
+To the right of 6 there is 1 smaller element (1).
+To the right of 1 there is 0 smaller element.
+Return the array [2, 1, 1, 0].
+*/
+
+
+class Solution {
+public:
+    //use BST;
+    //BST node 记录三个数字： num 表示本身的值，sum表示这个node的# of left children. dup表示当前node重复次数
+    //从后向前遍历这个nums array，向bst中加入node
+    //当走向node的左子树的时候，node sum应该增加，因为左子树的个数+1
+    //
+    class Node
+    {
+    public:
+        int val;
+        int sum;
+        int dup;
+        Node* left;
+        Node* right;
+        Node(int v, int s):val(v), sum(s), dup(1),left(NULL), right(NULL){}
+    };
+    
+    vector<int> countSmaller(vector<int>& nums) {
+        if(nums.empty()) return vector<int>();
+        
+        int n = nums.size();
+        Node* root = NULL;
+        vector<int> res(n,0);
+        for(int i = n-1; i>=0; i--)
+        {
+            root = insert(nums[i], root, res, i, 0);
+        }
+        return res;
+    }
+    
+    Node* insert(int num, Node* cur, vector<int>& res, int i, int presum )
+    {
+        if(cur == NULL)
+        {
+            //注意这里sum initialize为0，因为其左子树为空
+            cur = new Node(num, 0);
+            res[i] = presum;
+ 
+        }
+        else if(cur->val > num)
+        {
+            //go to left child of cur
+            cur->sum++;
+            cur->left = insert(num, cur->left, res, i, presum);
+            
+        }
+        else if(cur->val == num)
+        {
+            cur->dup++;
+            res[i] = presum + cur->sum;
+        }
+        else
+        {
+            //go to right child of cur
+            cur->right= insert(num, cur->right, res, i, presum+cur->sum+cur->dup);
+
+        }
+        return cur;
+    }
+};
