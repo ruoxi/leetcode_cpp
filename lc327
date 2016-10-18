@@ -1,0 +1,77 @@
+/*327. Count of Range Sum   QuestionEditorial Solution  My Submissions
+Total Accepted: 11715
+Total Submissions: 42062
+Difficulty: Hard
+Contributors: Admin
+Given an integer array nums, return the number of range sums that lie in [lower, upper] inclusive.
+Range sum S(i, j) is defined as the sum of the elements in nums between indices i and j (i ≤ j), inclusive.
+
+Note:
+A naive algorithm of O(n2) is trivial. You MUST do better than that.
+
+Example:
+Given nums = [-2, 5, -1], lower = -2, upper = 2,
+Return 3.
+The three ranges are : [0, 0], [2, 2], [0, 2] and their respective sums are: -2, -1, 2.
+*/
+
+//count the result using merge sort
+//similar to lc315. Count of Smaller Numbers After Self
+//that one is to find num[j]-num[i] < 0 where j > i
+//this one is to find lower<=sum[j]-sum[i] <= upper where j>i
+
+
+class Solution {
+public:
+    int countRangeSum(vector<int>& nums, int lower, int upper) {
+        if(nums.empty()) return 0;
+        
+        int n = nums.size();
+        vector<long> sum(n+1, 0);
+        for(int i = 1; i <=n; i++)
+        {
+            sum[i] = sum[i-1] + nums[i-1];
+        }
+        
+        //对sum 数组进行merge sort
+        return mergesortCount(sum, 0, n+1, lower, upper);
+        
+    }
+    
+    //use mergesort
+    int mergesortCount(vector<long>& sum, int start, int end, int lower, int upper)
+    {
+        //this means only one element left
+        if(end - start <=1) return 0;
+        
+        int mid = start + (end - start)/2;
+        int count = mergesortCount(sum, start, mid, lower, upper) + mergesortCount(sum, mid, end, lower, upper);
+        
+        int l = mid, r = mid, k = 0, t= mid;
+        vector<long> sorted(end -start, 0);
+        //here merge [start, mid) and [mid, end)
+        for(int i = start; i < mid; i++, k++)
+        {
+            while(r < end && sum[r]-sum[i] <= upper) r++;
+            while(l < end && sum[l]-sum[i] < lower) l++;
+            
+            count += r-l;
+            
+            //now merge
+            while(t < end && sum[t] < sum[i])
+            {
+                sorted[k++] = sum[t++];
+            }
+            sorted[k] = sum[i];
+            
+        }
+        
+        //copy sorted list back to sum
+        for(int i = 0; i < k; i++)
+        {
+            sum[start+i] = sorted[i]; 
+        }
+        return count;
+        
+    }
+};
