@@ -1,0 +1,72 @@
+/*282. Expression Add Operators   QuestionEditorial Solution  My Submissions
+Total Accepted: 18651
+Total Submissions: 68198
+Difficulty: Hard
+Contributors: Admin
+Given a string that contains only digits 0-9 and a target value, return all possibilities to add binary operators (not unary) +, -, or * between the digits so they evaluate to the target value.
+
+Examples: 
+"123", 6 -> ["1+2+3", "1*2*3"] 
+"232", 8 -> ["2*3+2", "2+3*2"]
+"105", 5 -> ["1*0+5","10-5"]
+"00", 0 -> ["0+0", "0-0", "0*0"]
+"3456237490", 9191 -> []
+*/
+
+//思路：dfs,每次尝试以pos为起始，长度依次增加，看是否能达到target
+//注意：这里需要记录eval的值，代表上一次算出的值，以及multed，意思是1+2*3， 当计算1+2时，得出eval是3，但是当下一层是2*3时，需要把上一层加上的值减掉，
+//然后再加上上一层的值*3. eg 3-2+2*3 = 7
+//另外需要注意的是当计算当前层的数字时，0如果出现在起始位，eg num[pos]==0,那么只需要计算num[pos]就可以，因为00，03，010都是invalid
+
+class Solution {
+public:
+    vector<string> addOperators(string num, int target) {
+        if(num.empty()) return vector<string>();
+        
+
+        
+        vector<string> res;
+        
+        
+        dfs(num, target, "", res, 0, 0, 0);
+        return res;
+        
+        
+    }
+    
+    void dfs(string num, int target, string path, vector<string>& res, int pos, long eval, long multed)
+    {
+        //cout << "pos=" << pos << " eval=" << eval << endl;
+        if(pos == num.size())
+        {
+            if(target == eval)
+            {
+                res.push_back(path);
+                
+            }
+            return;
+        }
+        
+        //num中以pos开头，长度从1到n-i的数字看是否能达到target
+        for(int i = pos; i < num.size(); i++)
+        {
+            //以0开头的数字只能是0， 00,05都是invalid
+            if(i>pos && num[pos] == '0') break;
+            string curstr = num.substr(pos, i+1-pos);
+            long cur = stol(curstr);
+            //cout << "cur=" << cur << endl;
+            if(pos == 0)
+            {
+                dfs(num, target, path+curstr, res, i+1, eval+cur, cur);
+            }
+            else
+            {
+                
+                dfs(num, target, path + "+" + curstr, res, i+1, eval+cur, cur);
+                dfs(num, target, path+"-"+curstr, res, i+1, eval-cur, -cur);
+                dfs(num, target, path+"*"+curstr, res, i+1, eval-multed+cur*multed, cur*multed);
+            }
+        }
+        
+    }
+};
