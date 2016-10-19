@@ -1,0 +1,67 @@
+/*416. Partition Equal Subset Sum   QuestionEditorial Solution  My Submissions
+Total Accepted: 4634
+Total Submissions: 12248
+Difficulty: Medium
+Contributors: Admin
+Given a non-empty array containing only positive integers, find if the array can be partitioned into two subsets such that the sum of elements in both subsets is equal.
+
+Note:
+Each of the array element will not exceed 100.
+The array size will not exceed 200.
+Example 1:
+
+Input: [1, 5, 11, 5]
+
+Output: true
+
+Explanation: The array can be partitioned as [1, 5, 5] and [11].
+Example 2:
+
+Input: [1, 2, 3, 5]
+
+Output: false
+
+Explanation: The array cannot be partitioned into equal sum subsets.
+*/
+
+//思路：这是backpack dp的变形，
+//需要注意的是这里并不需要开2维数组，dp[j]表示能否组成sum 为j
+
+class Solution {
+public:
+    bool canPartition(vector<int>& nums) {
+        if(nums.empty()) return true;
+        
+        int n = nums.size();
+        
+        int sum = 0;
+        for(int i = 0; i < n; i++)
+        {
+            sum += nums[i];
+        }
+        
+        if(sum %2) return false;
+        
+        int target = sum/2;
+        //dp[i][j]表示前i个数能否组成sum为j
+        vector<bool> dp(target+1, false);
+        
+        dp[0] = true;
+        
+        
+        for(int i = 1; i <= n; i++)
+        {
+            //这里注意，如果j从target递减，则代表每一个nums[i]数字只能用一次
+            //如果j是从nums[i-1]到target递增， 则代表nums[i]可以用无限次
+            for(int j = target; j >= nums[i-1]; j--)
+            {
+                dp[j] = dp[j] || dp[j-nums[i-1]];
+            }
+        }
+        
+
+        return dp[target];
+        
+        
+    }
+};
