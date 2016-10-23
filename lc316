@@ -1,0 +1,55 @@
+/*
+316. Remove Duplicate Letters   QuestionEditorial Solution  My Submissions
+Total Accepted: 21190
+Total Submissions: 76367
+Difficulty: Hard
+Contributors: Admin
+Given a string which contains only lowercase letters, remove duplicate letters so that every letter appear once and only once. You must make sure your result is the smallest in lexicographical order among all possible results.
+
+Example:
+Given "bcabc"
+Return "abc"
+
+Given "cbacdcbc"
+Return "acdb"
+*/
+
+//思路：遍历一遍string,记录每个char出现过得次数
+//再遍历一次，对于每一个字符，cnt--,如果当前字符小于res中最后一个字符，并且这最后一个字符在之后还有出现过，就可以把res中的字符pop back,
+//把当前的放入res
+//如果当前字符已经visited过，说明之前已经出现过并且在res中在它之前的字符都符合要求（比他小，或者之后没有再出现过）
+
+class Solution {
+public:
+    string removeDuplicateLetters(string s) {
+        if(s.empty()) return s;
+        
+        int n = s.length();
+        int cnts[256] = {0};
+        
+        int visited[256] = {0};
+        string res="0";
+        for(int i = 0; i < n; i++)
+        {
+            cnts[s[i]]++;
+        }
+        
+        for(int i = 0; i < n; i++)
+        {
+            cnts[s[i]]--;
+            if(visited[s[i]]) continue;
+            
+            while(s[i] < res.back() && cnts[res.back()])
+            {
+                char cur = res.back();
+                res.pop_back();
+                visited[cur] = 0;
+            }
+            
+            res+=s[i];
+            visited[s[i]] = 1;
+        }
+        res.erase(0, 1);
+        return res;
+    }
+};
