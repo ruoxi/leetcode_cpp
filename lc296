@@ -1,0 +1,79 @@
+/*296. Best Meeting Point   QuestionEditorial Solution  My Submissions
+Total Accepted: 8158
+Total Submissions: 16497
+Difficulty: Hard
+Contributors: Admin
+A group of two or more people wants to meet and minimize the total travel distance. You are given a 2D grid of values 0 or 1, where each 1 marks the home of someone in the group. The distance is calculated using Manhattan Distance, where distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
+
+For example, given three people living at (0,0), (0,4), and (2,2):
+
+1 - 0 - 0 - 0 - 1
+|   |   |   |   |
+0 - 0 - 0 - 0 - 0
+|   |   |   |   |
+0 - 0 - 1 - 0 - 0
+The point (0,2) is an ideal meeting point, as the total travel distance of 2+2+2=6 is minimal. So return 6.
+
+*/
+//思路：先看x轴， eg{0，2，3， 5} ,最大值最小值0，5不管在哪个点回合，他们的travel distance都是5-0 = 0；
+//如果是奇数个 eg{0,1,5}则最后可以在1点回合，这样1就不需要travel
+
+//Runtime: O(MN)
+//Space:O(M+N)
+
+
+class Solution {
+public:
+    
+    int minTotalDistance(vector<vector<int>>& grid) {
+        
+        if(grid.empty() || grid.at(0).empty()) return 0;
+        
+        int n= grid.size(); int m = grid.at(0).size();
+        
+        vector<int> x;
+        vector<int> y;
+        //Note:这里分两个loop来加x, y是为了让x，和y按大小加入数组，
+        //这样之后就不需要sort
+        for(int i=0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                if(grid[i][j] == 1)
+                {
+                    x.push_back(i);
+                }
+            }
+        }
+        
+        for(int j = 0; j < m; j++)
+        {
+            for(int i = 0; i < n; i++)
+            {
+                if(grid[i][j])
+                {
+                    y.push_back(j);
+                }
+            }
+        }
+        
+        return getMin(x)+getMin(y);
+    }
+    
+    int getMin(vector<int>& nums)
+    {
+        int res = 0;
+
+        int n = nums.size();
+        int end = n-1, start = 0;
+        
+        while(start < end)
+        {
+            res += nums[end] - nums[start];
+            start++;
+            end--;
+        }
+        
+        return res;
+    }
+};
