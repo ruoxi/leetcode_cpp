@@ -1,0 +1,115 @@
+/*
+407. Trapping Rain Water II   QuestionEditorial Solution  My Submissions
+Total Accepted: 2297
+Total Submissions: 6889
+Difficulty: Hard
+Contributors: Admin
+Given an m x n matrix of positive integers representing the height of each unit cell in a 2D elevation map, compute the volume of water it is able to trap after raining.
+
+Note:
+Both m and n are less than 110. The height of each unit cell is greater than 0 and is less than 20,000.
+
+Example:
+
+Given the following 3x6 height map:
+[
+  [1,4,3,1,3,2],
+  [3,2,1,3,2,4],
+  [2,3,3,2,3,1]
+]
+
+Return 4.
+*/
+
+//思路：参考trapping water I, 外围高度最小值决定灌水基调， 
+//因此先走一遍最外层，放入priority queue,比较容易拿到最小值
+//然后每次从priority queue中拿出最小值，检查他的neighbor,如果没有visited过，并且neighor高度小于cur高度，那么res+=cur高度-neighbor高度
+//这里注意当把neighbor放入priority queue中时，需要放入的高度是max(cur高度，neighbor高度）
+//其实是在记录外围围墙的最大值
+class Solution {
+public:
+
+    class Node
+    {
+    public:
+        int val;
+        int x;
+        int y;
+        Node(int v, int xx, int yy): val(v), x(xx), y(yy) {}
+    };
+    
+    class Comparator
+    {
+    public:
+        bool operator()(Node& a, Node& b)
+        {
+            if(a.val != b.val) return a.val > b.val;
+            else
+            {
+                if(a.x != b.x) return a.x > b.x;
+                return a.y>b.y;
+            }
+        }
+    };
+    
+    vector<int> dx={1, -1, 0, 0};
+    vector<int> dy={0, 0 ,1 ,-1};
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        if(heightMap.empty() || heightMap.at(0).empty()) return 0;
+        
+        priority_queue<Node, vector<Node>, Comparator> pq;
+        
+        //insert nodes at boundary
+        int n= heightMap.size();
+        int m = heightMap.at(0).size();
+        vector<vector<int>> visited(n, vector<int>(m, 0));
+        for(int i = 0; i < n; i++)
+        {
+            Node l(heightMap[i][0], i, 0);
+            Node k(heightMap[i][m-1], i, m-1);
+            visited[i][0] = 1;
+            visited[i][m-1] = 1;
+            pq.push(l);
+            pq.push(k);
+        }
+        
+        for(int i = 0; i < m; i++)
+        {
+            Node l(heightMap[0][i], 0, i);
+            Node k(heightMap[n-1][i], n-1, i);
+            visited[0][i] = 1;
+            visited[n-1][i] = 1;
+            pq.push(l);
+            pq.push(k);
+        }
+        
+        int res = 0;
+        
+        while(!pq.empty())
+        {
+            Node cur = pq.top(); pq.pop();
+            int h = cur.val;
+            
+            //check it's neighbor
+            //cout << "h=" << h << endl;
+            for(int i = 0; i < 4; i++)
+            {
+                int nextx = cur.x+dx[i];
+                int nexty = cur.y+dy[i];
+                
+                if(nextx >=0 && nextx < n && nexty>=0 && nexty < m && visited[nextx][nexty] == 0)
+                {
+                    if(heightMap[nextx][nexty] < h)
+                    {
+                        res += h-heightMap[nextx][nexty];
+                    }
+                    visited[nextx][nexty] = 1;
+                    pq.push(Node(max(h, heightMap[nextx][nexty]), nextx, nexty));
+                }
+            }
+            
+        }
+        
+        return res;
+    }
+};
