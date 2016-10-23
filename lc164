@@ -1,0 +1,70 @@
+/*164. Maximum Gap   QuestionEditorial Solution  My Submissions
+Total Accepted: 39305
+Total Submissions: 139691
+Difficulty: Hard
+Contributors: Admin
+Given an unsorted array, find the maximum difference between the successive elements in its sorted form.
+
+Try to solve it in linear time/space.
+
+Return 0 if the array contains less than 2 elements.
+
+You may assume all elements in the array are non-negative integers and fit in the 32-bit signed integer range.
+
+Credits:
+Special thanks to @porker2008 for adding this problem and creating all test cases.
+*/
+
+
+//Runtime: O(n)
+//Space: O(n)
+
+class Solution {
+public:
+    //bucket sort
+    //get min and max value in nums, then the minimum value of max gap is bucket_size = ceiling((max-min)/(n-1))
+    //# of bucket = (max-min)/len +1
+    int maximumGap(vector<int>& nums) {
+        if(nums.size() < 2) return 0;
+        
+        int n = nums.size();
+        
+        int maxv = nums[0];
+        int minv = nums[0];
+        
+        for(int i = 1; i <n ;i++)
+        {
+            maxv = max(maxv, nums[i]);
+            minv = min(minv, nums[i]);
+        }
+        
+        //注意bucket_size eg {1, 1, 1, 1}, bucket_size = 1
+        int bucket_size = (maxv-minv)/n + 1;
+
+        int bucket_num = (maxv-minv)/bucket_size + 1;
+ 
+        //now put each num into bucket, only need to save min and max values in each bucket
+        vector<int> minbuckets(bucket_num, INT_MAX);
+        vector<int> maxbuckets(bucket_num, INT_MIN);
+        
+        for(int i = 0; i < n; i++)
+        {
+            int index = (nums[i]-minv)/bucket_size;
+            
+            minbuckets[index] = min(minbuckets[index], nums[i]);
+            maxbuckets[index] = max(maxbuckets[index], nums[i]);
+        }
+        
+        //now go through the all the buckets and check the gap between ith and i+1th bucket
+        int maxgap = maxbuckets[0] - minbuckets[0];
+        int prev = maxbuckets[0];
+        for(int i = 1; i < bucket_num; i++)
+        {
+            if(minbuckets[i] == INT_MAX && maxbuckets[i] == INT_MIN) continue;
+            maxgap = max(maxgap, minbuckets[i] - prev);
+            prev = maxbuckets[i];
+        }
+        
+        return maxgap;
+    }
+};
