@@ -1,0 +1,41 @@
+/*412. Fizz Buzz   QuestionEditorial Solution  My Submissions
+Total Accepted: 6838
+Total Submissions: 11796
+Difficulty: Easy
+Contributors: Admin
+Write a program that outputs the string representation of numbers from 1 to n.
+
+But for multiples of three it should output “Fizz” instead of the number and for the multiples of five output “Buzz”. 
+For numbers which are multiples of both three and five output “FizzBuzz”.
+*/
+
+//Runtime: O(n)
+//Space: O(n)
+
+class Solution {
+public:
+    vector<string> fizzBuzz(int n) {
+        if(n < 1) return vector<string>();
+        
+        vector<string> res(n, "");
+        
+        for(int i = 1; i <=n; i++)
+        {
+            string cur = "";
+            if(i%3 == 0)
+            {
+                cur = "Fizz";
+            }
+            
+            if(i%5 == 0)
+            {
+                cur += "Buzz";
+            }
+            
+            res[i-1] = cur.empty() ? to_string(i) : cur;
+        }
+        
+        return res;
+        
+    }
+};
