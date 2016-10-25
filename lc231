@@ -1,0 +1,18 @@
+/*
+231. Power of Two   QuestionEditorial Solution  My Submissions
+Total Accepted: 105072
+Total Submissions: 270944
+Difficulty: Easy
+Contributors: Admin
+Given an integer, write a function to determine if it is a power of two.
+*/
+
+//思路：2^n 是只有一个bit是1， eg: 10, 100, 1000
+class Solution {
+public:
+    bool isPowerOfTwo(int n) {
+        if(n <=0) return false;
+        
+        return (n&(n-1)) == 0;
+    }
+};
