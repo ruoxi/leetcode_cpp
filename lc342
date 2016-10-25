@@ -1,0 +1,28 @@
+/*342. Power of Four   QuestionEditorial Solution  My Submissions
+Total Accepted: 43304
+Total Submissions: 117526
+Difficulty: Easy
+Contributors: Admin
+Given an integer (signed 32 bits), write a function to check whether it is a power of 4.
+
+Example:
+Given num = 16, return true. Given num = 5, return false.
+
+Follow up: Could you solve it without loops/recursion?
+*/
+
+
+class Solution {
+public:
+    //思路：4的n次方的性质是，
+    // 1. 大于等于1
+    // 2. 只有一个bit是1
+    // 3. 只有奇数位是1， eg, 100, 10000
+    bool isPowerOfFour(int num) {
+        if(num == 0) return false;
+        if(num == 1) return true;
+        
+        
+        return (num&(num-1)) == 0 && ((num & 0x55555555) != 0);
+    }
+};
