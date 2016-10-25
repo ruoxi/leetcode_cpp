@@ -1,0 +1,45 @@
+/*387. First Unique Character in a String   QuestionEditorial Solution  My Submissions
+Total Accepted: 23891
+Total Submissions: 54016
+Difficulty: Easy
+Contributors: Admin
+Given a string, find the first non-repeating character in it and return it's index. If it doesn't exist, return -1.
+
+Examples:
+
+s = "leetcode"
+return 0.
+
+s = "loveleetcode",
+return 2.
+Note: You may assume the string contain only lowercase letters.
+*/
+
+//思路：用数组记录每个char出现的次数，然后再从头遍历一遍，如果freq == 1, return i
+//Runtime: O(n)
+//Space: O(1);
+
+class Solution {
+public:
+    int firstUniqChar(string s) {
+        if(s.empty()) return -1;
+        
+        int n = s.length();
+        vector<int> freq(26, 0);
+        
+        for(int i = 0; i < n; i++)
+        {
+            freq[s[i] - 'a']++;
+        }
+        
+        for(int i = 0; i < n; i++)
+        {
+            if(freq[s[i] - 'a'] == 1)
+            {
+                return i;
+            }
+        }
+        
+        return -1;
+    }
+};
