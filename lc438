@@ -1,0 +1,93 @@
+/*
+438. Find All Anagrams in a String   QuestionEditorial Solution  My Submissions
+Total Accepted: 2024
+Total Submissions: 5840
+Difficulty: Easy
+Contributors: Stomach_ache
+Given a string s and a non-empty string p, find all the start indices of p's anagrams in s.
+
+Strings consists of lowercase English letters only and the length of both strings s and p will not be larger than 20,100.
+
+The order of output does not matter.
+
+Example 1:
+
+Input:
+s: "cbaebabacd" p: "abc"
+
+Output:
+[0, 6]
+
+Explanation:
+The substring with start index = 0 is "cba", which is an anagram of "abc".
+The substring with start index = 6 is "bac", which is an anagram of "abc".
+Example 2:
+
+Input:
+s: "abab" p: "ab"
+
+Output:
+[0, 1, 2]
+
+Explanation:
+The substring with start index = 0 is "ab", which is an anagram of "ab".
+The substring with start index = 1 is "ba", which is an anagram of "ab".
+The substring with start index = 2 is "ab", which is an anagram of "ab".
+*/
+
+//思路：sliding window
+//用p建立一个map, 记录p中每一个char出现的次数， count 代表一共要找到多少个char
+//start 表示sliding window的起始，i(end)表示sliding window 的终点
+//遍历s， 如果s[i]在map中，那么count--, i++
+//如果count==0,表示找到一个解，加入到res
+//如果window size == p.size(),开始挪动window起始点，同时update count
+
+//eg. s = adbca  p = abc
+//map = {a:1, b:1, c:1} count = 3
+//i =0: map= {a:0, b:1, c:1} count = 2 start = 0, i->1
+//i =1: map= {a:0, b:1, c:1, d:-1} count = 2 start=0 i->2
+//i =2: map= {a:0, b:0, c:1, d:-1} count = 1 i->3 move start:=> map= {a:1, b:0, c:1, d:-1} count=2 start = 1
+//i =3: map= {a:1, b:0, c:0, d:-1} count = 1 i->4 move start:=> map= {a:1, b:0, c:0: d:0} count=1 start=2
+//i= 4: map= {a:0, b:0, c:0, d:0} count = 0 i->5 add to res, move start:=> map= {a:0, b:1, c:0, d:0} count=1 start=3
+//res = {2}
+
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+ 
+        
+        vector<int> map(256, 0);
+        
+        int n = p.length();
+        for(int i = 0; i < n; i++)
+        {
+            map[p[i]]++;
+        }
+        
+        int start = 0;
+        vector<int> res;
+        int count = n;
+        for(int i = 0; i < s.length();)
+        {
+            //if s[i] in map, count--
+            if(map[s[i++]]-- > 0)
+            {
+                count--;
+            }
+            
+            if(count == 0)
+            {
+                res.push_back(start);
+            }
+            
+            //if window size == n, move start
+            if(i-start == n && map[s[start++]]++ >=0 )
+            {
+                count++;
+            }
+        }
+        
+        return res;
+        
+    }
+};
