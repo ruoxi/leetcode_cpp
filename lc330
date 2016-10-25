@@ -31,6 +31,9 @@ public:
     //表示已经可以组成[0, miss) 的所有数字，如果nums里下一个num <= miss, 则表示可以把这个区间extend成[0,miss+num)
     //如果下一个num > miss, 则表示[miss, num)这个区间达不到，那么这个时候就需要把miss加入到array中，可以把区间extend到[0, 2*miss]
     //这时候如果num <= 2*miss那么这个区间可以接着被extend到[0,2*miss+num]...
+    //也可以这样理解，maxNum 表示能加到的最大数，
+    // 当nums[i] <= maxNum,表示nums[i]可以用来extend 区间从[0, maxNum] 到[0, maxNum+nums[i]]; maxNum= maxNum+nums[i]
+    //如果nums[i] > maxNum,表示没有办法加到maxNum+1， 所以这时候patch maxNum+1到array 中， 这样区间从[0, maxNum] extend到[0, maxNum+maxNum+1], maxNum = maxNum+maxNum+1
     int minPatches(vector<int>& nums, int n) {
         long miss = 1, add = 0, i = 0;
         
