@@ -1,0 +1,48 @@
+/*371. Sum of Two Integers   QuestionEditorial Solution  My Submissions
+Total Accepted: 42023
+Total Submissions: 81356
+Difficulty: Easy
+Contributors: Admin
+Calculate the sum of two integers a and b, but you are not allowed to use the operator + and -.
+
+Example:
+Given a = 1 and b = 2, return 3.*/
+
+//"&" AND operation, for example, 2 (0010) & 7 (0111) => 2 (0010)
+
+//"^" XOR operation, for example, 2 (0010) ^ 7 (0111) => 5 (0101)
+
+//"~" NOT operation, for example, ~2(0010) => -3 (1101) what??? Don't get frustrated here. It's called two's complement.
+
+//1111 is -1, in two's complement
+
+//1110 is -2, which is ~2 + 1, ~0010 => 1101, 1101 + 1 = 1110 => 2
+
+//1101 is -3, which is ~3 + 1
+
+//so if you want to get a negative number, you can simply do ~x + 1
+
+//思路： carry = a&b, 找出a和b都为1的bit
+//a = a^b,相同为零不同为1， 所以a,b中相加为1，没有overflow的bit都留了下来
+//b = carry << 1, 因为carry表示当前bit相加后有overlow,向左移动一位之后就表示进1的bit
+
+class Solution {
+public:
+    int getSum(int a, int b) {
+        int res = 0;
+        
+        if(a == 0) return b;
+        if(b == 0) return a;
+        
+        while(b!=0)
+        {
+            int carry = a&b;
+            
+            a = a^b;
+            
+            b = carry << 1;
+        }
+        
+        return a;
+    }
+};
