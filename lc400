@@ -1,0 +1,65 @@
+/*
+400. Nth Digit   QuestionEditorial Solution  My Submissions
+Total Accepted: 7629
+Total Submissions: 25356
+Difficulty: Easy
+Contributors: Admin
+Find the nth digit of the infinite integer sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...
+
+Note:
+n is positive and will fit within the range of a 32-bit signed integer (n < 231).
+
+Example 1:
+
+Input:
+3
+
+Output:
+3
+Example 2:
+
+Input:
+11
+
+Output:
+0
+
+Explanation:
+The 11th digit of the sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ... is a 0, which is part of the number 10.
+*/
+
+
+class Solution {
+public:
+    //先找是有几位数
+    //1 -> 9 总共有9个digit
+    //10->99 总共有90*2 个digit
+    //100->999 总共有900*3个digit
+    //然后再找n所在的数，
+    //最后在n所在的数里找是第几个digit
+    int findNthDigit(int n) {
+        long count =9;
+        int len = 1;
+        int start = 1;
+        
+        while(n > count*len)
+        {
+            n = n - count*len;
+            count = count*10;
+            start = start*10;
+            len++;
+            
+        }
+        
+        //n 现在等于从start开头的第n个digit
+        //cout << "start=" << start << " count=" << count << " len=" << len << " n=" << n << endl;
+        start += (n-1)/len;
+        
+        string res = to_string(start);
+        //cout << "res=" <<res << endl;
+        int digit_index = (n-1)%len;
+        //cout << "digit_index=" << digit_index << endl;
+        return res[digit_index]-'0';
+        
+    }
+};
