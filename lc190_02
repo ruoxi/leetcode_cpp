@@ -1,0 +1,34 @@
+/*
+190. Reverse Bits   QuestionEditorial Solution  My Submissions
+Total Accepted: 81618
+Total Submissions: 276281
+Difficulty: Easy
+Contributors: Admin
+Reverse bits of a given 32 bits unsigned integer.
+
+For example, given input 43261596 (represented in binary as 00000010100101000001111010011100), return 964176192 (represented in binary as 00111001011110000010100101000000).
+
+Follow up:
+If this function is called many times, how would you optimize it?
+
+Related problem: Reverse Integer
+*/
+
+class Solution {
+public:
+    uint32_t reverseBits(uint32_t n) {
+        uint32_t res=0;
+        int i = 0;
+        while(i <32)
+        {
+            uint32_t tmp = n&1;
+            res = res<<1;
+            res = res|tmp;
+            n = n >>1;
+            i++;
+            
+        }
+        
+        return res;
+    }
+};
