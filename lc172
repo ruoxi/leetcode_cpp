@@ -1,0 +1,29 @@
+/*
+172. Factorial Trailing Zeroes   QuestionEditorial Solution  My Submissions
+Total Accepted: 75147
+Total Submissions: 218510
+Difficulty: Easy
+Contributors: Admin
+Given an integer n, return the number of trailing zeroes in n!.
+
+Note: Your solution should be in logarithmic time complexity.
+*/
+
+
+
+class Solution {
+public:
+    //number of 5, and 2, number of 5 will be smaller than number of 2, so check 5 is enough
+    int trailingZeroes(int n) {
+        if(n == 0) return 0;
+        int res = 0;
+        while(n > 0)
+        {
+            res +=n/5;
+            n = n/5;
+        }
+        
+        return res;
+        
+    }
+};
