@@ -1,0 +1,81 @@
+/*419. Battleships in a Board   QuestionEditorial Solution  My Submissions
+Total Accepted: 3234
+Total Submissions: 5401
+Difficulty: Medium
+Contributors: ben65
+Given an 2D board, count how many different battleships are in it. The battleships are represented with 'X's, empty slots are represented with '.'s. You may assume the following rules:
+
+You receive a valid board, made of only battleships or empty slots.
+Battleships can only be placed horizontally or vertically. In other words, they can only be made of the shape 1xN (1 row, N columns) or Nx1 (N rows, 1 column), where N can be of any size.
+At least one horizontal or vertical cell separates between two battleships - there are no adjacent battleships.
+Example:
+X..X
+...X
+...X
+In the above board there are 2 battleships.
+Invalid Example:
+...X
+XXXX
+...X
+This is not a valid board - as battleships will always have a cell separating between them.
+Your algorithm should not modify the value of the board.
+*/
+
+
+class Solution {
+public:
+    //similar to number of island
+    //check how many cells are disconnected
+    vector<int> dx = {1, -1, 0, 0};
+    vector<int> dy = {0, 0, 1, -1};
+    void dfs(vector<vector<char>>& board, vector<vector<bool>>& visited, int x, int y)
+    {
+        stack<pair<int, int>> stk;
+        
+        stk.push(make_pair(x,y));
+        visited[x][y] = true;
+        while(!stk.empty())
+        {
+            int cx = stk.top().first;
+            int cy = stk.top().second;
+            stk.pop();
+            for(int i = 0; i < 4; i++)
+            {
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
+                //cout << "nx=" << nx << " ny=" << ny << endl;
+                if(nx >=0 && nx < board.size() && ny >=0 && ny < board.at(0).size() && !visited[nx][ny] && board[nx][ny] == 'X')
+                {
+                    //cout << "nx=" << nx << " ny=" << ny << endl;
+                    visited[nx][ny] = true;
+                    stk.push(make_pair(nx, ny));
+                }
+            }
+            
+        }
+    }
+    
+    int countBattleships(vector<vector<char>>& board) {
+        if(board.empty() || board.at(0).empty()) return 0;
+        
+        int n = board.size();
+        int m = board.at(0).size();
+        
+        vector<vector<bool>> visited(n, vector<bool>(m, false));
+        int res = 0;
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                if(!visited[i][j] && board[i][j] == 'X')
+                {
+                    //cout << "i=" << i<< " j= " << j << endl;
+                    dfs(board, visited, i, j);
+                    res++;
+                }
+            }
+        }
+        
+        return res;
+    }
+};
