@@ -1,0 +1,62 @@
+318. Maximum Product of Word Lengths   QuestionEditorial Solution  My Submissions
+Total Accepted: 36715
+Total Submissions: 88341
+Difficulty: Medium
+Contributors: Admin
+Given a string array words, find the maximum value of length(word[i]) * length(word[j]) where the two words do not share common letters. You may assume that each word will contain only lower case letters. If no such two words exist, return 0.
+
+Example 1:
+Given ["abcw", "baz", "foo", "bar", "xtfn", "abcdef"]
+Return 16
+The two words can be "abcw", "xtfn".
+
+Example 2:
+Given ["a", "ab", "abc", "d", "cd", "bcd", "abcd"]
+Return 4
+The two words can be "ab", "cd".
+
+Example 3:
+Given ["a", "aa", "aaa", "aaaa"]
+Return 0
+No such pair of words.
+
+
+
+class Solution {
+public:
+    //思路：总共26个小写字母，可以用32位int中的26位来表示字母是否出现
+    //eg: 00000000....1111表示dbca出现了
+    //对于每一个word都计算出他的bit representation, 
+    //然后对于每一个word[i] 到看一下i->n中是否存在word[j], word[i]&word[j] == 0 表示没有重合的字母，然后update result
+    int maxProduct(vector<string>& words) {
+        if(words.empty()) return 0;
+        
+        int n = words.size();
+        vector<int> data(n, 0);
+        
+        for(int i = 0; i < n; i++)
+        {
+            int m = words[i].length();
+            string tmp = words[i];
+            
+            for(int j = 0; j <m; j++)
+            {
+                data[i] |= (1 << (tmp[j]-'a'));
+            }
+        }
+        
+        int res = 0;
+        for(int i = 0; i < n-1; i++)
+        {
+            for(int j = i+1; j < n; j++)
+            {
+                if((data[i]&data[j]) == 0 && res < words[i].length()*words[j].length())
+                {
+                    res = words[i].length() * words[j].length();
+                }
+            }
+        }
+        
+        return res;
+    }
+};
