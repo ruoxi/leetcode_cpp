@@ -1,0 +1,32 @@
+319. Bulb Switcher   QuestionEditorial Solution  My Submissions
+Total Accepted: 30655
+Total Submissions: 73658
+Difficulty: Medium
+Contributors: Admin
+There are n bulbs that are initially off. You first turn on all the bulbs. Then, you turn off every second bulb. On the third round, you toggle every third bulb (turning on if it's off or turning off if it's on). For the ith round, you toggle every i bulb. For the nth round, you only toggle the last bulb. Find how many bulbs are on after n rounds.
+
+Example:
+
+Given n = 3. 
+
+At first, the three bulbs are [off, off, off].
+After first round, the three bulbs are [on, on, on].
+After second round, the three bulbs are [on, off, on].
+After third round, the three bulbs are [on, off, off]. 
+
+So you should return 1, because there is only one bulb is on.
+
+//这里注意分析什么情况下bulb i可以被switch奇数次
+
+class Solution {
+public:
+    int bulbSwitch(int n) {
+        //对于bulb i, 能被1...i,整除的次数， 如果是偶数次，就是off，如果是奇数次就是on
+        //eg. i = 12, 能整除他的有 1， 12， 2， 6， 3， 4 因子都是成对出现的，只有sqrt是一个
+        //eg. i =9, 因子有1, 9, 3
+        //所以bulb n最终能不能亮，只需要看有没有整数的sqrt
+        //对以n 个bulb, sqrt(n) 表示1...n中有多少个数有整数sqrt
+        //eg: n = 34, sqrt(n) = 5. 表示1...34中间 有5个数有整数个sqrt, 1, 4, 9,16,25最终也只会有这5个灯亮
+        return sqrt(n);
+    }
+};
