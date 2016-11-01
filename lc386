@@ -1,0 +1,45 @@
+386. Lexicographical Numbers   QuestionEditorial Solution  My Submissions
+Total Accepted: 8786
+Total Submissions: 23533
+Difficulty: Medium
+Contributors: Admin
+Given an integer n, return 1 - n in lexicographical order.
+
+For example, given 13, return: [1,10,11,12,13,2,3,4,5,6,7,8,9].
+
+Please optimize your algorithm to use less time and space. The input size may be as large as 5,000,000.
+
+class Solution {
+public:
+    //n=102
+    // 1, 10, 100, 101, 102, 11, 
+    vector<int> lexicalOrder(int n) {
+        vector<int> res(n, 0);
+        
+        int cur = 1;
+        for(int i = 0; i < n; i++)
+        {
+            res[i] = cur;
+            if(cur*10 <=n)
+            {
+                cur = cur*10;
+            }
+            else
+            {
+                if(cur >=n) cur =cur/10;
+                
+                cur++;
+                //需要注意这里
+                //当cur加到20 n=34时，需要cur/10得到2，使得从2开始加入，2， 20， 21，22.。。
+                //否则result里就会跳过2
+                while(cur %10 == 0)
+                {
+                    cur = cur/10;
+                }
+                
+            }
+        }
+        
+        return res;
+    }
+};
