@@ -1,0 +1,112 @@
+417. Pacific Atlantic Water Flow   QuestionEditorial Solution  My Submissions
+Total Accepted: 3678
+Total Submissions: 11792
+Difficulty: Medium
+Contributors: Admin
+Given an m x n matrix of non-negative integers representing the height of each unit cell in a continent, the "Pacific ocean" touches the left and top edges of the matrix and the "Atlantic ocean" touches the right and bottom edges.
+
+Water can only flow in four directions (up, down, left, or right) from a cell to another one with height equal or lower.
+
+Find the list of grid coordinates where water can flow to both the Pacific and Atlantic ocean.
+
+Note:
+The order of returned grid coordinates does not matter.
+Both m and n are less than 150.
+Example:
+
+Given the following 5x5 matrix:
+
+  Pacific ~   ~   ~   ~   ~ 
+       ~  1   2   2   3  (5) *
+       ~  3   2   3  (4) (4) *
+       ~  2   4  (5)  3   1  *
+       ~ (6) (7)  1   4   5  *
+       ~ (5)  1   1   2   4  *
+          *   *   *   *   * Atlantic
+
+Return:
+
+[[0, 4], [1, 3], [1, 4], [2, 2], [3, 0], [3, 1], [4, 0]] (positions with parentheses in above matrix).
+
+class Solution {
+public:
+    //BFS, 两个ocean 各有一个queue
+    //一开始把ocean boarder放进queue里，然后bfs看4个方向的neighbor能不能visited,
+    //可以visit是表示neighbor cell height >= current cell, mark the visited node for each ocean
+    //最后再走一遍两个ocean的visited node,重合的就是结果
+    
+    vector<int> dx = {1, -1, 0, 0};
+    vector<int> dy = {0, 0, 1, -1};
+    void markVisited(queue<pair<int, int>>& ocean, vector<vector<bool>>& visited, vector<vector<int>>& matrix)
+    {
+        int n = visited.size(); int m = visited.at(0).size();
+        while(!ocean.empty())
+        {
+            int cx = ocean.front().first;
+            int cy = ocean.front().second;
+            ocean.pop();
+            
+            for(int i = 0; i < 4; i++)
+            {
+                int nx = cx + dx[i];
+                int ny = cy + dy[i];
+                
+                if(nx >=0 && nx <n && ny >=0 && ny < m && !visited[nx][ny] && matrix[cx][cy] <= matrix[nx][ny])
+                {
+                    ocean.push(make_pair(nx, ny));
+                    visited[nx][ny] = true;
+                }
+            }
+            
+        }
+    }
+    vector<pair<int, int>> pacificAtlantic(vector<vector<int>>& matrix) {
+        if(matrix.empty() || matrix.at(0).empty()) return vector<pair<int, int>>();
+        
+        int n = matrix.size();
+        int m = matrix.at(0).size();
+        
+        vector<vector<bool>> visitedPacific(n, vector<bool>(m, false));
+        vector<vector<bool>> visitedAtlantic(n, vector<bool>(m, false));
+        
+        queue<pair<int,int>> pacific;
+        queue<pair<int,int>> atlantic;
+        
+        //first add border to queue
+        for(int i = 0; i < n; i++)
+        {
+            pacific.push(make_pair(i, 0));
+            visitedPacific[i][0] = true;
+            atlantic.push(make_pair(i, m-1));
+            visitedAtlantic[i][m-1] = true;
+        }
+        
+        for(int j = 0; j < m; j++)
+        {
+            pacific.push(make_pair(0, j));
+            visitedPacific[0][j] = true;
+            atlantic.push(make_pair(n-1, j));
+            visitedAtlantic[n-1][j] = true;
+        }
+        
+        //traverse pacific ocean
+        markVisited(pacific, visitedPacific, matrix);
+        markVisited(atlantic, visitedAtlantic, matrix);
+
+        //check if any cell that are both visited
+        vector<pair<int, int>> res;
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                if(visitedPacific[i][j] && visitedAtlantic[i][j])
+                {
+                    res.push_back(make_pair(i, j));
+                }
+            }
+        }
+        
+        return res;
+        
+    }
+};
