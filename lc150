@@ -1,0 +1,76 @@
+150. Evaluate Reverse Polish Notation   QuestionEditorial Solution  My Submissions
+Total Accepted: 77693
+Total Submissions: 306231
+Difficulty: Medium
+Contributors: Admin
+Evaluate the value of an arithmetic expression in Reverse Polish Notation.
+
+Valid operators are +, -, *, /. Each operand may be an integer or another expression.
+
+Some examples:
+  ["2", "1", "+", "3", "*"] -> ((2 + 1) * 3) -> 9
+  ["4", "13", "5", "/", "+"] -> (4 + (13 / 5)) -> 6
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+
+class Solution {
+public:
+    //use stack
+    //if it is digit, put it to stack,
+    //whenever see operator, pop two nums from stack
+    
+    bool isoperator(string& str)
+    {
+        if(str != "+" && str != "-" && str != "*" && str != "/" ) return false;
+        
+        return true;
+    }
+    
+ 
+    int evalRPN(vector<string>& tokens) {
+        if(tokens.empty()) return 0;
+        
+        int n = tokens.size();
+        
+        stack<int> stk;
+        
+        for(int i = 0; i < n; i++)
+        {
+            string cur = tokens[i];
+            if(!isoperator(cur))
+            {
+                int num = stoi(cur);
+                stk.push(num);
+            }
+            else
+            {
+                //pop values
+                int second = stk.top(); stk.pop();
+                int first = stk.top(); stk.pop();
+                
+                if(cur == "+")
+                {
+                    stk.push(first+second);
+                }
+                else if(cur == "-")
+                {
+                    stk.push(first-second);
+                }
+                else if(cur == "*")
+                {
+                    stk.push(first*second);
+                }
+                else
+                {
+                    stk.push(first/second);
+                }
+            }
+        }
+        
+        return stk.top();
+        
+    }
+};
