@@ -1,0 +1,161 @@
+425. Word Squares   QuestionEditorial Solution  My Submissions
+Total Accepted: 1639
+Total Submissions: 4056
+Difficulty: Hard
+Contributors: Admin
+Given a set of words (without duplicates), find all word squares you can build from them.
+
+A sequence of words forms a valid word square if the kth row and column read the exact same string, where 0 ≤ k < max(numRows, numColumns).
+
+For example, the word sequence ["ball","area","lead","lady"] forms a word square because each word reads the same both horizontally and vertically.
+
+b a l l
+a r e a
+l e a d
+l a d y
+Note:
+There are at least 1 and at most 1000 words.
+All words will have the exact same length.
+Word length is at least 1 and at most 5.
+Each word contains only lowercase English alphabet a-z.
+Example 1:
+
+Input:
+["area","lead","wall","lady","ball"]
+
+Output:
+[
+  [ "wall",
+    "area",
+    "lead",
+    "lady"
+  ],
+  [ "ball",
+    "area",
+    "lead",
+    "lady"
+  ]
+]
+
+Explanation:
+The output consists of two word squares. The order of output does not matter (just the order of words in each word square matters).
+Example 2:
+
+Input:
+["abat","baba","atan","atal"]
+
+Output:
+[
+  [ "baba",
+    "abat",
+    "baba",
+    "atan"
+  ],
+  [ "baba",
+    "abat",
+    "baba",
+    "atal"
+  ]
+]
+
+Explanation:
+The output consists of two word squares. The order of output does not matter (just the order of words in each word square matters).
+
+class Solution {
+public:
+    //backtracking: anyword can be a start -> for loop to try every word
+    //eg. if input {"area","lead","wall","lady","ball"} and say we select "wall" as start
+    // the second word needs to be start with a, which is area
+    // the third word needs to start with le, which is lead
+    // the forth one needs to start with lad, which is lady
+    // and we know we only need four words because the word length is 4
+    //To retrieve words based on prefix, we can build a trie
+    //注意：这里允许重复使用单词
+    class TrieNode
+    {
+    public:
+        vector<string> prefix;
+        bool isword;
+        vector<TrieNode*> children;
+        TrieNode()
+        { 
+            children.assign(26, NULL); 
+            isword = false;
+        }
+    };
+    
+    TrieNode* buildtrie(vector<string>& words)
+    {
+        TrieNode* root = new TrieNode();
+    
+        for(int i = 0; i < words.size(); i++)
+        {
+            TrieNode* cur= root;
+            string word = words[i];
+            for(int j = 0; j < word.size(); j++)
+            {
+                if(cur->children[word[j]-'a'] == NULL)
+                {
+                    TrieNode* node = new TrieNode();
+                    cur->children[word[j] - 'a'] = node;
+                }
+                
+                cur = cur->children[word[j]-'a'];
+                cur->prefix.push_back(word);
+                if(j == word.size()-1) cur->isword = true;
+            }
+        }
+        
+        return root;
+    }
+    
+    void dfs(vector<string>& words, vector<vector<string>>& res, vector<string>& sol, int target, TrieNode* root)
+    {
+        //check level
+        int level = sol.size();
+        
+        if(level == target)
+        {
+            res.push_back(sol);
+            return;
+        }
+        
+        
+        //找出以sol[i][level]开头的单词
+        TrieNode* cur = root;
+        for(int i = 0; i < level; i++)
+        {
+            char prefix = sol[i][level];
+            cur = cur->children[prefix-'a'];
+            if(cur == NULL)
+            {
+                return;
+            }
+        }
+        
+        vector<string> candidates = cur->prefix;
+        for(int i = 0; i < candidates.size(); i++)
+        {
+            sol.push_back(candidates[i]);
+            dfs(words, res,sol, target, root);
+            sol.pop_back();
+        }
+    }
+    
+    vector<vector<string>> wordSquares(vector<string>& words) {
+        vector<vector<string>> res;
+        vector<string> sol;
+        
+        //build a trie
+        TrieNode* root = buildtrie(words);
+        
+        for(int i = 0; i < words.size(); i++)
+        {
+            sol.clear();
+            sol.push_back(words[i]);
+            dfs(words, res,sol, words[i].size(), root);
+        }
+        
+        return res;
+    }
+};
