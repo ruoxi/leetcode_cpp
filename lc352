@@ -1,0 +1,145 @@
+352. Data Stream as Disjoint Intervals   QuestionEditorial Solution  My Submissions
+Total Accepted: 7858
+Total Submissions: 20510
+Difficulty: Hard
+Contributors: Admin
+Given a data stream input of non-negative integers a1, a2, ..., an, ..., summarize the numbers seen so far as a list of disjoint intervals.
+
+For example, suppose the integers from the data stream are 1, 3, 7, 2, 6, ..., then the summary will be:
+
+[1, 1]
+[1, 1], [3, 3]
+[1, 1], [3, 3], [7, 7]
+[1, 3], [7, 7]
+[1, 3], [6, 7]
+Follow up:
+What if there are lots of merges and the number of disjoint intervals are small compared to the data stream's size?
+
+
+
+
+/**
+ * Definition for an interval.
+ * struct Interval {
+ *     int start;
+ *     int end;
+ *     Interval() : start(0), end(0) {}
+ *     Interval(int s, int e) : start(s), end(e) {}
+ * };
+ */
+class SummaryRanges {
+public:
+    /** Initialize your data structure here. */
+    //找到最后一个intervals[i].end < start-1 : sindex
+    int findlastSmallerthanTarget(int target)
+    {
+        int start = 0;
+        int end = intervals.size()-1;
+        
+        while(start + 1 < end)
+        {
+            int mid = start + (end - start)/2;
+            
+            if(intervals[mid].end < target)
+            {
+                start = mid;
+            }
+            else
+            {
+                end = mid;
+            }
+        }
+        
+        if(intervals[end].end < target) return end;
+        if(intervals[start].end < target) return start;
+        
+        return -1;
+    }
+    
+    //找到第一个intervals[i].start > end+1 : eindex
+    int findfirstLargerthanTarget(int target)
+    {
+        int start = 0; 
+        int end = intervals.size();
+        
+        while(start + 1 < end)
+        {
+            int mid = start + (end - start)/2;
+            
+            if(intervals[mid].start > target)
+            {
+                end = mid;
+            }
+            else
+            {
+                start = mid;
+            }
+        }
+        
+        if(intervals[start].start > target) return start;
+        if(intervals[end].start > target) return end;
+        
+        return intervals.size();
+    }
+    
+    SummaryRanges() {
+        intervals.clear();
+    }
+    
+    void addNum(int val) {
+        //the new interval start is [val, val]
+        //to check if needs merge
+        //找到最后一个intervals[i].end < start-1 : sindex
+        //找到第一个intervals[i].start > end+1 : eindex
+        //那么sindex+1 到eindex-1 中间的interval就需要和[val, val] merge
+        
+        //第一个interval或者val 比第一个interval小，不用merge
+        if(intervals.empty() || intervals[0].start > val+1)
+        {
+            intervals.insert(intervals.begin(), Interval(val, val));
+            return;
+        }
+        
+        if(intervals.back().end < val-1)
+        {
+            intervals.push_back(Interval(val, val));
+            return;
+        }
+        
+        //sindex == -1表示interval[0].end >= val-1 有overlap
+        int sindex = findlastSmallerthanTarget(val-1);
+        //eindex == n 表示interval[n-1].start <= val+1 有overlap
+        int eindex = findfirstLargerthanTarget(val+1);
+        
+        //merge 
+        int start = min(val, intervals[sindex+1].start);
+        int end = max(val, intervals[eindex-1].end);
+        //cout << "val = " << val << " sindex=" << sindex << " eindex=" << eindex  << " start=" << start << " end=" << end<< endl;
+        //erase sindex+1 to eindex-1
+ 
+        //注意:如果sindex+1 = eindex表示新的interval是需要insert进去，不需要erase
+        //eg. [1,1], [5,5] start = 3, end = 3=> sindex=0, eindex=2
+        if(sindex +1 < eindex)
+        {
+            //注意：这里erase(firstpos, lastpos) 是erase [firstpos,lastpos), 不包括最后一个
+            intervals.erase(intervals.begin()+sindex+1, intervals.begin()+eindex);
+        }
+        //insert the merged one
+        intervals.insert(intervals.begin()+sindex+1, Interval(start, end));
+
+        
+    }
+    
+    vector<Interval> getIntervals() {
+        return intervals;
+    }
+    
+    vector<Interval> intervals;
+};
+
+/**
+ * Your SummaryRanges object will be instantiated and called as such:
+ * SummaryRanges obj = new SummaryRanges();
+ * obj.addNum(val);
+ * vector<Interval> param_2 = obj.getIntervals();
+ */
