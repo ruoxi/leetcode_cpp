@@ -1,0 +1,75 @@
+248. Strobogrammatic Number III   QuestionEditorial Solution  My Submissions
+Total Accepted: 6692
+Total Submissions: 22499
+Difficulty: Hard
+Contributors: Admin
+A strobogrammatic number is a number that looks the same when rotated 180 degrees (looked at upside down).
+
+Write a function to count the total strobogrammatic numbers that exist in the range of low <= num <= high.
+
+For example,
+Given low = "50", high = "100", return 3. Because 69, 88, and 96 are three strobogrammatic numbers.
+
+Note:
+Because the range might be a large number, the low and high numbers are represented as string.
+
+
+class Solution {
+public:
+    //思路：dfs, string 0...n-1 从 两头像中间dfs
+    vector<string> pairs = {"00", "11", "69", "88", "96"};
+    
+    int strobogrammaticInRange(string low, string high) {
+        
+        int n = low.length();
+        int m = high.length();
+        int count = 0;
+        for(int i = n; i<=m; i++ )
+        {
+            vector<char> sol(i, '0');
+            dfs(low, high, count, sol, i, 0, i-1);
+            
+        }
+        
+        return count;
+    }
+    
+    void dfs(string low, string high, int& count, vector<char>& sol, int level, int left, int right)
+    {
+        if(left > right)
+        {
+            string s(sol.begin(), sol.end());
+            //注意：这里compare string的时候一定要注意check length
+            if((s.length() == low.length() && s < low) || (s.length() == high.length() && s > high))
+            {
+                //cout << "s " << s << " not in range low=" << low << " hight=" << high << endl;
+                return;
+            }
+            
+            count++;
+            return;
+        }
+        
+        for(int i = 0; i < pairs.size(); i++)
+        {
+            
+            //skip leading zeros
+            if(level != 1 && left ==0 && pairs[i][0] == '0')
+            {
+                continue;
+            }
+            
+            //the one in middle can not be 6 or 9
+            if((left == right) && (pairs[i][0] != pairs[i][1]))
+            {
+                continue;
+            }
+            //cout << "left=" << left << " right=" << right << " pairs[i][0]=" <<pairs[i][0] << " pairs[i][1]=" << pairs[i][1] << endl;
+            sol[left] = pairs[i][0];
+            sol[right] = pairs[i][1];
+            
+            dfs(low, high, count, sol, level, left+1, right-1);
+        }
+        
+    }
+};
