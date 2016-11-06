@@ -1,0 +1,90 @@
+301. Remove Invalid Parentheses   QuestionEditorial Solution  My Submissions
+Total Accepted: 24525
+Total Submissions: 71795
+Difficulty: Hard
+Contributors: Admin
+Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.
+
+Note: The input string may contain letters other than the parentheses ( and ).
+
+Examples:
+"()())()" -> ["()()()", "(())()"]
+"(a)())()" -> ["(a)()()", "(a())()"]
+")(" -> [""]
+
+
+class Solution {
+public:
+    //BFS:把input string remove掉 ith position 括号 i=>{0, n-1}, 加入到queue里
+    //每次从queue里拿一个string, check 是否valid
+    
+    
+    bool isvalid(string& s)
+    {
+        if(s.empty()) return true;
+        
+        int n = s.length();
+        int cnt = 0;
+        for(int i = 0; i < n; i++)
+        {
+            if(s[i] == '(') cnt++;
+            else if(s[i] == ')')
+            {
+                if(cnt == 0) return false;
+                cnt--;
+            }
+        }
+        
+        return cnt == 0;
+    }
+    vector<string> removeInvalidParentheses(string s) {
+        
+        
+        if(s.empty()) return vector<string>{""};
+        
+        queue<string> q;
+        q.push(s);
+        bool found = false;
+        
+        set<string> visited;
+        visited.insert(s);
+        
+        vector<string> res;
+        while(!q.empty())
+        {
+            int levelsize = q.size();
+            
+            for(int i = 0; i < levelsize; i++)
+            {
+                string cur = q.front(); q.pop();
+                
+                if(isvalid(cur))
+                {
+                    res.push_back(cur);
+                    found = true;
+                }
+                
+                if(found) continue;
+                
+                //remove one of the ( or ) in cur
+                for(int j = 0; j < cur.length(); j++)
+                {
+                    if(cur[j] != '(' && cur[j] != ')') continue;
+                    
+                    //remove position j
+                    string next = cur.substr(0, j) + cur.substr(j+1);
+                    
+                    if(visited.find(next) != visited.end()) continue;
+                    
+                    q.push(next);
+                    visited.insert(next);
+                }
+            }
+            
+            if(found) return res;
+            
+        }
+        
+        return res;
+    }
+};
