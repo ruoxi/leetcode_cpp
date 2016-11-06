@@ -1,0 +1,82 @@
+329. Longest Increasing Path in a Matrix   QuestionEditorial Solution  My Submissions
+Total Accepted: 24699
+Total Submissions: 71538
+Difficulty: Hard
+Contributors: Admin
+Given an integer matrix, find the length of the longest increasing path.
+
+From each cell, you can either move to four directions: left, right, up or down. You may NOT move diagonally or move outside of the boundary (i.e. wrap-around is not allowed).
+
+Example 1:
+
+nums = [
+  [9,9,4],
+  [6,6,8],
+  [2,1,1]
+]
+Return 4
+The longest increasing path is [1, 2, 6, 9].
+
+Example 2:
+
+nums = [
+  [3,4,5],
+  [3,2,6],
+  [2,2,1]
+]
+Return 4
+The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.
+
+class Solution {
+public:
+    //dp[i][j]表示以(i,j)点结尾的longest increasing path
+    //dp[i][j] = max(dp[i-1][j], dp[i+1][j], dp[i][j-1], dp[i][j+1] } +1 when dp[i][j] > dp[i-1][j]....
+    vector<int> dx = {1, -1, 0, 0};
+    vector<int> dy = {0, 0, 1, -1};
+    int dfs(vector<vector<int>>& matrix, vector<vector<int>>& dp, vector<vector<bool>>& visited, int i, int j)
+    {
+        
+        if(visited[i][j]) return dp[i][j];
+        visited[i][j] = true;
+
+        int n = matrix.size();
+        int m = matrix.at(0).size();
+        
+        //check neighbor
+        int res = 0;
+        for(int l = 0; l < 4; l++)
+        {
+            int nx = i+dx[l];
+            int ny = j+dy[l];
+            
+            if(nx < 0 || nx >= n || ny <0 || ny >=m || matrix[i][j] <= matrix[nx][ny]) continue;
+            
+            res = max(res, dfs(matrix, dp, visited, nx, ny));
+        }
+        
+        
+        dp[i][j] = res+1;
+
+        return dp[i][j];
+    }
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        if (matrix.empty() || matrix.at(0).empty()) return 0;
+        
+        int n = matrix.size();
+        int m = matrix.at(0).size();
+        
+        vector<vector<bool>> visited(n, vector<bool>(m, false));
+        vector<vector<int>> dp(n, vector<int>(m, 1));
+        int res = 1;
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                if(visited[i][j]) continue; 
+                res = max(res, dfs(matrix, dp, visited, i, j));
+            }
+        }
+        
+        return res;
+    }
+};
