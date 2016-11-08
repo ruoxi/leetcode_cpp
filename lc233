@@ -1,0 +1,38 @@
+233. Number of Digit One   QuestionEditorial Solution  My Submissions
+Total Accepted: 24404
+Total Submissions: 90851
+Difficulty: Hard
+Contributors: Admin
+Given an integer n, count the total number of digit 1 appearing in all non-negative integers less than or equal to n.
+
+For example:
+Given n = 13,
+Return 6, because digit 1 occurred in the following numbers: 1, 10, 11, 12, 13.
+
+
+class Solution {
+public:
+    //eg n = 3141092, 看百位数字能出现多少个1时， 把n分成两个部分：a=31410 b=92
+    //a中可以看出百位1的prefix是""->3141 总共3142个，3142*100 但是最后以3141开头的百位只有3141000->3141092,百位1没有出现
+    //所以表示整个百位1出现了3141*100个
+    //eg n =3141192, a=31411 b=92
+    //a中可以看出百位1的prefix是""->3141 总共3142个，3142*100 但是最后以3141开头的百位只有3141100->3141192 共193个
+    //所以整个百位1出现的次数是3141*1000 + 192
+    //eg n = 3141592, a=3145 b=92
+    //a中可以看出百位1de prefix 是""->3141 总共3142个，这次百>=2所以3141100->3141199 总共100个都可以算到里面
+    int countDigitOne(int n) {
+        
+        int ones = 0;
+        for(long long m = 1; m <=n; m=m*10)
+        {
+            int a = n/m;
+            int b = n%m;
+            
+            ones += (a+8)/10*m;
+            ones += a%10 == 1 ? (b+1) : 0; 
+        }
+        
+        return ones;
+        
+    }
+};
