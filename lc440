@@ -1,0 +1,58 @@
+440. K-th Smallest in Lexicographical Order   QuestionEditorial Solution  My Submissions
+Total Accepted: 1129
+Total Submissions: 5890
+Difficulty: Hard
+Contributors: Stomach_ache
+Given integers n and k, find the lexicographically k-th smallest integer in the range from 1 to n.
+
+Note: 1 ≤ k ≤ n ≤ 109.
+
+Example:
+
+Input:
+n: 13   k: 2
+
+Output:
+10
+
+Explanation:
+The lexicographical order is [1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9], so the second smallest number is 10.
+
+class Solution {
+public:
+    int findKthNumber(int n, int k) {
+        if(k == 1) return 1;
+        
+        int res = 1;
+        for(--k; k>0;)
+        {
+            //对于每一层，calculate #|{result, result*, result**, result***, ...}|
+            //对于区间[first, last)里，看有多少个
+            int count = 0;
+            //eg. 这里计算以res开头的[res, res+1), [res*, (res+1)**), [res*, (res+1)**) 同时在[1,n]区间内的个数
+            for(long long first = static_cast<long long> (res), last = first+1; first <=n; first = first*10, last = last*10)
+            {
+                count += static_cast<int>(min(n+1LL, last) - first);
+            }
+                
+            //this means the result is not in this interval
+            if(k >= count)
+            {
+                // skip {result, result*, result**, result***, ...}
+                // increase the current prefix 
+                k -= count;
+                res++;
+
+            }
+            else
+            {
+                //need to search within this interval
+                k--;
+                res =res*10;
+            }
+            
+        }
+        
+        return res;
+    }
+};
