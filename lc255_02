@@ -1,0 +1,44 @@
+255. Verify Preorder Sequence in Binary Search Tree   QuestionEditorial Solution  My Submissions
+Total Accepted: 13753
+Total Submissions: 35807
+Difficulty: Medium
+Contributors: Admin
+Given an array of numbers, verify whether it is the correct preorder traversal sequence of a binary search tree.
+
+You may assume each number in the sequence is unique.
+
+Follow up:
+Could you do it using only constant space complexity?
+
+//Runtime: O(n)
+//Space: O(n)
+
+class Solution {
+public:
+    bool verifyPreorder(vector<int>& preorder) {
+        if(preorder.empty()) return true;
+        
+        stack<int> stk;
+        int n = preorder.size();
+        int low = INT_MIN;
+        for(int i = 0; i < n; i++)
+        {
+            int cur = preorder[i];
+            if(cur < low)
+            {
+                return false;
+            }
+            
+            //if cur > stk.top() it means cur is in right subtree of stk.top() or its ancestor
+            while(!stk.empty() && cur > stk.top())
+            {
+                low = stk.top();
+                stk.pop();
+            }
+            
+            stk.push(cur);
+        }
+        
+        return true;
+    }
+};
