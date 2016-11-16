@@ -1,0 +1,69 @@
+333. Largest BST Subtree   QuestionEditorial Solution  My Submissions
+Total Accepted: 9102
+Total Submissions: 31113
+Difficulty: Medium
+Contributors: Admin
+Given a binary tree, find the largest subtree which is a Binary Search Tree (BST), where largest means subtree with largest number of nodes in it.
+
+Note:
+A subtree must include all of its descendants.
+Here's an example:
+    10
+    / \
+   5  15
+  / \   \ 
+ 1   8   7
+The Largest BST Subtree in this case is the highlighted one. 
+The return value is the subtree's size, which is 3.
+Show Hint 
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+//思路：对于每一个node,需要知道他的左子树min, max和右子树min,max,同时要知道左右子树分别有多少个node是bst
+//这里注意，一个node要成为bst,需要保证他所有左子树右子树都是bst,
+
+//Runtime: O(n)
+class Solution {
+public:
+    class Result
+    {
+    public:
+        int minv;
+        int maxv;
+        int nodes;
+        Result(int xx, int yy, int n): minv(xx), maxv(yy), nodes(n){}
+    };
+    int largestBSTSubtree(TreeNode* root) {
+        
+        if(root == NULL) return 0;
+        if(root->left == NULL && root->right == NULL) return 1;
+        int res = 0;
+        helper(root,res);
+        return res;
+        
+    }
+    
+    Result helper(TreeNode* root, int& res)
+    {
+        if(root == NULL) return Result(INT_MAX, INT_MIN, 0);
+        
+        Result left = helper(root->left,res);
+        Result right = helper(root->right,res);
+        if(right.nodes != -1 && left.nodes != -1 && root->val < right.minv && root->val > left.maxv)
+        {
+
+            int size = 1+left.nodes+right.nodes;
+            res = max(res, size);
+            return Result(min(root->val, left.minv), max(root->val, right.maxv), size);
+        }
+       
+        return Result(0, 0, -1);
+    }
+};
