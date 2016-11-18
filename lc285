@@ -1,0 +1,46 @@
+285. Inorder Successor in BST   QuestionEditorial Solution  My Submissions
+Total Accepted: 19247
+Total Submissions: 53270
+Difficulty: Medium
+Contributors: Admin
+Given a binary search tree and a node in it, find the in-order successor of that node in the BST.
+
+Note: If the given node has no in-order successor in the tree, return null.
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ 
+//对于BST, 如果p->val < root->val, 表示向左子树走，那么successor有可能会是root, 所以update parent = root
+//如果p->val >= root->val 表示向右子树走，这个时候，successor只有可能是root->right中的某一个node,不会是root,所以不用update parent
+class Solution {
+public:
+    TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+        if(root == NULL) return NULL;
+        
+        TreeNode* parent = NULL;
+        TreeNode* cur = root;
+        while(cur != NULL)
+        {
+            if(cur->val <= p->val)
+            {
+                cur = cur->right;
+                
+            }
+            else
+            {
+                parent = cur;
+                cur = cur->left;
+            }
+        }
+        
+        return parent;
+        
+    }
+};
