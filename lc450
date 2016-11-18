@@ -1,0 +1,160 @@
+450. Delete Node in a BST   QuestionEditorial Solution  My Submissions
+Total Accepted: 1350
+Total Submissions: 4664
+Difficulty: Medium
+Contributors: tsipporah5945
+Given a root node reference of a BST and a key, delete the node with the given key in the BST. Return the root node reference (possibly updated) of the BST.
+
+Basically, the deletion can be divided into two stages:
+
+Search for a node to remove.
+If the node is found, delete the node.
+Note: Time complexity should be O(height of tree).
+
+Example:
+
+root = [5,3,6,2,4,null,7]
+key = 3
+
+    5
+   / \
+  3   6
+ / \   \
+2   4   7
+
+Given key to delete is 3. So we find the node with value 3 and delete it.
+
+One valid answer is [5,4,6,2,null,null,7], shown in the following BST.
+
+    5
+   / \
+  4   6
+ /     \
+2       7
+
+Another valid answer is [5,2,6,null,4,null,7].
+
+    5
+   / \
+  2   6
+   \   \
+    4   7
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+//思路：首先要在bst中找到要删除的node和他的parent
+//然后分为下面 种情况
+//1. 如果node->right == NULL, 那么只需要parent->left/right == node->left
+//2. 如果node->right != NULL,那么需要在node右子树中找到leftmost child,用它来replace node
+//   在找leftmost child 的时候， 需要注意这个可能有右子树，
+class Solution {
+public:
+
+    TreeNode* findParent(TreeNode* parent, TreeNode* node, int key)
+    {
+        if(node == NULL) return parent;
+        
+        if(node->val < key)
+        {
+            return findParent(node, node->right, key);
+        }
+        else if(node->val > key)
+        {
+            return findParent(node, node->left, key);
+        }
+        else
+        {
+            return parent;
+        }
+    }
+    
+    void deleteNode(TreeNode* parent, TreeNode* cur)
+    {
+        //cur is point to node with value key
+        if(cur->right == NULL)
+        {
+            if(parent->left == cur)
+            {
+                parent->left = cur->left;
+            }
+            else
+            {
+                parent->right = cur->left;
+            }
+            
+            return;
+        }
+        
+        //otherwise, need to find the leftmost child of cur->right
+        TreeNode* newcur = cur->right;
+        TreeNode* prev = cur;
+        while(newcur->left != NULL)
+        {
+            prev = newcur;
+            newcur = newcur->left;
+        }
+        
+        if(prev->left == newcur)
+        {
+            prev->left = newcur->right;
+        }
+        else
+        {
+            //这里表示cur->right没有左子树
+            //newcur = cur->right
+            //注意这里不能直接prev->right = NULL因为newcur可能有右子树
+            prev->right = newcur->right;
+        }
+        
+        if(parent->left == cur)
+        {
+            parent->left = newcur;
+        }
+        else
+        {
+            parent->right = newcur;
+        }
+        
+        newcur->left = cur->left;
+        newcur->right = cur->right;
+        
+        //delete(cur);
+    }
+    
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if(root == NULL) return NULL;
+        
+        TreeNode dummy(0);
+        dummy.left = root;
+        
+        TreeNode* parent = findParent(&dummy, root, key);
+        TreeNode* cur = NULL;
+        cout << "parent=" << parent->val << endl;
+        if(parent->left != NULL && parent->left->val == key)
+        {
+            cur = parent->left;
+        }
+        else if(parent->right != NULL && parent->right->val == key)
+        {
+            cur = parent->right;
+        }
+        else
+        {
+            //cout << "return dummy left\n";
+            return dummy.left;
+        }
+        
+        
+        deleteNode(parent, cur);
+        
+        return dummy.left;
+        
+        
+    }
+};
