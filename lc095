@@ -1,0 +1,71 @@
+95. Unique Binary Search Trees II   QuestionEditorial Solution  My Submissions
+Total Accepted: 69441
+Total Submissions: 228959
+Difficulty: Medium
+Contributors: Admin
+Given an integer n, generate all structurally unique BST's (binary search trees) that store values 1...n.
+
+For example,
+Given n = 3, your program should return all 5 unique BST's shown below.
+
+   1         3     3      2      1
+    \       /     /      / \      \
+     3     2     1      1   3      2
+    /     /       \                 \
+   2     1         2                 3
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ 
+//Runtime: O(2^n)
+//Space: O(2^n)
+
+class Solution {
+public:
+    vector<TreeNode*> generateTrees(int n) {
+        if(n == 0) return vector<TreeNode*>();
+        return helper(1, n);
+        
+    }
+    
+    
+    //return vector of roots of BST formed unsing numbers from start to end
+    vector<TreeNode*> helper(int start, int end)
+    {
+        if(start > end) return vector<TreeNode*>(1, NULL);
+        if(start == end) 
+        {
+            TreeNode* root = new TreeNode(start);
+            return vector<TreeNode*>(1, root);
+        }
+        vector<TreeNode*> res;
+        for(int i = start; i <= end; i++)
+        {
+            //get left subtree
+            vector<TreeNode*> left = helper(start, i-1);
+            vector<TreeNode*> right = helper(i+1, end);
+            
+            for(int j = 0; j < left.size(); j++)
+            {
+                for(int k = 0; k < right.size(); k++)
+                {
+                    TreeNode* root = new TreeNode(i);
+                    root->left = left.at(j);
+                    root->right = right.at(k);
+                    res.push_back(root);
+                }
+            }
+        }
+        
+        return res;
+        
+        
+    }
+};
