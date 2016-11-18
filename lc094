@@ -1,0 +1,52 @@
+94. Binary Tree Inorder Traversal   QuestionEditorial Solution  My Submissions
+Total Accepted: 161721
+Total Submissions: 375322
+Difficulty: Medium
+Contributors: Admin
+Given a binary tree, return the inorder traversal of its nodes' values.
+
+For example:
+Given binary tree [1,null,2,3],
+   1
+    \
+     2
+    /
+   3
+return [1,3,2].
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        if(root == NULL) return vector<int>();
+        
+        stack<TreeNode*> stk;
+        TreeNode* cur = root;
+        vector<int> res;
+        
+        while(!stk.empty() || cur != NULL)
+        {
+            while(cur != NULL)
+            {
+                stk.push(cur);
+                cur = cur->left;
+            }
+            
+            cur = stk.top();
+            res.push_back(cur->val);
+            stk.pop();
+            cur = cur->right;
+        }
+        
+        return res;
+    }
+};
