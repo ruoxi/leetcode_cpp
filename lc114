@@ -1,0 +1,74 @@
+114. Flatten Binary Tree to Linked List   QuestionEditorial Solution  My Submissions
+Total Accepted: 104373
+Total Submissions: 314668
+Difficulty: Medium
+Contributors: Admin
+Given a binary tree, flatten it to a linked list in-place.
+
+For example,
+Given
+
+         1
+        / \
+       2   5
+      / \   \
+     3   4   6
+The flattened tree should look like:
+   1
+    \
+     2
+      \
+       3
+        \
+         4
+          \
+           5
+            \
+             6
+click to show hints.
+
+Hints:
+If you notice carefully in the flattened tree, each node's right child points to the next node of a pre-order traversal.
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    void flatten(TreeNode* root) {
+        //find the right most child of root's left child,
+        //then let this right most child->right tree = root->right
+        //then root->right = root->left
+        //recursively call this 
+        
+        if(root == NULL) 
+        {
+            return;
+        }
+
+        if(root->left == NULL) 
+        {
+            return flatten(root->right);
+        }
+        
+        TreeNode* cur = root->left;
+
+        while(cur->right != NULL)
+        {
+            cur = cur->right;
+        }
+        
+        cur->right = root->right;
+        root->right = root->left;
+        root->left = NULL;
+
+        return flatten(root->right);
+        
+    }
+};
