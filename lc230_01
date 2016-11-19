@@ -1,0 +1,59 @@
+230. Kth Smallest Element in a BST   QuestionEditorial Solution  My Submissions
+Total Accepted: 73939
+Total Submissions: 178915
+Difficulty: Medium
+Contributors: Admin
+Given a binary search tree, write a function kthSmallest to find the kth smallest element in it.
+
+Note: 
+You may assume k is always valid, 1 ≤ k ≤ BST's total elements.
+
+Follow up:
+What if the BST is modified (insert/delete operations) often and you need to find the kth smallest frequently? How would you optimize the kthSmallest routine?
+
+Hint:
+
+Try to utilize the property of a BST.
+What if you could modify the BST node's structure?
+The optimal runtime complexity is O(height of BST).
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ 
+//这里是计算root->left一共有多少个nodes，然后与k进行比较做binary search
+//如果可以修改node定义，可以把root有多少个left nodes写到node中，就可以避免重复计算
+//Runtime: worst case O(N^2) best case O(logN)
+//Space: O(logN)
+class Solution {
+public:
+    int kthSmallest(TreeNode* root, int k) {
+        int count = countNodes(root->left);
+        
+        if(count+1==k)
+        {
+            return root->val;
+        }
+        else if(count < k)
+        {
+            return kthSmallest(root->right, k-count-1);
+        }
+        else
+        {
+            return kthSmallest(root->left, k);
+        }
+    }
+    
+    int countNodes(TreeNode* root)
+    {
+        if(root == NULL) return 0;
+        
+        return 1+ countNodes(root->left) + countNodes(root->right);
+    }
+};
