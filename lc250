@@ -1,0 +1,79 @@
+250. Count Univalue Subtrees   QuestionEditorial Solution  My Submissions
+Total Accepted: 10924
+Total Submissions: 27468
+Difficulty: Medium
+Contributors: Admin
+Given a binary tree, count the number of uni-value subtrees.
+
+A Uni-value subtree means all nodes of the subtree have the same value.
+
+For example:
+Given binary tree,
+              5
+             / \
+            1   5
+           / \   \
+          5   5   5
+return 4.
+
+Show Tags
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+
+    class Result
+    {
+    public:
+        bool isunivalue;
+        int cnt; //它的子树中有几个univalue tree,可以不包含这个点
+        Result(bool u, int xx): isunivalue(u), cnt(xx) {}
+    };
+    int countUnivalSubtrees(TreeNode* root) {
+        if(root == NULL) return 0;
+        if(root->left == NULL && root->right == NULL) return 1;
+        
+        Result res = helper(root);
+        return res.cnt;
+    }
+    
+    Result helper(TreeNode* root)
+    {
+        if(root == NULL) return Result(true, 0);
+        if(root->left == NULL && root->right == NULL)
+        {
+            return Result(true, 1);
+        }
+        
+        Result left = helper(root->left);
+        Result right = helper(root->right);
+        
+        if(!left.isunivalue || !right.isunivalue)
+        {
+            return Result(false, left.cnt+right.cnt);
+        }
+        
+        bool isunivalue = true;
+        if(root->left != NULL && root->left->val != root->val)
+        {
+            isunivalue = false;
+        }
+        
+        if(root->right != NULL && root->right->val != root->val)
+        {
+            isunivalue = false;
+        }
+        
+        int cnt = isunivalue ? left.cnt+right.cnt+1 : left.cnt+right.cnt;
+        return Result(isunivalue, cnt);
+    }
+};
