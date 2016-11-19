@@ -1,0 +1,66 @@
+156. Binary Tree Upside Down   QuestionEditorial Solution  My Submissions
+Total Accepted: 17815
+Total Submissions: 42707
+Difficulty: Medium
+Contributors: Admin
+Given a binary tree where all the right nodes are either leaf nodes with a sibling (a left node that shares the same parent node) or empty, flip it upside down and turn it into a tree where the original right nodes turned into left leaf nodes. Return the new root.
+
+For example:
+Given a binary tree {1,2,3,4,5},
+    1
+   / \
+  2   3
+ / \
+4   5
+return the root of the binary tree [4,5,2,#,#,3,1].
+   4
+  / \
+ 5   2
+    / \
+   3   1  
+confused what "{1,#,2,3}" means? > read more on how binary tree is serialized on OJ.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* upsideDownBinaryTree(TreeNode* root) {
+        if(root == NULL) return NULL;
+        if(root ->left == NULL && root->right == NULL) return root;
+        
+        TreeNode* newroot = upsideDownBinaryTree(root->left);
+        
+        //cout << "root=" << root->val << " newroot=" << newroot->val << " root->left=" << root->left->val << endl;
+        //注意：这里用root->left 而不用newroot是因为，newroot一直指向left most child,从未变过
+        //当返回时，root->left仍然指向之前的node
+        //eg.    1
+        //     /    \
+        //    2      5
+        //   / \
+        //  3   4
+        //一开始走到root->left = 3, root=2, 把tree 变成
+        //           3  1
+        //          / \ /
+        //         4   2
+        //注意这里newroot 指向3, 但是当root=1时，root->left仍然指向2
+       
+        root->left->left = root->right;
+        root->left->right = root;
+        root->left = NULL;
+        root->right = NULL;
+        return newroot;
+    }
+ 
+};
