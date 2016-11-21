@@ -1,0 +1,68 @@
+124. Binary Tree Maximum Path Sum   QuestionEditorial Solution  My Submissions
+Total Accepted: 80659
+Total Submissions: 325791
+Difficulty: Hard
+Contributors: Admin
+Given a binary tree, find the maximum path sum.
+
+For this problem, a path is defined as any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The path must contain at least one node and does not need to go through the root.
+
+For example:
+Given the below binary tree,
+
+       1
+      / \
+     2   3
+Return 6.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    //思路：对于每一个node,有两种情况， 一个是single path which may not include any node
+    //另一种是绕过当前node， 有可能包括left node singe path + right node single path + root
+    class Result
+    {
+    public:
+        int single; //从当前node往下走到任一点的最大sum,可以不包含点
+        int path;
+        Result(int s, int p) : single(s), path(p) {}
+    };
+    int maxPathSum(TreeNode* root) {
+        if(root == NULL) return 0;
+        
+        Result res = helper(root);
+        return res.path;
+    }
+    
+    Result helper(TreeNode* root)
+    {
+        if( root == NULL) return Result(0, INT_MIN);
+        if(root->left == NULL && root->right == NULL)
+        {
+            return Result(max(root->val, 0), root->val);
+        }
+        
+        Result left = helper(root->left);
+        Result right = helper(root->right);
+        
+        int single = max(left.single, right.single) + root->val;
+        single = max(single, 0);
+        
+        int path = max(left.path, right.path);
+        path = max(path, root->val + left.single + right.single);
+        return Result(single, path);
+    }
+};
