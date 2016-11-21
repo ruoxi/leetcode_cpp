@@ -1,0 +1,165 @@
+272. Closest Binary Search Tree Value II   QuestionEditorial Solution  My Submissions
+Total Accepted: 11832
+Total Submissions: 32143
+Difficulty: Hard
+Contributors: Admin
+Given a non-empty binary search tree and a target value, find k values in the BST that are closest to the target.
+
+Note:
+Given target value is a floating point.
+You may assume k is always valid, that is: k ≤ total nodes.
+You are guaranteed to have only one unique set of k values in the BST that are closest to the target.
+Follow up:
+Assume that the BST is balanced, could you solve it in less than O(n) runtime (where n = total nodes)?
+
+Hint:
+
+Consider implement these two helper functions:
+getPredecessor(N), which returns the next smaller node to N.
+getSuccessor(N), which returns the next larger node to N.
+Try to assume that each node has a parent pointer, it makes the problem much easier.
+Without parent pointer we just need to keep track of the path from the root to the current node using a stack.
+You would need two stacks to track the path in finding predecessor and successor node separately.
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+//思路：这里要求runtime < O(N)
+//那么可能就是O(logN)
+//表示一开始从root找到target node的时候，存入predecessor 和successor
+//之后再每次根据stack里的node找下一个predecessor/succesoor
+//这里注意，找nextpredeceesor,是从predecessor.top()看他的left child的右子树
+//找nextsuccessor是从successor.top()看他的right child的左子树
+class Solution {
+public:
+    //inorder traversal gives sorted predecessor of target
+    // reverse inorder traversal gives sorted successor of target
+    vector<int> closestKValues(TreeNode* root, double target, int k) {
+        if(root == NULL) return vector<int>();
+        
+        stack<TreeNode*> predecessor;
+        stack<TreeNode*> successor;
+        getpredecessor(root, target, predecessor);
+        getsuccessor(root, target, successor);
+        
+        if(!predecessor.empty() && !successor.empty() && predecessor.top()->val == successor.top()->val)
+        {
+            getNextpredecessor(predecessor);
+        }
+        
+        vector<int> res;
+        while(k > 0)
+        {
+            if(predecessor.empty())
+            {
+                res.push_back(getNextsuccessor(successor));
+            }
+            else if(successor.empty())
+            {
+                res.push_back(getNextpredecessor(predecessor));
+            }
+            else
+            {
+                double pred = (double)predecessor.top()->val;
+                double succ = (double)successor.top()->val;
+                
+                if(target - pred < succ - target)
+                {
+                    res.push_back(getNextpredecessor(predecessor));   
+                }
+                else
+                {
+                    res.push_back(getNextsuccessor(successor));
+                }
+            }
+            k--;
+            
+        }
+        
+        return res;
+    }
+    
+    void getpredecessor(TreeNode* root, double target, stack<TreeNode*>& predecessor)
+    {
+        //walk from root to target node, add nodes whose value < target
+        while(root != NULL)
+        {
+            if(root->val == target)
+            {
+                predecessor.push(root);
+                return;
+            }
+            else if(root->val < target)
+            {
+                predecessor.push(root);
+                root = root->right;
+            }
+            else
+            {
+                root = root->left;
+            }
+        }
+        
+    }
+    
+    void getsuccessor(TreeNode* root, double target, stack<TreeNode*>& successor)
+    {
+        while(root != NULL)
+        {
+            if(root->val == target)
+            {
+                successor.push(root);
+                return;
+            }
+            else if(root->val > target)
+            {
+                successor.push(root);
+                root= root->left;
+            }
+            else
+            {
+                root = root->right;
+            }
+        }
+    }
+    
+    int getNextpredecessor(stack<TreeNode*>& predecessor)
+    {
+
+        TreeNode* cur = predecessor.top();
+        predecessor.pop();
+        
+        int res = cur->val;
+        
+        cur = cur->left;
+        while(cur != NULL)
+        {
+            predecessor.push(cur);
+            cur = cur->right;
+        }
+        
+        return res;
+        
+    }
+    
+    int getNextsuccessor(stack<TreeNode*>& successor)
+    {
+        TreeNode* cur = successor.top();
+        successor.pop();
+        
+        int res = cur->val;
+        cur = cur->right;
+        while(cur != NULL)
+        {
+            successor.push(cur);
+            cur = cur->left;
+        }
+        
+        return res;
+    }
+};
