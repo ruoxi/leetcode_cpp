@@ -1,0 +1,110 @@
+99. Recover Binary Search Tree   QuestionEditorial Solution  My Submissions
+Total Accepted: 63398
+Total Submissions: 223530
+Difficulty: Hard
+Contributors: Admin
+Two elements of a binary search tree (BST) are swapped by mistake.
+
+Recover the tree without changing its structure.
+
+Note:
+A solution using O(n) space is pretty straight forward. Could you devise a constant space solution?
+Show Tags
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+ 
+//Runtime: O(n)
+//Space: O(1)
+class Solution {
+public:
+    //morris traversal
+    //use threaded binary tree concept
+    //inorder traversal
+    //if cur->left == NULL, print cur value (visit root), then set cur = cur->right
+    //if cur->left != NULL, find the predecessor of cur node when inorder traverse the tree
+    //if the predecessor does not have right child, let predecessor->right = cur, cur = cur->left (keep traversing left subtree).
+    //if the predecessor has right child == cur, then predecessor->right == NULL (restore the tree), cur = cur->right
+    
+    void recoverTree(TreeNode* root) {
+        if(root == NULL ) return;
+        if(root->left == NULL && root->right == NULL) return;
+        
+        TreeNode* cur = root;
+        TreeNode* first = NULL;
+        TreeNode* second = NULL;
+        TreeNode* prev = NULL;
+        while(cur != NULL)
+        {
+            if(cur->left == NULL)
+            {
+                //visit cur
+                //cout << "cur=" << cur->val;
+                if(prev!= NULL && prev->val > cur->val)
+                {
+                    if(first == NULL)
+                    {
+                        first = prev;
+                        second = cur;
+                    }
+                    else
+                    {
+                        second = cur;
+                    }
+                }
+                prev = cur;
+                cur = cur->right;
+                
+            }
+            else
+            {
+                //find the predecessor of cur
+                TreeNode* predecessor = cur->left;
+                while(predecessor->right != NULL && predecessor->right != cur)
+                {
+                    predecessor = predecessor->right;
+                }
+                
+                //check if predecessor->right == cur
+                //restore the tree, move the right subtree of cur
+                //this means left subtree has been visited, now visit cur
+                if(predecessor->right == cur)
+                {
+                    //visit cur 
+                    if(prev->val > cur->val)
+                    {
+                        if(first == NULL)
+                        {
+                            first = prev;
+                            second = cur;
+                        }
+                        else
+                        {
+                            second = cur;
+                        }
+                    }
+                    prev = cur;
+                    predecessor->right = NULL;
+                    cur =cur->right;
+                }
+                else
+                {
+                    predecessor->right = cur;
+                    cur = cur->left;
+                }
+            }
+        }
+        
+        int tmp = first->val;
+        first->val = second->val;
+        second->val = tmp;
+    }
+};
