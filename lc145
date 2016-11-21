@@ -1,0 +1,64 @@
+145. Binary Tree Postorder Traversal   QuestionEditorial Solution  My Submissions
+Total Accepted: 119941
+Total Submissions: 316192
+Difficulty: Hard
+Contributors: Admin
+Given a binary tree, return the postorder traversal of its nodes' values.
+
+For example:
+Given binary tree {1,#,2,3},
+   1
+    \
+     2
+    /
+   3
+return [3,2,1].
+
+Note: Recursive solution is trivial, could you do it iteratively?
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> postorderTraversal(TreeNode* root) {
+        if(root == NULL) return vector<int>();
+        
+        stack<TreeNode*> stk;
+        TreeNode* cur = root;
+        TreeNode* last_visited = NULL;
+        
+        vector<int> res;
+        while(!stk.empty() || cur != NULL)
+        {
+            while(cur != NULL)
+            {
+                stk.push(cur);
+                cur = cur->left;
+            }
+            
+            cur = stk.top();
+            
+            //check if traversing up the tree 
+            if(cur->right == NULL || cur->right == last_visited)
+            {
+                res.push_back(cur->val);
+                stk.pop();
+                last_visited = cur;
+                cur = NULL;
+
+            }
+            else
+            {
+                cur = cur->right;
+            }
+        }
+        
+        return res;
+    }
+};
