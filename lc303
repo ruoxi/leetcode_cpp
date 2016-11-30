@@ -1,0 +1,47 @@
+303. Range Sum Query - Immutable   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 51608
+Total Submissions: 198048
+Difficulty: Easy
+Contributors: Admin
+Given an integer array nums, find the sum of the elements between indices i and j (i ≤ j), inclusive.
+
+Example:
+Given nums = [-2, 0, 3, -5, 2, -1]
+
+sumRange(0, 2) -> 1
+sumRange(2, 5) -> -1
+sumRange(0, 5) -> -3
+Note:
+You may assume that the array does not change.
+There are many calls to sumRange function.
+
+//Runtime: constructor: O(n) query: O(1)
+//Space: O(n)
+
+class NumArray {
+public:
+    //prefix sum
+    NumArray(vector<int> &nums) {
+        int n = nums.size();
+        m_sums.assign(n+1, 0);
+        
+        for(int i = 1; i <=n; i++)
+        {
+            m_sums[i] = m_sums[i-1] + nums[i-1];
+        }
+    }
+
+    int sumRange(int i, int j) {
+        
+        return m_sums[j+1] - m_sums[i];
+        
+    }
+    //m_sums[i]表示nums[0...i-1]的和
+    vector<int> m_sums;
+};
+
+
+// Your NumArray object will be instantiated and called as such:
+// NumArray numArray(nums);
+// numArray.sumRange(0, 1);
+// numArray.sumRange(1, 2);
