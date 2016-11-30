@@ -32,12 +32,12 @@ return: 3, for 3 arithmetic slices in A: [1, 2, 3], [2, 3, 4] and [1, 2, 3, 4] i
 //Space: O(1)
 class Solution {
 public:
-    //序列型dp
+    //划分区间类
     //state: global[i]表示前i个数中有多少个arithmetic slices
-    //       local[i]表示以i-1结尾的arithmetic slices有多少个
-    //function: local[i] = local[i-1]+1 if A[i-1]-A[i-2] == diff
+    //       local[i]表示以i结尾的arithmetic slices有多少个
+    //function: local[i] = local[i-1]+1 if A[i]-A[i-1] == diff
     //          global[i] = global[i-1] + local[i]
-    //initialization: local[0] = 0, local[1] = 0, local[2] = 0, global[0]=0, global[1] = 0, global[2] = 0
+    //initialization: local[0] = 0, local[1] = 0, global[0]=0, global[1] = 0, 
     int numberOfArithmeticSlices(vector<int>& A) {
         if(A.size() < 3) return 0;
         
@@ -47,23 +47,23 @@ public:
         vector<int> local(2, 0);
         
         int diff = A[1] - A[0];
-        for(int i = 3; i <= n; i++)
+        for(int i = 2; i < n; i++)
         {
             local[i%2] = 0;
             global[i%2] = 0;
-            if(A[i-1] - A[i-2] == diff)
+            if(A[i] - A[i-1] == diff)
             {
                 local[i%2] = local[(i-1)%2] +1;
             }
             else
             {
-                diff = A[i-1]-A[i-2];
+                diff = A[i]-A[i-1];
             }
             
             global[i%2] = global[(i-1)%2] + local[i%2];
         }
         
-        return global[n%2];
+        return global[(n-1)%2];
         
     }
 };
