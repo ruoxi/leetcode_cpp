@@ -1,0 +1,83 @@
+361. Bomb Enemy   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 8360
+Total Submissions: 22230
+Difficulty: Medium
+Contributors: Admin
+Given a 2D grid, each cell is either a wall 'W', an enemy 'E' or empty '0' (the number zero), return the maximum enemies you can kill using one bomb.
+The bomb kills all the enemies in the same row and column from the planted point until it hits the wall since the wall is too strong to be destroyed.
+Note that you can only put the bomb at an empty cell.
+
+Example:
+For the given grid
+
+0 E 0 0
+E 0 W E
+0 E 0 0
+
+return 3. (Placing a bomb at (1,1) kills 3 enemies)
+Credits:
+Special thanks to @memoryless for adding this problem and creating all test cases.
+
+//Runtime: O(nm)
+//Space: O(m);
+
+class Solution {
+public:
+    int maxKilledEnemies(vector<vector<char>>& grid) {
+        if(grid.empty() || grid.at(0).empty()) return 0;
+        
+        int n = grid.size();
+        int m = grid.at(0).size();
+        
+        //mark 每个点所在的行能destroy多少个enemy
+        int res = 0, rowhits = 0;
+        vector<int> colhits(m, 0);
+        for(int i = 0; i <n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                //cout << "i=" << i << " j= " << j << endl;
+                if(j == 0 || grid[i][j-1] == 'W')
+                {
+                    //recalculate rowhits for this row until see 'W'
+                    rowhits = 0;
+                    //cout << "rowhits\n";
+                    for(int k = j; k < m && grid[i][k] != 'W'; k++)
+                    {
+                        //cout << "rowhits=" << rowhits << endl;
+                        if(grid[i][k] == 'E')
+                        {
+                            rowhits ++;
+                        }
+                    }
+                    
+                }
+                
+                //calculate colhits if the above cell is Wall
+                if(i == 0 || grid[i-1][j] == 'W')
+                {
+                    //cout << "colhits\n";
+                    colhits[j] = 0;
+                    for(int k = i; k <n && grid[k][j] != 'W'; k++)
+                    {
+                        //cout << "colhits[" << j << "]" << colhits[j] << endl;
+                        if(grid[k][j] == 'E')
+                        {
+                            colhits[j]++;
+                        }
+                    }
+                }
+                
+                if(grid[i][j] == '0')
+                {
+                    //calculate the enemy can bomb
+                    res = max(res, rowhits + colhits[j]);
+                    
+                }
+                
+            }
+        }
+        
+        return res;
+    }
+};
