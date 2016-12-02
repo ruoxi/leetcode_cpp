@@ -1,0 +1,72 @@
+300. Longest Increasing Subsequence   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 56223
+Total Submissions: 151753
+Difficulty: Medium
+Contributors: Admin
+Given an unsorted array of integers, find the length of longest increasing subsequence.
+
+For example,
+Given [10, 9, 2, 5, 3, 7, 101, 18],
+The longest increasing subsequence is [2, 3, 7, 101], therefore the length is 4. Note that there may be more than one LIS combination, it is only necessary for you to return the length.
+
+Your algorithm should run in O(n2) complexity.
+
+Follow up: Could you improve it to O(n log n) time complexity?
+
+Credits:
+Special thanks to @pbrother for adding this problem and creating all test cases.
+
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums) {
+        if(nums.empty()) return 0;
+        
+        int n = nums.size();
+        
+        vector<int> result;
+        
+        for(int i = 0; i < n; i++)
+        {
+            int pos = get_lowerbound(result, nums[i]);
+            
+            if(pos == -1)
+            {
+                result.push_back(nums[i]);
+            }
+            else
+            {
+                result[pos] = nums[i];
+            }
+        }
+        
+        return result.size();
+    }
+    
+    //get first occurance of target
+    int get_lowerbound(vector<int>& nums, int target)
+    {
+        if(nums.empty()) return -1;
+        
+        int n = nums.size();
+        int start = 0, end = n-1;
+        
+        while(start + 1 < end)
+        {
+            int mid = start + (end - start)/2;
+            
+            if(nums[mid] >= target)
+            {
+                end = mid;
+            }
+            else 
+            {
+                start = mid;
+            }
+        }
+        
+        if(nums[start] >= target) return start;
+        if(nums[end] >= target) return end;
+        
+        return -1;
+    }
+};
