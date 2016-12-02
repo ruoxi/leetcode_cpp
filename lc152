@@ -1,0 +1,47 @@
+152. Maximum Product Subarray   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 80894
+Total Submissions: 334688
+Difficulty: Medium
+Contributors: Admin
+Find the contiguous subarray within an array (containing at least one number) which has the largest product.
+
+For example, given the array [2,3,-2,4],
+the contiguous subarray [2,3] has the largest product = 6.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+//Runtime:O(n)
+//Space: O(1)
+
+class Solution {
+public:
+    //划分区间类dp
+    //state: localmax[i]表示以i点结尾的max product
+    //       localmin[i]表示以i点结尾的min product
+    //       global[i]表示前i个数中子区间的max product
+    //function: localmax[i] = max(localmax[i-1]*nums[i], localmin[i-1]*nums[i], nums[i])
+    //          localmin[i] = min(localmax[i-1]*nums[i], localmin[i-1]*nums[i], nums[i])
+    //          global[i] = max(global[i-1], localmax[i]);
+    //initialization: localmax[0] = nums[0], localmin[0]=nums[0]; global[0] = nums[0]
+    int maxProduct(vector<int>& nums) {
+        if(nums.empty()) return 0;
+        
+        int n = nums.size();
+        
+        vector<int> localmax(2, 0);
+        vector<int> localmin(2, 0);
+        vector<int> global(2, 0);
+        
+        localmax[0] = nums[0], localmin[0] = nums[0], global[0] = nums[0];
+        
+        for(int i = 1; i < n; i++)
+        {
+            localmax[i%2] = max(localmax[(i-1)%2]*nums[i], max(localmin[(i-1)%2]*nums[i], nums[i]));
+            localmin[i%2] = min(localmin[(i-1)%2]*nums[i], min(localmax[(i-1)%2]*nums[i], nums[i]));
+            global[i%2] = max(global[(i-1)%2], localmax[i%2]);
+        }
+        
+        return global[(n-1)%2];
+    }
+};
