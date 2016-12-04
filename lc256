@@ -1,0 +1,64 @@
+256. Paint House   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 15296
+Total Submissions: 33571
+Difficulty: Medium
+Contributors: Admin
+There are a row of n houses, each house can be painted with one of the three colors: red, blue or green. The cost of painting each house with a certain color is different. You have to paint all the houses such that no two adjacent houses have the same color.
+
+The cost of painting each house with a certain color is represented by a n x 3 cost matrix. For example, costs[0][0] is the cost of painting house 0 with color red; costs[1][2] is the cost of painting house 1 with color green, and so on... Find the minimum cost to paint all houses.
+
+Note:
+All costs are positive integers.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+class Solution {
+public:
+    //state: dp[i][0/1/2]表示前i个房子中第i-1个房子涂0/1/2的minimum cost
+    //function: dp[i][0] = min(dp[i-1][1], dp[i-1][2]) + cost[i-1][0]
+    //          dp[i][1] = min(dp[i-1][0], dp[i-1][2]) + cost[i-1][1]
+    //          dp[i][2] = min(dp[i-1][0], dp[i-1][1]) + cost[i-1][2]
+    //initialziation: dp[0][0] = 0; dp[0][1] = 0; dp[0][2] = 0;
+    int minCost(vector<vector<int>>& costs) {
+        
+        if(costs.empty()) return 0;
+        
+        int n = costs.size();
+        int m = costs.at(0).size();
+        
+        vector<vector<int>> dp(2, vector<int>(3, INT_MAX));
+        
+        for(int i = 0; i < 3; i++)
+        {
+            dp[0][i] = 0;
+        }
+        
+        
+        for(int i = 1; i <=n; i++)
+        {
+            for(int j = 0; j <3; j++)
+            {
+                dp[i%2][j] = INT_MAX;
+                for(int k = 0; k <3; k++)
+                {
+                    if(j == k) continue;
+                    dp[i%2][j] = min(dp[(i-1)%2][k], dp[i%2][j]);
+                }
+                
+                dp[i%2][j]+= costs[i-1][j];
+            }
+        }
+        
+        
+        int res = INT_MAX;
+        for(int i = 0; i < 3; i++)
+        {
+            res = min(res, dp[n%2][i]);
+        }
+        
+        return res;
+    }
+};
