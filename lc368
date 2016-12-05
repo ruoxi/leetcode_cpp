@@ -1,0 +1,77 @@
+368. Largest Divisible Subset   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 15604
+Total Submissions: 47758
+Difficulty: Medium
+Contributors: Admin
+Given a set of distinct positive integers, find the largest subset such that every pair (Si, Sj) of elements in this subset satisfies: Si % Sj = 0 or Sj % Si = 0.
+
+If there are multiple solutions, return any subset is fine.
+
+Example 1:
+
+nums: [1,2,3]
+
+Result: [1,2] (of course, [1,3] will also be ok)
+Example 2:
+
+nums: [1,2,4,8]
+
+Result: [1,2,4,8]
+Credits:
+Special thanks to @Stomach_ache for adding this problem and creating all test cases.
+
+//Runtime: O(n^2)
+//Space: O(n)
+
+class Solution {
+public:
+    //state: dp[i]表示以i为结尾的longest divisible subset的len {此处如果不节省空间的话，可以直接存对应的subset}
+    //       因为要返回的是实际的vector，所以需要另外一个vector来记录在longest divisible subset里每一个index对应的前一个index是什么
+    //function:     extend by larger elements
+    //          dp[i] = max{1 + dp[j]} where  0<=j <i && nums[i]%nums[j] == 0
+    //          child[i] = j if 1+dp[j] is the max divisible subset end at index i
+    //initialization: dp[i] = 1
+    vector<int> largestDivisibleSubset(vector<int>& nums) {
+        
+        if(nums.empty()) return vector<int>();
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        
+        //this means the length of longest subset end at i
+        vector<int> dp(n, 1);
+        vector<int> child(n, 0);
+        
+        int end = 0;
+        int endlen = 1;
+        
+        for(int i = 1; i <n; i++)
+        {
+            for(int j = i-1; j >=0; j--)
+            {
+                //extend by larger elements
+                if(nums[i]% nums[j] == 0 && dp[i] < dp[j]+1)
+                {
+                    dp[i] = dp[j]+1;
+                    child[i] = j;
+                    
+                }
+                
+            }
+            
+            if(endlen < dp[i])
+            {
+                endlen = dp[i];
+                end = i;
+            }
+        }
+        
+        vector<int> res(endlen, 0);
+        for(int i = endlen-1; i>=0; i--)
+        {
+            res[i] = nums[end];
+            end = child[end];
+        }
+        
+        return res;
+    }
+};
