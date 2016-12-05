@@ -1,0 +1,51 @@
+120. Triangle   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 88575
+Total Submissions: 275147
+Difficulty: Medium
+Contributors: Admin
+Given a triangle, find the minimum path sum from top to bottom. Each step you may move to adjacent numbers on the row below.
+
+For example, given the following triangle
+[
+     [2],
+    [3,4],
+   [6,5,7],
+  [4,1,8,3]
+]
+The minimum path sum from top to bottom is 11 (i.e., 2 + 3 + 5 + 1 = 11).
+
+Note:
+Bonus point if you are able to do this using only O(n) extra space, where n is the total number of rows in the triangle.
+
+//Runtime: O(nm)
+//Space: O(n)
+
+class Solution {
+public:
+    //state: dp[i]表示min path sum at col i
+    //function: dp[i] = min(dp[i], dp[i+1]) + triangle[row][i] where 0 <= row < nrow-1
+    //initialization: dp[i] = triangle[n-1][i]          
+    int minimumTotal(vector<vector<int>>& triangle) {
+        if(triangle.empty() || triangle.at(0).empty()) return 0;
+        
+        int n = triangle.size();
+
+        vector<int> dp(n+1, 0);
+        
+        for(int i = 0; i <n+1; i++)
+        {
+            dp[i] = triangle[n-1][i];
+        }
+        
+        for(int i = n-2; i >=0; i--)
+        {
+            for(int j = 0; j <= i; j++)
+            {
+                dp[j] = min(dp[j], dp[j+1])+triangle[i][j];
+            }
+        }
+        
+        return dp[0];
+        
+    }
+};
