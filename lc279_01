@@ -1,0 +1,61 @@
+279. Perfect Squares   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 58417
+Total Submissions: 169081
+Difficulty: Medium
+Contributors: Admin
+Given a positive integer n, find the least number of perfect square numbers (for example, 1, 4, 9, 16, ...) which sum to n.
+
+For example, given n = 12, return 3 because 12 = 4 + 4 + 4; given n = 13, return 2 because 13 = 4 + 9.
+
+Credits:
+Special thanks to @jianchao.li.fighter for adding this problem and creating all test cases.
+
+//Runtime: O(sqrt(n))
+//Space: O(1)
+
+class Solution {
+public:
+    // Based on Lagrange's Four Square theorem, there 
+    // are only 4 possible results: 1, 2, 3, 4.
+    
+    bool isSqrt(int n)
+    {
+        if(n == 1) return true;
+        
+        int i = (int)sqrt(n);
+        return i*i == n;
+    }
+    int numSquares(int n) {
+        if(n==0) return 0;
+        if(n==1) return 1;
+        
+        if(isSqrt(n)) return 1;
+        
+        // The result is 4 if and only if n can be written in the 
+        // form of 4^k*(8*m + 7). Please refer to 
+        // Legendre's three-square theorem.
+        while((n&3)== 0) // n%4 == 0
+        {
+            n >>= 2;
+        }
+        
+        //check if 8*m+7
+        if(n%8 == 7)
+        {
+            return 4;
+        }
+        
+        //check if 2
+        int sqrt_n = (int)sqrt(n);
+        
+        for(int i = 1; i<=sqrt_n; i++)
+        {
+            if(isSqrt(n-i*i))
+            {
+                return 2;
+            }
+        }
+        
+        return 3;
+    }
+};
