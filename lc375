@@ -1,0 +1,70 @@
+375. Guess Number Higher or Lower II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 12561
+Total Submissions: 36535
+Difficulty: Medium
+Contributors: Admin
+We are playing the Guess Game. The game is as follows:
+
+I pick a number from 1 to n. You have to guess which number I picked.
+
+Every time you guess wrong, I'll tell you whether the number I picked is higher or lower.
+
+However, when you guess a particular number x, and you guess wrong, you pay $x. You win the game when you guess the number I picked.
+
+Example:
+
+n = 10, I pick 8.
+
+First round:  You guess 5, I tell you that it's higher. You pay $5.
+Second round: You guess 7, I tell you that it's higher. You pay $7.
+Third round:  You guess 9, I tell you that it's lower. You pay $9.
+
+Game over. 8 is the number I picked.
+
+You end up paying $5 + $7 + $9 = $21.
+Given a particular n ≥ 1, find out how much money you need to have to guarantee a win.
+
+Hint:
+
+The best strategy to play the game is to minimize the maximum loss you could possibly face. Another strategy is to minimize the expected loss. Here, we are interested in the first scenario.
+Take a small example (n = 3). What do you end up paying in the worst case?
+Check out this article if you're still stuck.
+The purely recursive implementation of minimax would be worthless for even a small n. You MUST use dynamic programming.
+As a follow-up, how would you modify your code to solve the problem of minimizing the expected loss, instead of the worst-case loss?
+Credits:
+Special thanks to @agave and @StefanPochmann for adding this problem and creating all test cases.
+
+class Solution {
+public:
+
+    //假设选了一个错误的x,
+    //那么，接下来就是要在[1...x-1]或者[x+1...n]中找出max loss
+    //如果已知helper(1, x-1)和helper(x+1, n)的答案，
+    //f(x) = x+max(helper(1, x-1), helper(x+1,n)) =》这里
+    //最终需要minimize max loss
+    //就是把1...n都走一遍，找出min 的值
+    //dp[i][j] = min{f(x1), f(x2), f(x3)....} i <= x1, x2 ,x3 <=j
+    int getMoneyAmount(int n) {
+        vector<vector<int>> dp(n+1, vector<int>(n+1, 0));
+        
+        return helper(1, n, dp);
+    }
+    
+    
+    int helper(int start, int end, vector<vector<int>>& dp)
+    {
+        if(start >= end) return 0;
+        
+        if(dp[start][end] > 0) return dp[start][end];
+        
+        dp[start][end] = INT_MAX;
+        for(int i = start; i <= end; i++)
+        {
+            int result_choose_i = max(helper(start, i-1, dp), helper(i+1, end, dp)) + i;
+            dp[start][end] = min(dp[start][end], result_choose_i);
+        }
+        
+        
+        return dp[start][end];
+    }
+};
