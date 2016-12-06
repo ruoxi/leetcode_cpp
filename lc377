@@ -1,0 +1,65 @@
+377. Combination Sum IV   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 21078
+Total Submissions: 50947
+Difficulty: Medium
+Contributors: Admin
+Given an integer array with all positive numbers and no duplicates, find the number of possible combinations that add up to a positive integer target.
+
+Example:
+
+nums = [1, 2, 3]
+target = 4
+
+The possible combination ways are:
+(1, 1, 1, 1)
+(1, 1, 2)
+(1, 2, 1)
+(1, 3)
+(2, 1, 1)
+(2, 2)
+(3, 1)
+
+Note that different sequences are counted as different combinations.
+
+Therefore the output is 7.
+Follow up:
+What if negative numbers are allowed in the given array?
+How does it change the problem?
+What limitation we need to add to the question to allow negative numbers?
+
+Credits:
+Special thanks to @pbrother for adding this problem and creating all test cases.
+
+
+//Runtime: O(n*target)
+//Space: O(target)
+
+class Solution {
+public:
+    //state: dp[i]表示和为i的组合有多少个
+    //function: dp[i] += dp[i-nums[j]] where nums[j] <= i
+    //initialization: dp[0] = 1;
+    int combinationSum4(vector<int>& nums, int target) {
+        if(nums.empty()) return 0;
+        
+        //sort(nums.begin(), nums.end());
+        
+        int n = nums.size();
+        
+        vector<int> dp(target+1, 0);
+        dp[0] = 1;
+        
+        for(int i = 1; i <= target; i++)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                if(nums[j] <= i)
+                {
+                    dp[i] += dp[i-nums[j]];
+                }
+            }
+        }
+        
+        return dp[target];
+    }
+};
