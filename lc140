@@ -1,0 +1,78 @@
+140. Word Break II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 73962
+Total Submissions: 337767
+Difficulty: Hard
+Contributors: Admin
+Given a string s and a dictionary of words dict, add spaces in s to construct a sentence where each word is a valid dictionary word.
+
+Return all such possible sentences.
+
+For example, given
+s = "catsanddog",
+dict = ["cat", "cats", "and", "sand", "dog"].
+
+A solution is ["cats and dog", "cat sand dog"].
+
+Show Company Tags
+Show Tags
+
+
+class Solution {
+public:
+    //memorization + dfs
+    //dp[i] = vector<string> possible break downs of s from s[i...n-1]
+    vector<string> wordBreak(string s, unordered_set<string>& wordDict) {
+        if(s.empty()) return vector<string>();
+        
+        int maxlen = 0;
+        
+        for(auto word: wordDict)
+        {
+            maxlen = max(maxlen, (int)word.length());
+        }
+        
+        int n = s.length();
+
+        unordered_map<int, vector<string>> dp;
+        vector<bool> visited(n, false);
+        
+        return dfs(s, 0, wordDict, dp, visited, maxlen);
+    }
+    
+    vector<string> dfs(string s, int start, unordered_set<string>& wordDict, unordered_map<int, vector<string>>& dp, vector<bool>& visited, int maxlen)
+    {
+        if(start >= s.length()) return vector<string>();
+        
+        if(visited[start]) return dp[start];
+        
+        vector<string> res;
+        
+        if(wordDict.find(s.substr(start)) != wordDict.end())
+        {
+            res.push_back(s.substr(start));
+        }
+        
+        for(int i = 1; i <= maxlen; i++)
+        {
+            string sub = s.substr(start, i);
+            
+            if(wordDict.find(sub) != wordDict.end())
+            {
+                vector<string> second_part=dfs(s, start+i, wordDict, dp, visited, maxlen);
+                
+                string sol = "";
+                for(int j = 0; j < second_part.size(); j++)
+                {
+                    sol = sub + " " + second_part[j];
+                    res.push_back(sol);
+                }
+            }
+            
+            
+        }
+        
+        dp[start] = res;
+        visited[start] = true;
+        return res;
+    }
+};
