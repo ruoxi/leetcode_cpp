@@ -1,0 +1,63 @@
+32. Longest Valid Parentheses   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 80499
+Total Submissions: 349519
+Difficulty: Hard
+Contributors: Admin
+Given a string containing just the characters '(' and ')', find the length of the longest valid (well-formed) parentheses substring.
+
+For "(()", the longest valid parentheses substring is "()", which has length = 2.
+
+Another example is ")()())", where the longest valid parentheses substring is "()()", which has length = 4.
+
+//Runtime: O(n);
+//Space: O(n)
+
+class Solution {
+public:
+
+    //state: dp[i]表示以s[i]结尾的longest valid parentheses substring length
+    //function: dp[i] = 0 if(s[i] == '('' && s[i-1] == '(')
+    //          dp[i] = dp[i-1] if(s[i] == '(' && s[i-1] == ')')
+    //          dp[i] = dp[i-1]+2 if(s[i] == ')' && s[i-1] == '(' )
+    //          dp[i] = dp[i-dp[i-1]-1] + dp[i-1] + 2 if(s[i] == ')' && s[i-1] == ')')
+    //initialziation: dp[0] = 0;
+    int longestValidParentheses(string s) {
+        
+        
+        if(s.empty()) return 0;
+        int n = s.length();
+        vector<int> dp(n, 0);
+        int res = 0;
+        for(int i = 1; i < n; i++)
+        {
+            if(s[i] == '(')
+            {
+                if(s[i-1] =='(')
+                {
+                    dp[i] = 0;
+                }
+                else
+                {
+                    dp[i] = dp[i-1];
+                }
+            }
+            else
+            {
+                if(s[i-1] == '(')
+                {
+                    dp[i] = dp[i-1]+2;
+                }
+                else
+                {
+                    if(i-dp[i-1] -1 >=0 && s[i-dp[i-1]-1] == '(')
+                    {
+                        dp[i] = dp[i-1] + dp[i-dp[i-1]-1] +2;
+                    }
+                }
+            }
+            res = max(res, dp[i]);
+        }
+        
+        return res;
+    }
+};
