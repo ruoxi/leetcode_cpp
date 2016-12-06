@@ -1,0 +1,43 @@
+62. Unique Paths   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 114850
+Total Submissions: 295441
+Difficulty: Medium
+Contributors: Admin
+A robot is located at the top-left corner of a m x n grid (marked 'Start' in the diagram below).
+
+The robot can only move either down or right at any point in time. The robot is trying to reach the bottom-right corner of the grid (marked 'Finish' in the diagram below).
+
+How many possible unique paths are there?
+
+//Runtime: O(nm)
+//Space: O(n)
+
+class Solution {
+public:
+    //state: dp[i][j]表示从(0,0)点走到(i,j)点的path sum
+    //function: dp[i][j] = dp[i-1][j] + dp[i][j-1]
+    //initialization: dp[i][0] = 1; dp[0][i] = 1
+    int uniquePaths(int m, int n) {
+        
+        vector<vector<int>> dp(2, vector<int>(n, 0));
+        
+        dp[0][0] = 1;
+        
+        for(int j = 1; j < n; j++)
+        {
+            dp[0][j] = 1;
+        }
+        
+        for(int i = 1; i < m; i++)
+        {
+            dp[i%2][0] = 1;
+            for(int j = 1; j <n; j++)
+            {
+                dp[i%2][j] = dp[(i-1)%2][j] + dp[i%2][j-1];
+            }
+        }
+        
+        return dp[(m-1)%2][n-1];
+        
+    }
+};
