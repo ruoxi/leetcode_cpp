@@ -1,0 +1,134 @@
+321. Create Maximum Number   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 13550
+Total Submissions: 57231
+Difficulty: Hard
+Contributors: Admin
+Given two arrays of length m and n with digits 0-9 representing two numbers. Create the maximum number of length k <= m + n from digits of the two. The relative order of the digits from the same array must be preserved. Return an array of the k digits. You should try to optimize your time and space complexity.
+
+Example 1:
+nums1 = [3, 4, 6, 5]
+nums2 = [9, 1, 2, 5, 8, 3]
+k = 5
+return [9, 8, 6, 5, 3]
+
+Example 2:
+nums1 = [6, 7]
+nums2 = [6, 0, 4]
+k = 5
+return [6, 7, 6, 0, 4]
+
+Example 3:
+nums1 = [3, 9]
+nums2 = [8, 9]
+k = 3
+return [9, 8, 9]
+
+Credits:
+Special thanks to @dietpepsi for adding this problem and creating all test cases.
+
+//Runtime: O((m+n)^3) 
+
+class Solution {
+public:
+    //思路，一共取k个数可以分成，从nums1中取前i 大的数，从nums2中取前k-i大的数
+    //然后按照大小合并，找出其中最大的
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        
+        if(nums1.empty() && nums2.empty()) return vector<int>();
+        
+        queue<int> top1;
+        int n = nums1.size(), m = nums2.size();
+        
+        vector<int> res;
+        for(int i = max(0, k-m); i <= k && i <=n; i++)
+        {
+            //cout << "out i=" << i << endl;
+            vector<int> top1 = getMaxArray(nums1, i);
+            vector<int> top2 = getMaxArray(nums2, k-i);
+            
+            vector<int> sol = merge(top1, top2);
+            
+            //check which one is greater
+            if(!greater(res, 0, sol, 0))
+            {
+                res = sol;
+            }
+            
+        }
+        
+        return res;
+       
+    }
+    
+    vector<int> merge(vector<int>& nums1, vector<int>& nums2)
+    {
+        if(nums1.empty()) return nums2;
+        if(nums2.empty()) return nums1;
+        
+        int n = nums1.size(), m = nums2.size();
+        
+        vector<int> res(n+m, 0);
+
+        for(int i = 0, j = 0, k =0; k < m+n; k++)
+        {
+            //nums1 start at i > nums2 start at j
+            //cout << "merge i=" << i << " j=" << j << endl;
+            if(greater(nums1, i, nums2, j))
+            {
+                res[k] = nums1[i];
+                i++;
+            }
+            else
+            {
+                res[k] = nums2[j];
+                j++;
+            }
+        }
+        
+        return res;
+    }
+    
+    
+    bool greater(vector<int>& nums1, int start1, vector<int>& nums2, int start2)
+    {
+        if(start1 == nums1.size()) return false;
+        if(start2 == nums2.size()) return true;
+        
+        int n = nums1.size(), m = nums2.size();
+        int i = start1, j = start2;
+        for(; i< n && j < m; i++, j++)
+        {
+            //cout << "i=" << i << "nums1[i]=" << nums1[i] << " j=" << j << " nums2[j]=" << nums2[j] << endl;
+            if(nums1[i] > nums2[j]) return true;
+            else if(nums1[i] < nums2[j]) return false;
+
+        }
+        
+        if(i < n) return true;
+        return false;
+    }
+    //get top k number from array, must preserve the order
+    vector<int> getMaxArray(vector<int>& nums, int k)
+    {
+        if(k == 0) return vector<int>();
+        int j = 0;
+        vector<int> res(k, 0);
+        int n = nums.size();
+        for(int i = 0; i <nums.size(); i++)
+        {
+            while(n-i+j > k && j > 0 && res[j-1] < nums[i])
+            {
+                j--;
+            }
+            
+            if(j < k)
+            {
+                res[j] = nums[i];
+                j++;
+            }
+        }
+        
+        
+        return res;
+    }
+};
