@@ -1,0 +1,55 @@
+132. Palindrome Partitioning II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 61800
+Total Submissions: 265698
+Difficulty: Hard
+Contributors: Admin
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return the minimum cuts needed for a palindrome partitioning of s.
+
+For example, given s = "aab",
+Return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 cut.
+
+Show Tags
+Show Similar Problems
+
+
+class Solution {
+public:
+    //state: mincut[i] means minimum cut for s[0...i-1]
+    //function: for each centered at i, let j be half of the length of longest palindrome 
+    //          if(s[i-j] == s[i+j] ) mincut[i] = min{mincut[i-j]+1} where 0<=i < n,  
+    //initialzation: mincut[i] = i-1
+    int minCut(string s) {
+        
+        if(s.empty()) return 0;
+        if(s.length() == 1) return 0;
+        
+        int n = s.length();
+        
+        vector<int> cut(n+1, 0);
+        for(int i = 0; i <=n; i++)
+        {
+            cut[i] = i-1;
+        }
+        
+        for(int i = 0; i < n; i++)
+        {
+            //odd length palindrome
+            for(int j = 0; i+j < n&& i-j >=0 && s[i+j] == s[i-j]; j++)
+            {
+                cut[i+j+1] = min(cut[i+j+1], cut[i-j]+1);
+            }
+            
+            
+            //even length palindrome
+            for(int j = 0; i+1+j < n && i-j>=0 && s[i+1+j] == s[i-j]; j++)
+            {
+                cut[i+j+2] = min(cut[i+j+2], cut[i-j]+1);
+            }
+        }
+        
+        return cut[n];
+        
+    }
+};
