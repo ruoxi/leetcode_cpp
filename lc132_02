@@ -1,0 +1,78 @@
+132. Palindrome Partitioning II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 61799
+Total Submissions: 265697
+Difficulty: Hard
+Contributors: Admin
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return the minimum cuts needed for a palindrome partitioning of s.
+
+For example, given s = "aab",
+Return 1 since the palindrome partitioning ["aa","b"] could be produced using 1 cut.
+
+
+//Runtime: O(n^2)
+//Space: O(n^2)
+
+class Solution {
+public:
+    //state:dp[i] 表示s[0...i-1]由最少多少个palindrome partition 组成
+    //function: dp[i] = min{dp[j]+1} where 0<=j <=i-1 && ispalindrome[j][i-1]
+    //initialization: dp[0] = 0; dp[i] = 1
+    //2nd dp, 组成ispalindrome数组
+    //state: ispalindrome[i][j] 表示s[i...j] is palindrome
+    //function: ispalindrome[i][j] = ispanlindrome[i+1][j-1]&& s[i] == s[j]
+    //initialization: ispalindrome[i][i] = true ispalindrome[i][i+1] = s[i] == s[i+1]
+    int minCut(string s) {
+        
+        if(s.empty()) return 0;
+        if(s.length() == 1) return 0;
+        
+        int n = s.length();
+        
+        vector<vector<bool>> ispalindrome(n, vector<bool>(n, false));
+        
+        for(int i = 0; i < n; i++)
+        {
+            ispalindrome[i][i] = true;
+            if(i+1 < n)
+            {
+                ispalindrome[i][i+1] = s[i] == s[i+1];
+            }
+        }
+        
+        for(int len = 2; len < n; len++)
+        {
+            for(int i = 0; i+len < n; i++)
+            {
+                if(s[i] == s[i+len] && ispalindrome[i+1][i+len-1])
+                {
+                    ispalindrome[i][i+len] = true;
+                }
+            }
+        }
+        
+        
+        vector<int> dp(n+1, 0);
+        dp[0] = 0;
+        
+        for(int i = 1; i <=n; i++)
+        {
+            dp[i] = i;
+        }
+        
+        for(int i = 1; i <=n; i++)
+        {
+            for(int j = i-1; j>=0; j--)
+            {
+                if(ispalindrome[j][i-1])
+                {
+                    dp[i] = min(dp[i], dp[j]+1);
+                }
+            }
+        }
+        
+        return dp[n]-1;
+        
+    }
+};
