@@ -1,0 +1,77 @@
+85. Maximal Rectangle   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 54986
+Total Submissions: 213687
+Difficulty: Hard
+Contributors: Admin
+Given a 2D binary matrix filled with 0's and 1's, find the largest rectangle containing only 1's and return its area.
+
+For example, given the following matrix:
+
+1 0 1 0 0
+1 0 1 1 1
+1 1 1 1 1
+1 0 0 1 0
+Return 6.
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+//Runtime: O(n^2)
+//Space: O(m)
+
+class Solution {
+public:
+    //iterate 每一行， 计算出以当前行为底边的每个column的高度：一旦matrix[cur_row][j] == 0, 那么高度为0
+    //对这一行算好的高度求出最大的rectangle area,用histogram那道题的做法
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if(matrix.empty() || matrix.at(0).empty()) return 0;
+        
+        int n = matrix.size();
+        int m = matrix.at(0).size();
+        
+        vector<int> height(m+1, 0);
+        
+        height[m] = -1;
+        int res = 0;
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                if(matrix[i][j] == '0')
+                {
+                    height[j] = 0;
+                }
+                else
+                {
+                    height[j]++;
+                }
+                //cout << "i=" << i << " j= " << j << " height=" << height[j] << endl;
+            }
+            
+            
+            //用height数组计算max rectangle area
+            //用单调递增栈
+            stack<int> stk;
+            int index = 0;
+            while(index <=m)
+            {
+                if(stk.empty() || height[stk.top()] <= height[index] )
+                {
+                    stk.push(index);
+                    index++;
+                }
+                else
+                {
+                    int h = height[stk.top()]; stk.pop();
+                    int lastindex = stk.empty() ? -1 : stk.top();
+                    
+                    int width = index - lastindex-1;
+                    int area = h*width;
+                    res = max(res, area);
+                }
+            }
+        }
+        
+        return res;
+    }
+};
