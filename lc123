@@ -1,0 +1,56 @@
+123. Best Time to Buy and Sell Stock III   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 73370
+Total Submissions: 261448
+Difficulty: Hard
+Contributors: Admin
+Say you have an array for which the ith element is the price of a given stock on day i.
+
+Design an algorithm to find the maximum profit. You may complete at most two transactions.
+
+Note:
+You may not engage in multiple transactions at the same time (ie, you must sell the stock before you buy again).
+
+Show Tags
+Show Similar Problems
+//Runtime: O(n);
+//Space: O(n)
+
+class Solution {
+public:
+    //找到一个分界线，分界线左边的profit+分界线右边的profit最大
+    //state: left[i]表示在第i天前卖出的max profit是多大
+    //       right[i]表示在第i天后买入的max profit是多大
+    //function: left[i] = max(prices[i] - minprice, left[i-1])
+    //          right[i] = max(maxprice - prices[i], right[i+1])
+    //initialization: left(n, 0), right(n, 0)
+    int maxProfit(vector<int>& prices) {
+        if(prices.empty()) return 0;
+        
+        int n = prices.size();
+        vector<int> left(n, 0);
+        
+        int minprice = prices[0];
+        for(int i = 1; i <n; i++)
+        {
+            minprice = min(minprice, prices[i]);
+            left[i] = max(prices[i]-minprice, left[i-1]);
+        }
+        
+        vector<int> right(n, 0);
+        int maxprice = prices[n-1];
+        for(int i = n-2; i>=0; i--)
+        {
+            maxprice = max(maxprice, prices[i]);
+            right[i] = max(maxprice-prices[i], right[i+1]);
+        }
+        
+        int res = 0;
+        for(int i = 0; i < n; i++)
+        {
+            res = max(res, left[i] + right[i]);
+        }
+        
+        return res;
+        
+    }
+};
