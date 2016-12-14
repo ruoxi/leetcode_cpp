@@ -1,0 +1,73 @@
+44. Wildcard Matching   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 77396
+Total Submissions: 411184
+Difficulty: Hard
+Contributors: Admin
+Implement wildcard pattern matching with support for '?' and '*'.
+
+'?' Matches any single character.
+'*' Matches any sequence of characters (including the empty sequence).
+
+The matching should cover the entire input string (not partial).
+
+The function prototype should be:
+bool isMatch(const char *s, const char *p)
+
+Some examples:
+isMatch("aa","a") → false
+isMatch("aa","aa") → true
+isMatch("aaa","aa") → false
+isMatch("aa", "*") → true
+isMatch("aa", "a*") → true
+isMatch("ab", "?*") → true
+isMatch("aab", "c*a*b") → false
+
+
+class Solution {
+public:
+    //思路：用两个pointer记录s和p match 到哪里: indexs, indexp
+    //      如果s[indexs] == p[indexp] || p[indexp] == ? indexs++, indexp++
+    //      如果p[indexp] == '*' 此时记录下当前*的位置，starp = indexp, indexp++, matchs = indexs;
+    //注意这里indexs不增加，是为了match 0个字母
+    //接下来尝试match indexp和indexs, 如果不match, 则indexp重新调成回startp+1, matchs++(表示*需要match的字母多了一个), indexs = matchs
+    bool isMatch(string s, string p) {
+        if(s.empty() && p.empty()) return true;
+
+        int n = s.length();
+        int m = p.length();
+        
+        int indexs = 0, indexp = 0, starp = -1, matchs = -1;
+        while(indexs < n)
+        {
+            if(indexp < m && (s[indexs] == p[indexp] || p[indexp] == '?'))
+            {
+                indexp++;
+                indexs++;
+            }
+            else if(indexp < m && p[indexp] == '*')
+            {
+                starp = indexp;
+                matchs = indexs;
+                indexp++;
+            }
+            else if(starp != -1)
+            {
+                matchs++;
+                indexs = matchs;
+                indexp = starp+1;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        //check if p still has extra characters
+        while(indexp < m && p[indexp] == '*')
+        {
+            indexp++;
+        }
+        
+        return indexp ==m;
+    }
+};
