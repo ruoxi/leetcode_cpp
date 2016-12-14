@@ -1,0 +1,82 @@
+265. Paint House II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 14871
+Total Submissions: 40283
+Difficulty: Hard
+Contributors: Admin
+There are a row of n houses, each house can be painted with one of the k colors. The cost of painting each house with a certain color is different. You have to paint all the houses such that no two adjacent houses have the same color.
+
+The cost of painting each house with a certain color is represented by a n x k cost matrix. For example, costs[0][0] is the cost of painting house 0 with color 0; costs[1][2] is the cost of painting house 1 with color 2, and so on... Find the minimum cost to paint all houses.
+
+Note:
+All costs are positive integers.
+
+Follow up:
+Could you solve it in O(nk) runtime?
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+class Solution {
+public:
+    //state: dp[i][j]表示前i个屋子中第i个屋子paint成第j个颜色的 min cost
+    //function: dp[i][j] = min{dp[i-1][l]} + cost[i][j] where 0<=l <=k && l != j
+    //initialization: dp[0][j] = cost[0][j]
+    //这里注意用两个variable记录上一行的最小值和第二小值，把O(nk^2)优化到O(nk)
+    int minCostII(vector<vector<int>>& costs) {
+        if(costs.empty() || costs.at(0).empty()) return 0;
+        
+        int n = costs.size();
+        int m = costs.at(0).size();
+        
+        vector<vector<int>> dp(2, vector<int>(m, INT_MAX));
+        int smallest = -1, second_s = -1;
+        for(int i = 0; i <m; i++)
+        {
+            dp[0][i] = costs[0][i];
+            if(smallest == -1 || dp[0][smallest] > dp[0][i])
+            {
+                second_s= smallest;
+                smallest = i;
+            }
+            else if(second_s == -1 || dp[0][second_s] > dp[0][i])
+            {
+                second_s = i;
+            }
+        }
+        //cout << "smallest=" <<smallest << " second_s=" << second_s << endl;
+        
+        for(int i = 1; i < n; i++)
+        {
+            int tmp_s = -1, tmp_sec_s = -1;
+            for(int j = 0; j <m; j++)
+            {
+                if(smallest == j)
+                {
+                    dp[i%2][j] = dp[(i-1)%2][second_s] + costs[i][j];
+                }
+                else
+                {
+                    dp[i%2][j] = dp[(i-1)%2][smallest] + costs[i][j];
+                }
+                
+                if(tmp_s == -1 || dp[i%2][tmp_s] > dp[i%2][j])
+                {
+                    tmp_sec_s = tmp_s;
+                    tmp_s = j;
+                }
+                else if(tmp_sec_s == -1 || dp[i%2][tmp_sec_s] > dp[i%2][j])
+                {
+                    tmp_sec_s = j;
+                }
+                
+            }
+            
+            smallest = tmp_s;
+            second_s = tmp_sec_s;
+        }
+        
+        return dp[(n-1)%2][smallest];
+    }
+};
