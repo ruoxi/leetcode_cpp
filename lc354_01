@@ -1,0 +1,66 @@
+354. Russian Doll Envelopes   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 13509
+Total Submissions: 43123
+Difficulty: Hard
+Contributors: Admin
+You have a number of envelopes with widths and heights given as a pair of integers (w, h). One envelope can fit into another if and only if both the width and height of one envelope is greater than the width and height of the other envelope.
+
+What is the maximum number of envelopes can you Russian doll? (put one inside other)
+
+Example:
+Given envelopes = [[5,4],[6,4],[6,7],[2,3]], the maximum number of envelopes you can Russian doll is 3 ([2,3] => [5,4] => [6,7]).
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+
+
+//Runtime: O(NLOGN)
+//space: O(n)
+class Solution {
+public:
+    //binary search
+    //sort envelopes based on asending order of width, if the width are the same, sort on descending based on height
+    //then find the longest increasing subsequence on height
+    
+    
+    class Comparator
+    {
+    public:
+        bool operator()(pair<int, int>& a, pair<int, int>&b)
+        {
+            if(a.first == b.first) return a.second > b.second;
+            return a.first < b.first;
+        }
+    };
+    
+    int maxEnvelopes(vector<pair<int, int>>& envelopes) {
+        if(envelopes.empty()) return 0;
+        
+        sort(envelopes.begin(), envelopes.end(), Comparator());
+        
+        int n = envelopes.size();
+        
+        vector<int> heights;
+        
+        for(int i = 0; i < n; i++)
+        {
+            auto lower = lower_bound(heights.begin(), heights.end(), envelopes[i].second);
+            
+            if(lower == heights.end()) 
+            {
+                heights.push_back(envelopes[i].second);
+            }
+            else
+            {
+                *lower = envelopes[i].second;
+            }
+        }
+        
+        return heights.size();
+    }
+    
+    
+};
