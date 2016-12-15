@@ -1,0 +1,44 @@
+354. Russian Doll Envelopes   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 13508
+Total Submissions: 43121
+Difficulty: Hard
+Contributors: Admin
+You have a number of envelopes with widths and heights given as a pair of integers (w, h). One envelope can fit into another if and only if both the width and height of one envelope is greater than the width and height of the other envelope.
+
+What is the maximum number of envelopes can you Russian doll? (put one inside other)
+
+Example:
+Given envelopes = [[5,4],[6,4],[6,7],[2,3]], the maximum number of envelopes you can Russian doll is 3 ([2,3] => [5,4] => [6,7]).
+//Runtime:O(n^2)
+//Space: O(n)
+
+class Solution {
+public:
+    //state: dp[i]表示以i点结尾的最长sequence
+    //function: dp[i] = max{1+dp[j]} if envelopes[i].first & second > envelopes[j].first&second
+    //initialization: dp[i] = 1;
+    int maxEnvelopes(vector<pair<int, int>>& envelopes) {
+        if(envelopes.empty()) return 0;
+        
+        sort(envelopes.begin(), envelopes.end());
+        int n = envelopes.size();
+        
+        vector<int> dp(n, 1);
+        int res = 1;
+        for(int i = 1; i <n; i++)
+        {
+
+            for(int j = i-1; j >=0; j--)
+            {
+                if(envelopes[i].first > envelopes[j].first && envelopes[i].second > envelopes[j].second)
+                {
+                    dp[i] = max(dp[i], dp[j]+1);
+                }
+            }
+            
+            res = max(res, dp[i]);
+        }
+        
+        return res;
+    }
+};
