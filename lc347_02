@@ -1,0 +1,66 @@
+347. Top K Frequent Elements   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 43645
+Total Submissions: 95550
+Difficulty: Medium
+Contributors: Admin
+Given a non-empty array of integers, return the k most frequent elements.
+
+For example,
+Given [1,1,1,2,2,3] and k = 2, return [1,2].
+
+Note: 
+You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+Your algorithm's time complexity must be better than O(n log n), where n is the array's size.
+
+
+class Solution {
+public:
+
+
+    class Comparator
+    {
+    public:
+        bool operator()(const pair<int, int>& a, const pair<int, int>& b)
+        {
+            if(a.first != b.first) return a.first > b.first;
+            
+            return a.second > b.second;
+        }
+    };
+    //sort based on frequency
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        if(nums.empty()) return vector<int>();
+        
+        //key is nums[i], value is frequency
+        unordered_map<int, int> table;
+        
+        int n = nums.size();
+        for(int i = 0; i < n; i++)
+        {
+            table[nums[i]]++;
+        }
+        
+        priority_queue<pair<int, int>, vector<pair<int, int>>, Comparator> pq;
+        
+        for(auto num : table)
+        {
+            pq.push(make_pair(num.second, num.first));
+            //cout << "add frequency=" << num.second << " num=" << num.first << endl;
+            if(pq.size() > k)
+            {
+                //cout << "remove " << pq.top().second << endl;
+                pq.pop();
+            }
+        }
+        
+        vector<int> res(pq.size(), 0);
+        for(int i = pq.size()-1; i >=0; i--)
+        {
+            res[i] = pq.top().second;
+            pq.pop();
+        }
+        
+        return res;
+        
+    }
+};
