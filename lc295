@@ -1,0 +1,87 @@
+295. Find Median from Data Stream   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 31312
+Total Submissions: 134942
+Difficulty: Hard
+Contributors: Admin
+Median is the middle value in an ordered integer list. If the size of the list is even, there is no middle value. So the median is the mean of the two middle value.
+
+Examples: 
+[2,3,4] , the median is 3
+
+[2,3], the median is (2 + 3) / 2 = 2.5
+
+Design a data structure that supports the following two operations:
+
+void addNum(int num) - Add a integer number from the data stream to the data structure.
+double findMedian() - Return the median of all elements so far.
+For example:
+
+add(1)
+add(2)
+findMedian() -> 1.5
+add(3) 
+findMedian() -> 2
+
+
+class MedianFinder {
+public:
+
+    MedianFinder()
+    {
+        initialize = false;
+    }
+    // Adds a number into the data structure.
+    void addNum(int num) {
+        if(!initialize) 
+        {
+            median = num;
+            initialize = true;
+            return;
+        }
+        
+        if(num < median)
+        {
+            maxheap.push(num);
+        }
+        else
+        {
+            minheap.push(num);
+        }
+        
+        //need to move element to minheap
+        if(maxheap.size() > minheap.size())
+        {
+            minheap.push(median);
+            median = maxheap.top();
+            maxheap.pop();
+        }
+        
+        //need to move element to maxheap
+        if(maxheap.size() + 1 < minheap.size())
+        {
+            maxheap.push(median);
+            median = minheap.top();
+            minheap.pop();
+        }
+        
+        
+    }
+
+    // Returns the median of current data stream
+    double findMedian() {
+        if(minheap.size() == maxheap.size()) return median;
+        return (median + minheap.top())/2.0;
+    }
+    
+    //use a maxheap to store the values smaller than median
+    //use a minheap to store vaules larger than median
+    priority_queue<int, vector<int>, greater<int>> minheap;
+    priority_queue<int, vector<int>, less<int>> maxheap;
+    int median;
+    bool initialize;
+};
+
+// Your MedianFinder object will be instantiated and called as such:
+// MedianFinder mf;
+// mf.addNum(1);
+// mf.findMedian();
