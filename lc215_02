@@ -1,0 +1,90 @@
+215. Kth Largest Element in an Array   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 99052
+Total Submissions: 265662
+Difficulty: Medium
+Contributors: Admin
+Find the kth largest element in an unsorted array. Note that it is the kth largest element in the sorted order, not the kth distinct element.
+
+For example,
+Given [3,2,1,5,6,4] and k = 2, return 5.
+
+Note: 
+You may assume k is always valid, 1 ≤ k ≤ array's length.
+
+Credits:
+Special thanks to @mithmatt for adding this problem and creating all test cases.
+
+
+//quick select
+//Runtime: O(n), because each time we can narrow down the problem to half
+// n + n/2 + n/4 + .... <O(2n) = O(n)
+
+//Space: O(1)
+
+class Solution {
+public:
+    //partition
+    int findKthLargest(vector<int>& nums, int k) {
+        if(nums.empty()) return 0;
+        
+        int n = nums.size();
+        
+        int start = 0, end = n-1;
+        
+        while(start <= end)
+        {
+            int pos = partition(nums, start, end);
+            if(pos  == k-1)
+            {
+                return nums[pos];
+            }
+            else if(pos < k-1)
+            {
+                start = pos+1;
+            }
+            else
+            {
+                end = pos-1;
+            }
+        }
+        
+        return -1;
+        
+        
+        
+
+    }
+    
+    int partition(vector<int>& nums, int start, int end)
+    {
+        int pivot = nums[start];
+        
+        int left = start, right = end;
+        
+        while(left < right)
+        {
+            //find the first one which is larger or equal to pivot
+            while(left < right && nums[right] < pivot)
+            {
+                right--;
+            }
+            
+            nums[left] = nums[right];
+            
+            //find the first one on the left which is smaller than pivot
+            while(left < right && nums[left] >=pivot)
+            {
+                left++;
+            }
+            
+            nums[right] = nums[left];
+        }
+        
+        nums[left] = pivot;
+        
+        return left;
+    }
+    
+    
+    
+};
