@@ -1,0 +1,148 @@
+355. Design Twitter   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 11862
+Total Submissions: 48920
+Difficulty: Medium
+Contributors: Admin
+Design a simplified version of Twitter where users can post tweets, follow/unfollow another user and is able to see the 10 most recent tweets in the user's news feed. Your design should support the following methods:
+
+postTweet(userId, tweetId): Compose a new tweet.
+getNewsFeed(userId): Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent.
+follow(followerId, followeeId): Follower follows a followee.
+unfollow(followerId, followeeId): Follower unfollows a followee.
+Example:
+
+Twitter twitter = new Twitter();
+
+// User 1 posts a new tweet (id = 5).
+twitter.postTweet(1, 5);
+
+// User 1's news feed should return a list with 1 tweet id -> [5].
+twitter.getNewsFeed(1);
+
+// User 1 follows user 2.
+twitter.follow(1, 2);
+
+// User 2 posts a new tweet (id = 6).
+twitter.postTweet(2, 6);
+
+// User 1's news feed should return a list with 2 tweet ids -> [6, 5].
+// Tweet id 6 should precede tweet id 5 because it is posted after tweet id 5.
+twitter.getNewsFeed(1);
+
+// User 1 unfollows user 2.
+twitter.unfollow(1, 2);
+
+// User 1's news feed should return a list with 1 tweet id -> [5],
+// since user 1 is no longer following user 2.
+twitter.getNewsFeed(1);
+
+
+class Twitter {
+public:
+
+    class Tweet
+    {
+    public:
+        int tweetid;
+        int time;
+        Tweet(int id, int t)
+        :tweetid(id), time(t) {}
+    };
+    
+    class Comparator
+    {
+    public:
+        bool operator()(const Tweet& a, const Tweet& b)
+        {
+            return a.time > b.time;
+        }
+    };
+    /** Initialize your data structure here. */
+    Twitter() {
+        time = 0;
+    }
+    
+    /** Compose a new tweet. */
+    void postTweet(int userId, int tweetId) {
+        time++;
+        users.insert(userId);
+        tweets[userId].push_back(Tweet(tweetId, time));
+    }
+    
+    /** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
+    vector<int> getNewsFeed(int userId) {
+        //get all the followers
+        set<int> ids;
+        
+        if(followers.find(userId) != followers.end())
+        {
+            ids.insert(followers[userId].begin(), followers[userId].end());
+        }
+        ids.insert(userId);
+        //get most recent 10 tweet 
+        priority_queue<Tweet, vector<Tweet>, Comparator> pq;
+        int pq_size = 10;
+        
+        for(auto id: ids)
+        {
+            //cout << "id=" << id << endl;
+            vector<Tweet> list = tweets[id];
+            
+            for(int i = list.size()-1; i >=0; i--)
+            {
+                //cout << "list[" << i << "]" << " tweetid=" << list[i].tweetid << " time=" << list[i].time << endl;
+                pq.push(list[i]);
+                
+                if(pq.size() > pq_size)
+                {
+                    //cout << "pop\n";
+                    pq.pop();
+                }
+            }
+        }
+        
+        //cout << "pq size=" << pq.size() << endl;
+        vector<int> res(pq.size(), 0);
+        
+        for(int i = pq.size()-1; i>=0; i--)
+        {
+            res[i] = pq.top().tweetid;
+            pq.pop();
+        }
+        
+        return res;
+        
+        
+    }
+    
+    /** Follower follows a followee. If the operation is invalid, it should be a no-op. */
+    void follow(int followerId, int followeeId) {
+        
+        users.insert(followerId);
+        users.insert(followeeId);
+        followers[followerId].insert(followeeId);
+    }
+    
+    /** Follower unfollows a followee. If the operation is invalid, it should be a no-op. */
+    void unfollow(int followerId, int followeeId) {
+        
+        if(followers.find(followerId) == followers.end()) return;
+        if(followers[followerId].find(followeeId) == followers[followerId].end()) return;
+        
+        followers[followerId].erase(followeeId);
+    }
+    
+    int time;
+    set<int> users;
+    unordered_map<int, set<int>> followers;
+    unordered_map<int, vector<Tweet>> tweets;
+};
+
+/**
+ * Your Twitter object will be instantiated and called as such:
+ * Twitter obj = new Twitter();
+ * obj.postTweet(userId,tweetId);
+ * vector<int> param_2 = obj.getNewsFeed(userId);
+ * obj.follow(followerId,followeeId);
+ * obj.unfollow(followerId,followeeId);
+ */
