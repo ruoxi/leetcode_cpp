@@ -1,0 +1,82 @@
+253. Meeting Rooms II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 26370
+Total Submissions: 69312
+Difficulty: Medium
+Contributors: Admin
+Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
+
+For example,
+Given [[0, 30],[5, 10],[15, 20]],
+return 2.
+
+//Runtime: O(nlogn)
+//Space: O(n)
+
+/**
+ * Definition for an interval.
+ * struct Interval {
+ *     int start;
+ *     int end;
+ *     Interval() : start(0), end(0) {}
+ *     Interval(int s, int e) : start(s), end(e) {}
+ * };
+ */
+class Solution {
+public:
+    //思路：先把interval按start time 从小到大排序，
+    //然后把interval一个一个加入到minheap中， 按照end time 排序，
+    //如果新的interval start time >= heap中的end time , meeting roon 不变
+    //否则要+1
+    
+    class smallComparator
+    {
+    public:
+        bool operator()(const Interval& a, const Interval& b)
+        {
+            if(a.start != b.start) return a.start < b.start;
+            else return a.end < b.end;
+        }
+    };
+    
+    class Comparator
+    {
+    public:
+        bool operator()(const Interval& a, const Interval& b)
+        {
+            if(a.end != b.end) return a.end > b.end;
+            return a.start > b.start;
+        }
+    };
+    int minMeetingRooms(vector<Interval>& intervals) {
+        if(intervals.empty()) return 0;
+        
+        int n = intervals.size();
+        
+        sort(intervals.begin(), intervals.end(), smallComparator());
+        
+        priority_queue<Interval, vector<Interval>, Comparator> pq;
+        
+        for(int i = 0; i < n; i++)
+        {
+            Interval cur = intervals[i];
+            if(pq.empty())
+            {
+                pq.push(cur);
+            }
+            else 
+            {
+                Interval small = pq.top();
+                if (cur.start >= small.end)
+                {
+                    pq.pop();
+                    cur.start = small.start;
+                }
+                
+                pq.push(cur);
+            }
+        }
+        
+        return pq.size();
+        
+    }
+};
