@@ -1,0 +1,107 @@
+307. Range Sum Query - Mutable   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 25111
+Total Submissions: 136135
+Difficulty: Medium
+Contributors: Admin
+Given an integer array nums, find the sum of the elements between indices i and j (i ≤ j), inclusive.
+
+The update(i, val) function modifies nums by updating the element at index i to val.
+Example:
+Given nums = [1, 3, 5]
+
+sumRange(0, 2) -> 9
+update(1, 2)
+sumRange(0, 2) -> 8
+Note:
+The array is only modifiable by the update function.
+You may assume the number of calls to update and sumRange function is distributed evenly.
+
+//runtime: Build up a binary indexed tree: O(nlogn)
+//         update O(logn)
+//         sum O(logn)
+
+class NumArray {
+public:
+    NumArray(vector<int> &nums) {
+        
+        //for each nums[i], update the bitree[i+1] and use get next to update the affected node
+        //size of bitree is n+1
+        int n = nums.size();
+        this->nums = nums;
+        bitree.assign(n+1, 0);
+        
+        for(int i = 0; i < n; i++)
+        {
+            int idx = i+1;
+            while(idx <= n)
+            {
+                bitree[idx] += nums[i];
+                
+                idx = getnext(idx);
+            }
+        }
+        
+    }
+
+    void update(int i, int val) {
+        //update i+1, and the corresponding affected nodes
+        int idx = i+1;
+        int diff = val - nums[i];
+        int n = bitree.size();
+        while(idx < n)
+        {
+            bitree[idx] += diff;
+            idx = getnext(idx);
+        }
+        nums[i] = val;
+    }
+
+    int sumRange(int i, int j) {
+        return sum(j) - sum(i-1);
+    }
+    
+    //this gives sum from nums[0...i]
+    //start from i+1 in bitree
+    //sum += bitree[idx+1] and its parents
+    int sum(int i)
+    {
+        int idx = i+1;
+        int sum = 0;
+        int n = bitree.size();
+        //注意这里idx不能等于0，因为0的parent还是0, 死循环
+        while(idx <n && idx >0)
+        {
+            sum += bitree[idx];
+            idx = getparent(idx);
+        }
+        return sum;
+    }
+    
+    //parent = idx - idx&(-idx)
+    int getparent(int idx)
+    {
+        idx -= idx&(-idx);
+        return idx;
+    }
+    
+    //get two's complement of idx
+    // idx &-idx
+    // idx + idx& -idx
+    int getnext(int idx)
+    {
+        idx +=idx & (-idx);
+        
+        return idx;
+    }
+    //build a binary index tree
+    vector<int> bitree;
+    vector<int> nums;
+    
+};
+
+
+// Your NumArray object will be instantiated and called as such:
+// NumArray numArray(nums);
+// numArray.sumRange(0, 1);
+// numArray.update(1, 10);
+// numArray.sumRange(1, 2);
