@@ -1,0 +1,110 @@
+315. Count of Smaller Numbers After Self   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 24094
+Total Submissions: 72259
+Difficulty: Hard
+Contributors: Admin
+You are given an integer array nums and you have to return a new counts array. The counts array has the property where counts[i] is the number of smaller elements to the right of nums[i].
+
+Example:
+
+Given nums = [5, 2, 6, 1]
+
+To the right of 5 there are 2 smaller elements (2 and 1).
+To the right of 2 there is only 1 smaller element (1).
+To the right of 6 there is 1 smaller element (1).
+To the right of 1 there is 0 smaller element.
+Return the array [2, 1, 1, 0].
+
+//Runtime: O(nlogn)
+//space: O(n)
+
+
+class Solution {
+public:
+
+    //start from end of array, build up a binary search tree
+    //each node consists value, sum which means number of nodes on its left subtree, and dup which means how many duplicates it has in the array
+    //when insert nums[i], sum is sum+dup of the node where we turn right (means all the numbers on the left of this node is smaller than nums[i])
+    
+    class TreeNode
+    {
+    public:
+        int value;
+        int sum;
+        int dup;
+        TreeNode* left;
+        TreeNode* right;
+        TreeNode(int v, int s, int d)
+        :value(v), sum(s), dup(d), left(NULL), right(NULL) {}
+    };
+    
+    vector<int> countSmaller(vector<int>& nums) {
+        if(nums.empty()) return vector<int>();
+        
+        int n = nums.size();
+        
+        vector<int> res(n, 0);
+        TreeNode* root = NULL;
+        for(int i = n-1; i >=0; i--)
+        {
+            //cout << "buildBST nums[" << i << "]=" << nums[i] << endl;
+            res[i] = buildBST(nums[i], root);
+            //cout << ""
+        }
+        
+        return res;
+        
+    }
+    
+    int buildBST(int value, TreeNode*& root)
+    {
+        if(root == NULL)
+        {
+            root = new TreeNode(value, 0, 1);
+            return 0;
+        }
+        
+        TreeNode* cur = root;
+        TreeNode* prev = NULL;
+        int res = 0;
+        while(cur != NULL)
+        {
+            //walk to right of bst
+            if(cur->value < value)
+            {
+                res += cur->sum + cur->dup;
+                prev = cur;
+                cur = cur->right;
+            }
+            else if(cur->value > value)
+            {
+                //walk to left
+                //update sum of cur 
+                cur->sum++;
+                prev = cur;
+                cur = cur->left;
+            }
+            else
+            {
+                //duplicate
+                cur->dup++;
+                res += cur->sum;
+                break;
+            }
+        }
+        
+        if(cur != NULL) return res;
+        TreeNode* node = new TreeNode(value, 0, 1);
+        if(prev->value < value)
+        {
+            //add to prev right child
+            prev->right = node;
+        }
+        else 
+        {
+            prev->left = node;
+        }
+        
+        return res;
+    }
+};
