@@ -1,0 +1,129 @@
+130. Surrounded Regions   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 70186
+Total Submissions: 402797
+Difficulty: Medium
+Contributors: Admin
+Given a 2D board containing 'X' and 'O' (the letter O), capture all regions surrounded by 'X'.
+
+A region is captured by flipping all 'O's into 'X's in that surrounded region.
+
+For example,
+X X X X
+X O O X
+X X O X
+X O X X
+After running your function, the board should be:
+
+X X X X
+X X X X
+X X X X
+X O X X
+
+//注意，这里用union find但是所有连接到bounary 的'O'点都需要指向dummy node (n*m)
+//这样就需要每次union的时候确保是从较小root指向较大root
+//同时要注意最后走一遍father数组时，仍然需要用find()函数去找到root,
+//因为有可能路径没有全部压缩
+
+class Solution {
+public:
+    //union find solution:
+    //for the 'O' in the bounary, connect them to a dummy root eg n*m
+    //the rest connect to a valid idx
+    //at the end, flip all the connected component not root at n*m
+    
+    vector<int> dx = {-1, 0};
+    vector<int> dy = {0, -1};
+    void solve(vector<vector<char>>& board) {
+        if(board.empty() || board.at(0).empty()) return;
+        
+        int n = board.size();
+        int m = board.at(0).size();
+        
+        unordered_map<int, int>father;
+        father[n*m] = n*m;
+        //dummy root for 'Os' connected to boundary
+        int dummy = n*m;
+
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                
+                if(board[i][j] == 'O')
+                {
+                    int idx = i*m+j;
+                    if(i == 0 || i == n-1 || j ==0 || j==m-1)
+                    {
+                        father[idx] = dummy;
+                    }
+                    else
+                    {
+                        father[idx] = idx;
+                    }
+                    //cout << "i=" << i<< " j=" << j << " idx=" << idx << endl;
+                    for(int l = 0; l < 2; l++)
+                    {
+                        int nx = i+dx[l];
+                        int ny = j+dy[l];
+                        int nidx = nx*m+ny;
+                        //cout << " nx=" << nx << " ny=" << ny << " nidx=" << nidx << endl;
+                        if(nx >=0 && nx < n && ny >=0 && ny < m && board[nx][ny] == 'O')
+                        {
+                            int rootc = find(father, idx);
+                            int rootn = find(father, nidx);
+                            //cout << "i=" <<i << "j=" <<j << " rootc=" << rootc << " rootn=" << rootn;
+                            if(rootc != rootn)
+                            {
+                                if(rootc < rootn)
+                                {
+                                    father[rootc] = rootn;
+                                }
+                                else
+                                {
+                                    father[rootn] = rootc;
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+                
+            }
+        }
+        
+        cout << "finish\n";
+        //now go through all the points in father, whose root is not dummy, mark it as X
+        for(auto node : father)
+        {
+            if(find(father, node.first) == dummy)
+            {
+                continue;
+            }
+            
+            int x = node.first/m;
+            int y = node.first%m;
+            cout << "x=" << x << " y=" << y << endl;
+            board[x][y] = 'X';
+        }
+    }
+    
+    int find(unordered_map<int, int>& father, int idx)
+    {
+        int pa = father[idx];
+        while(pa != father[pa])
+        {
+            pa = father[pa];
+        }
+        
+        int root = pa;
+        pa = idx;
+        while(pa != father[pa])
+        {
+            int tmp = father[pa];
+            father[pa] = root;
+            pa = tmp;
+        }
+        
+        return root;
+    }
+};
