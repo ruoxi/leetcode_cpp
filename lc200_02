@@ -1,0 +1,103 @@
+200. Number of Islands   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 80040
+Total Submissions: 249679
+Difficulty: Medium
+Contributors: Admin
+Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example 1:
+
+11110
+11010
+11000
+00000
+Answer: 1
+
+Example 2:
+
+11000
+11000
+00100
+00011
+Answer: 3
+
+//Union find
+
+//Runtime: average O(nm)
+//Space: O(nm)
+
+
+class Solution {
+public:
+    //union find, add grid[i][j] == 1 to father[idx] = idx
+    //then check its neighbor, if it is in father array, union
+    vector<int> dx = {-1, 0};
+    vector<int> dy = {0, -1};
+    
+    int find(unordered_map<int, int>& father, int idx)
+    {
+        int pa = father[idx];
+        
+        while(pa != father[pa])
+        {
+            pa = father[pa];
+        }
+        
+        int root = pa;
+        pa = idx;
+        
+        while(father[pa] != pa)
+        {
+            int tmp = father[pa];
+            father[pa] = root;
+            pa = tmp;
+        }
+        
+        return root;
+    }
+    
+    int numIslands(vector<vector<char>>& grid) {
+        if(grid.empty() || grid.at(0).empty()) return 0;
+        
+        unordered_map<int, int> father;
+        
+        int n = grid.size();
+        int m = grid.at(0).size();
+        
+        int res = 0;
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                if(grid[i][j] == '1')
+                {
+                    res++;
+                    int idx = i*m+j;
+                    father[idx] = idx;
+                    
+                    //check neighbor to see if need to union
+                    for(int l = 0; l < 2; l++)
+                    {
+                        int nx = i+dx[l];
+                        int ny = j + dy[l];
+                        int nidx = nx*m+ny;
+                        if(nx >=0 && nx < n && ny>=0 && ny <m && grid[nx][ny] == '1')
+                        {
+                            int root_cur = find(father, idx);
+                            int root_n = find(father, nidx);
+                            
+                            if(root_cur != root_n)
+                            {
+                                res--;
+                                father[root_cur] = root_n;
+                            }
+                            
+                        }
+                    }
+                }
+            }
+        }
+        
+        return res;
+    }
+};
