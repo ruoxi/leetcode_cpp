@@ -1,0 +1,83 @@
+23. Merge k Sorted Lists   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 121646
+Total Submissions: 471865
+Difficulty: Hard
+Contributors: Admin
+Merge k sorted linked lists and return it as one sorted list. Analyze and describe its complexity.
+
+//Divide and Conquer
+
+//Runtime: O(nlogn)
+//Space: O(1);
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    //reuse merge two linked list
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if(lists.empty()) return NULL;
+        
+        return helper(lists, 0, lists.size()-1);
+    }
+    
+    ListNode* helper(vector<ListNode*>& lists, int start, int end)
+    {
+        if(start == end) return lists[start];
+        
+        int mid = start + (end-start)/2;
+        
+        ListNode* left = helper(lists, start, mid);
+        ListNode* right = helper(lists, mid+1, end);
+        
+        return mergeTwoLists(left, right);
+    }
+    
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2)
+    {
+        if(l1 == NULL) return l2;
+        if(l2 == NULL) return l1;
+        
+        ListNode dummy(-1);
+        ListNode* prev = &dummy;
+        
+        while(l1 != NULL && l2 != NULL)
+        {
+            ListNode* cur = NULL;
+            if(l1->val < l2->val)
+            {
+                cur = l1;
+                l1 = l1->next;
+            }
+            else
+            {
+                cur = l2;
+                l2 = l2->next;
+            }
+            
+            prev->next = cur;
+            prev = prev->next;
+            cur->next = NULL;
+        }
+        
+        if(l1 != NULL)
+        {
+            prev->next = l1;
+        }
+        
+        if(l2 != NULL)
+        {
+            prev->next = l2;
+        }
+        
+        return dummy.next;
+        
+    }
+};
