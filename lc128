@@ -1,0 +1,91 @@
+128. Longest Consecutive Sequence   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 88093
+Total Submissions: 250518
+Difficulty: Hard
+Contributors: Admin
+Given an unsorted array of integers, find the length of the longest consecutive elements sequence.
+
+For example,
+Given [100, 4, 200, 1, 3, 2],
+The longest consecutive elements sequence is [1, 2, 3, 4]. Return its length: 4.
+
+Your algorithm should run in O(n) complexity.
+
+class Solution {
+public:
+    //union find
+    //the neighbors are in the same connected component
+    //store the number of nodes in same component to cnt[root]
+    int longestConsecutive(vector<int>& nums) {
+        
+        if(nums.empty()) return 0;
+        
+        int n = nums.size();
+        
+        unordered_map<int, int> father;
+        unordered_map<int, int> cnt;
+        
+        for(int i = 0; i < nums.size(); i++)
+        {
+            int cur = nums[i];
+            if(father.find(nums[i]) != father.end()) continue;
+            
+            father[cur] = cur;
+            cnt[cur] = 1;
+            //check lower and upper
+            if(father.find(cur-1) !=father.end())
+            {
+                int rootl = find(father, cur-1);
+                int rootc = find(father, cur);
+                
+                if(rootl != rootc)
+                {
+                    father[rootc] = rootl;
+                    cnt[rootl] += cnt[rootc];
+                }
+            }
+            
+            if(father.find(cur+1) != father.end())
+            {
+                int rootr = find(father, cur+1);
+                int rootc = find(father, cur);
+                if(rootr != rootc)
+                {
+                    father[rootc] = rootr;
+                    cnt[rootr] += cnt[rootc];
+                }
+            }
+        }
+        
+        
+        //get max cnt on root
+        int res = 1;
+        for(auto node : father)
+        {
+            int root = find(father, node.first);
+            res = max(res, cnt[root]);
+        }
+        
+        return res;
+    }
+    
+    int find(unordered_map<int, int>& father, int a)
+    {
+        int pa = father[a];
+        while(pa != father[pa])
+        {
+            pa = father[pa];
+        }
+        
+        int roota = pa;
+        pa = a;
+        while(pa != father[pa])
+        {
+            int tmp = father[pa];
+            father[pa] = roota;
+            pa = tmp;
+        }
+        
+        return roota;
+    }
+};
