@@ -1,0 +1,87 @@
+200. Number of Islands   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 80041
+Total Submissions: 249683
+Difficulty: Medium
+Contributors: Admin
+Given a 2d grid map of '1's (land) and '0's (water), count the number of islands. An island is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+Example 1:
+
+11110
+11010
+11000
+00000
+Answer: 1
+
+Example 2:
+
+11000
+11000
+00100
+00011
+Answer: 3
+
+Credits:
+Special thanks to @mithmatt for adding this problem and creating all test cases.
+
+//BFS
+//Runtime: O(NM)
+//Space: O(nm)
+class Solution {
+public:
+    //use bfs to mark the one in the same island
+    int numIslands(vector<vector<char>>& grid) {
+        if(grid.empty() || grid.at(0).empty()) return 0;
+        
+        int n = grid.size();
+        int m = grid.at(0).size();
+        vector<vector<bool>> visited(n, vector<bool>(m, false));
+        int res = 0;
+        
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                if(grid[i][j] == '1' && !visited[i][j])
+                {
+                    res++;
+                    bfs(grid, visited, i, j);
+                }
+            }
+        }
+        
+        return res;
+    }
+    
+    vector<int> dx = {1, -1, 0, 0};
+    vector<int> dy = {0, 0, 1, -1};
+    void bfs(vector<vector<char>>& grid, vector<vector<bool>>& visited, int x, int y)
+    {
+        queue<pair<int, int>> q;
+        q.push(make_pair(x, y));
+        visited[x][y] = true;
+        
+        int n = grid.size();
+        int m = grid.at(0).size();
+        
+        while(!q.empty())
+        {
+            int curx = q.front().first;
+            int cury = q.front().second;
+            q.pop();
+            
+            for(int i = 0; i < 4; i++)
+            {
+                int nx = curx + dx[i];
+                int ny = cury + dy[i];
+                
+                if(nx >=0 && nx < n && ny >=0 && ny < m && grid[nx][ny] == '1' && !visited[nx][ny])
+                {
+                    q.push(make_pair(nx, ny));
+                    visited[nx][ny] = true;
+                }
+            }
+        }
+        
+    }
+};
