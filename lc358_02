@@ -1,0 +1,99 @@
+358. Rearrange String k Distance Apart   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 6301
+Total Submissions: 19856
+Difficulty: Hard
+Contributors: Admin
+Given a non-empty string str and an integer k, rearrange the string such that the same characters are at least distance k from each other.
+
+All input strings are given in lowercase letters. If it is not possible to rearrange the string, return an empty string "".
+
+Example 1:
+str = "aabbcc", k = 3
+
+Result: "abcabc"
+
+The same letters are at least distance 3 from each other.
+Example 2:
+str = "aaabc", k = 3 
+
+Answer: ""
+
+It is not possible to rearrange the string.
+Example 3:
+str = "aaadbbcc", k = 2
+
+Answer: "abacabcd"
+
+Another possible answer is: "abcabcda"
+
+The same letters are at least distance 2 from each other.
+
+//这里是需要把出现次数最多的字母先放
+//所以用了max heap, sort based on frequency 
+//为了保证相同字母间隔是k，每次放从heap中拿k个不同的字母
+//如果heap中的字母数<k,那么就是invalid
+//这里需要用一个cache记录用过的字母及被update后的frequency
+
+class Solution {
+public:
+
+
+    string rearrangeString(string str, int k) {
+        if(str.empty() || k== 0) return str;
+        
+        int n = str.size();
+        
+        vector<int> cnt(26, 0);
+        
+        for(int i = 0; i < n; i++)
+        {
+            cnt[str[i]-'a']++;
+        }
+        
+        
+        priority_queue<pair<int, int>> pq;
+        
+        for(int i = 0; i < 26; i++)
+        {
+            if(cnt[i] ==0) continue;
+            
+            pq.push(make_pair(cnt[i], i));
+        }
+        
+        
+        string res = "";
+        int i = 0;
+        while(!pq.empty())
+        {
+            priority_queue<pair<int, int>> cache;
+            //add the char with most cnt first
+            //find the number of chars we can put for each iteration
+            int m = min(k, n);
+            
+            for(int i = 0; i < m; i++)
+            {
+                if(pq.empty()) return "";
+                pair<int, int> cur = pq.top();
+                pq.pop();
+                res += 'a'+cur.second;
+                cur.first--;
+                if(cur.first >0)
+                {
+                    cache.push(cur);
+                }
+                n--;
+                
+            }
+            
+            while(!cache.empty())
+            {
+                pq.push(cache.top());
+                cache.pop();
+            }
+            
+            
+            
+        }
+        return res;
+    }
+};
