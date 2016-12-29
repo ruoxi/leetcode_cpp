@@ -1,0 +1,69 @@
+128. Longest Consecutive Sequence   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 88093
+Total Submissions: 250518
+Difficulty: Hard
+Contributors: Admin
+Given an unsorted array of integers, find the length of the longest consecutive elements sequence.
+
+For example,
+Given [100, 4, 200, 1, 3, 2],
+The longest consecutive elements sequence is [1, 2, 3, 4]. Return its length: 4.
+
+Your algorithm should run in O(n) complexity.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+
+class Solution {
+public:
+    //use map to store numbers on the left of nums[i] and numbers on the right of nums[i]
+    //remember to update the boundary
+    int longestConsecutive(vector<int>& nums) {
+        if(nums.empty()) return 0;
+        
+        int n = nums.size();
+        int res = 1;
+        unordered_map<int, pair<int, int>> table;
+        
+        for(int i = 0; i < n; i++)
+        {
+            int cur = nums[i];
+            if(table.find(cur) != table.end()) continue;
+            
+            //check its left
+            int nleft = 0; 
+            if(table.find(cur-1) != table.end())
+            {
+                nleft = table[cur-1].first+1;
+            }
+            
+            int nright = 0;
+            if(table.find(cur+1) != table.end())
+            {
+                nright = table[cur+1].second+1;
+            }
+            
+            //update the boundary
+            int leftmost = cur-nleft;
+            int rightmost = cur+nright;
+            int diff = rightmost-leftmost;
+            if(nleft > 0)
+            {
+                table[leftmost].second = diff;
+            }
+            if(nright > 0)
+            {
+                table[rightmost].first = diff;
+            }
+            
+            res = max(res, nleft+nright+1);
+            table[cur] = make_pair(nleft, nright);
+            
+        }
+        
+        return res;
+    }
+};
