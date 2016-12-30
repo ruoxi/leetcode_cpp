@@ -20,6 +20,13 @@ Explanation: The maximum result is 5 ^ 25 = 28.
 //Runtime: O(n)
 //Space: O(n)
 
+//Idea: use 0 ^ bit to preserve bit
+//      use 1 ^ bit to find the xor of bit
+// 0^0 = 0
+// 0^1 = 1
+// 1^0 = 1
+// 1^1 = 0
+
 class Solution {
 public:
     class TrieNode
