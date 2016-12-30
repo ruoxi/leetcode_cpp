@@ -1,0 +1,135 @@
+307. Range Sum Query - Mutable   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 25187
+Total Submissions: 136613
+Difficulty: Medium
+Contributors: Admin
+Given an integer array nums, find the sum of the elements between indices i and j (i ≤ j), inclusive.
+
+The update(i, val) function modifies nums by updating the element at index i to val.
+Example:
+Given nums = [1, 3, 5]
+
+sumRange(0, 2) -> 9
+update(1, 2)
+sumRange(0, 2) -> 8
+Note:
+The array is only modifiable by the update function.
+You may assume the number of calls to update and sumRange function is distributed evenly.
+
+
+//use segment tree
+//segment tree properties: full binary tree, height = ceil(log2(n)) where n = input.size()
+//                        #of leaves = n; # of internal nodes = n-1; total # of nodes in segment tree is 2n-1
+//Runtime: Construct tree: O(n); Update: O(logn); Query: O(logn)
+//Space: worst case O(4n), => O(n)
+
+//注意:需要保存 n = input.size();
+//之后update, query 时所用的startRange, endRange 是 [0，n-1], 不是segmentTree.size()-1;
+
+class NumArray {
+public:
+    NumArray(vector<int> &nums) {
+        if(nums.empty()) return;
+        //construct segTree
+        int n = nums.size();
+        this->n = n;
+        int h = ceil(log2(n));
+        
+        int m = 2*pow(2, h) -1;
+        //cout << "segTree size=" << m << endl;
+        segTree.assign(m, 0);
+        
+        constructSegmentTree(nums, 0, n-1 , 0);
+        //cout << "construct tree done\n";
+    }
+    
+    void constructSegmentTree(vector<int>& nums, int low, int high, int pos)
+    {
+        if(low > high) return;
+        
+        if(low == high)
+        {
+            segTree[pos] = nums[low];
+            return;
+        }
+        
+        int mid = low + (high - low)/2;
+        
+        constructSegmentTree(nums, low, mid, pos*2+1);
+        constructSegmentTree(nums, mid+1, high, pos*2+2);
+        
+        //cout << "pos=" << pos << " sum =" << segTree[pos*2+1] + segTree[pos*2+2]<< endl;
+        segTree[pos] = segTree[pos*2+1] + segTree[pos*2+2];
+    }
+
+    void update(int i, int val) {
+        updateSegmentTree(0, n-1, i, val, 0);
+    }
+    
+    
+    void updateSegmentTree(int startRange, int endRange, int idx, int val, int pos)
+    {
+        if(startRange > endRange) return;
+        
+        //check if not overlap
+        if(idx < startRange || idx > endRange)
+        {
+            return;
+        }
+        
+        //check if total overlap
+        if(startRange == idx && endRange == idx)
+        {
+            //cout << "update pos=" << pos <<" to value=" << val << endl;
+            segTree[pos] = val;
+            return;
+        }
+        
+        //if idx is within range, need to check both left and right
+        int mid = startRange + (endRange - startRange)/2;
+        updateSegmentTree(startRange, mid, idx, val, pos*2+1);
+        updateSegmentTree(mid+1, endRange, idx, val, pos*2+2);
+        //cout << "update pos=" <<pos << " value=" <<  segTree[pos*2+1] + segTree[pos*2+2] << endl;
+        segTree[pos] = segTree[pos*2+1] + segTree[pos*2+2];
+    }
+
+    int sumRange(int i, int j) {
+        return querySumSegmentTree(i, j, 0, n-1, 0);   
+    }
+    
+    //qlow and qhigh are the range we want to query
+    int querySumSegmentTree(int qlow, int qhigh, int startRange, int endRange, int pos)
+    {
+        if(startRange > endRange) return 0;
+        
+        //if no overlap
+        if(qhigh < startRange || qlow > endRange)
+        {
+            return 0;
+        }
+        
+        //if total overlap, means [startRange, endRange] falls within [qlow, qhigh]
+        if(qlow <= startRange && qhigh >= endRange)
+        {
+            return segTree[pos];
+        }
+        
+        //if partial overlap, need to check left and right
+        int mid = startRange + (endRange - startRange)/2;
+        int left = querySumSegmentTree(qlow, qhigh, startRange, mid, pos*2+1);
+        int right = querySumSegmentTree(qlow, qhigh, mid+1, endRange, pos*2+2);
+        
+        return left+right;
+        
+    }
+    
+    vector<int> segTree;
+    int n;
+};
+
+
+// Your NumArray object will be instantiated and called as such:
+// NumArray numArray(nums);
+// numArray.sumRange(0, 1);
+// numArray.update(1, 10);
+// numArray.sumRange(1, 2);
