@@ -1,0 +1,143 @@
+336. Palindrome Pairs   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 18202
+Total Submissions: 74373
+Difficulty: Hard
+Contributors: Admin
+Given a list of unique words, find all pairs of distinct indices (i, j) in the given list, so that the concatenation of the two words, i.e. words[i] + words[j] is a palindrome.
+
+Example 1:
+Given words = ["bat", "tab", "cat"]
+Return [[0, 1], [1, 0]]
+The palindromes are ["battab", "tabbat"]
+Example 2:
+Given words = ["abcd", "dcba", "lls", "s", "sssll"]
+Return [[0, 1], [1, 0], [3, 2], [2, 4]]
+The palindromes are ["dcbaabcd", "abcddcba", "slls", "llssssll"]
+
+
+class Solution {
+public:
+
+    class TrieNode
+    {
+    public:
+        vector<TrieNode*> children;
+        bool isword;
+        int index;
+        vector<int> palinList;
+        TrieNode()
+        {
+            children.assign(26, NULL);
+            isword = false;
+            index=-1;
+        }
+    };
+    vector<vector<int>> palindromePairs(vector<string>& words) {
+        if(words.empty()) return vector<vector<int>>();
+        
+        int n = words.size();
+        
+        TrieNode* root = buildTrie(words);
+        
+        //check parlindrome
+        vector<vector<int>> res;
+        
+        for(int i = 0; i < words.size(); i++)
+        {
+            string word = words[i];
+            //check the trie from the end of word
+            checkTrie(root, word, i, res);
+            
+        }
+        
+        return res;
+    }
+    
+    
+    void checkTrie(TrieNode* root, string& word, int wordIndex, vector<vector<int>>& res)
+    {
+        
+        //if word is longer than trie path
+        for(int i = word.length()-1; i>=0; i--)
+        {
+            if(root->index != -1 && root->index != wordIndex && ispalindrome(word, 0, i))
+            {
+                vector<int> sol = {root->index, wordIndex};
+                res.push_back(sol);
+            }
+            
+            root = root->children[word[i]-'a'];
+            
+            if(root == NULL)
+            {
+                return;
+            }
+        }
+        
+        
+        //word end, check the rest trie is palindrome or not
+        //if it is the last trie node of a word, add it to res
+        //if the rest are palindrome 
+        for(auto k : root->palinList)
+        {
+            if(k == wordIndex) continue;
+            res.push_back({k, wordIndex});
+        }
+        
+    }
+    
+    TrieNode* buildTrie(vector<string>& words)
+    {
+        int n = words.size();
+        TrieNode* root = new TrieNode();
+        
+        for(int i = 0; i < n; i++)
+        {
+            //if(words[i].empty()) continue;
+            string word = words[i];
+            int m = word.length();
+            TrieNode* prev = root;
+            for( int j = 0; j < m; j++)
+            {
+                if(prev->children[word[j]-'a'] == NULL)
+                {
+                    prev->children[word[j] - 'a'] = new TrieNode();
+                }
+                //if word[j...m-1] is palindrome
+                if(ispalindrome(word, j, m-1))
+                {
+                    prev->palinList.push_back(i);
+                }
+                prev = prev->children[word[j]-'a'];
+                
+                
+            }
+            
+            prev->isword = true;
+            prev->index = i;
+            prev->palinList.push_back(i);
+
+        }
+        
+        return root;
+    }
+    
+    
+    bool ispalindrome(string& s, int i, int j)
+    {
+        if(s.empty()) return true;
+        if(i == j) return true;
+        
+        while(i < j)
+        {
+            if(s[i] != s[j])
+            {
+                return false;
+            }
+            i++;
+            j--;
+        }
+        
+        return true;
+    }
+};
