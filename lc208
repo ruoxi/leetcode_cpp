@@ -1,0 +1,95 @@
+208. Implement Trie (Prefix Tree)   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 59246
+Total Submissions: 231474
+Difficulty: Medium
+Contributors: Admin
+Implement a trie with insert, search, and startsWith methods.
+
+Note:
+You may assume that all inputs are consist of lowercase letters a-z.
+
+//Runtime: search and insert O(n) where n is length of word
+
+
+class TrieNode {
+public:
+    // Initialize your data structure here.
+    TrieNode() {
+
+        children.assign(26, NULL);
+        isword = false;
+
+    }
+    vector<TrieNode*> children;
+    bool isword;
+};
+
+class Trie {
+public:
+    Trie() {
+        root = new TrieNode();
+    }
+
+    // Inserts a word into the trie.
+    void insert(string word) {
+        if(word.empty()) return;
+        TrieNode* prev = root;
+        int n = word.length();
+        for(int i = 0; i < n; i++)
+        {
+            char c = word[i];
+            if(prev->children[c-'a'] == NULL)
+            {
+                prev->children[c-'a'] = new TrieNode();
+            }
+            prev = prev->children[c-'a'];
+        }
+        
+        prev->isword = true;
+    }
+
+    // Returns if the word is in the trie.
+    bool search(string word) {
+        if(word.empty()) return true;
+        
+        TrieNode* prev = find(word);
+        
+        return prev!= NULL && prev->isword;
+    }
+
+    // Returns if there is any word in the trie
+    // that starts with the given prefix.
+    bool startsWith(string prefix) {
+        if(prefix.empty()) return true;
+        
+        TrieNode* prev = find(prefix);
+        
+        return prev != NULL;
+    }
+
+
+    TrieNode* find(string word)
+    {
+        int n = word.length();
+        TrieNode* prev = root;
+        for(int i = 0; i < n; i++)
+        {
+            char c = word[i];
+            if(prev->children[c-'a'] == NULL)
+            {
+                return NULL;
+            }
+            prev = prev->children[c-'a'];
+        }
+        
+        return prev;
+    }
+    
+private:
+    TrieNode* root;
+};
+
+// Your Trie object will be instantiated and called as such:
+// Trie trie;
+// trie.insert("somestring");
+// trie.search("key");
