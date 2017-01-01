@@ -1,0 +1,116 @@
+212. Word Search II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 35186
+Total Submissions: 158870
+Difficulty: Hard
+Contributors: Admin
+Given a 2D board and a list of words from the dictionary, find all words in the board.
+
+Each word must be constructed from letters of sequentially adjacent cell, where "adjacent" cells are those horizontally or vertically neighboring. The same letter cell may not be used more than once in a word.
+
+For example,
+Given words = ["oath","pea","eat","rain"] and board =
+
+[
+  ['o','a','a','n'],
+  ['e','t','a','e'],
+  ['i','h','k','r'],
+  ['i','f','l','v']
+]
+Return ["eat","oath"].
+
+
+
+class Solution {
+public:
+
+
+    class TrieNode
+    {
+    public:
+        vector<TrieNode*> children;
+        bool isword;
+        string str;
+        TrieNode()
+        {
+            children.assign(26, NULL);
+            isword = false;
+            str = "";
+        }
+    };
+    vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
+        if(words.empty() ) return vector<string>();
+        if(board.empty() || board.at(0).empty()) return vector<string>();
+        
+        //first build a trie for input words
+        TrieNode* root = buildTrie(words);
+        
+        //then do dfs in board
+        set<string> res;
+        int n = board.size();
+        int m = board.at(0).size();
+        vector<vector<bool>> visited(n, vector<bool>(m, false));
+        
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                dfs(board, visited, root, i, j, res);
+            }
+        }
+        
+        return vector<string>(res.begin(), res.end());
+        
+    }
+    
+    void dfs(vector<vector<char>>& board, vector<vector<bool>>& visited, TrieNode* node, int x, int y, set<string>& res)
+    {
+        int n = board.size();
+        int m = board.at(0).size();
+        
+        if(node->isword)
+        {
+            res.insert(node->str);
+        }
+        if(x <0 || x>=n || y<0 || y>=m || visited[x][y]) return;
+        
+        if(node->children[board[x][y]-'a'] == NULL) return;
+        
+        visited[x][y] = true;
+        //check neighbor
+        node = node->children[board[x][y] - 'a'];
+        
+        dfs(board, visited, node, x+1, y, res);
+        dfs(board, visited, node, x-1, y, res);
+        dfs(board, visited, node, x, y+1, res);
+        dfs(board, visited, node, x, y-1, res);
+        
+        
+        visited[x][y] = false;
+        
+    }
+    
+    TrieNode* buildTrie(vector<string>& words)
+    {
+        int n = words.size();
+        TrieNode* root = new TrieNode();
+        
+        for(int i = 0; i < n; i++)
+        {
+            string word = words[i];
+            int m = word.length();
+            TrieNode* prev = root;
+            for(int j = 0; j < m; j++)
+            {
+                if(prev->children[word[j]-'a'] == NULL)
+                {
+                    prev->children[word[j]-'a'] = new TrieNode();
+                }
+                
+                prev = prev->children[word[j]-'a'];
+            }
+            prev->isword = true;
+            prev->str = word;
+        }
+        return root;
+    }
+};
