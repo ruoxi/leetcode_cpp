@@ -1,0 +1,92 @@
+336. Palindrome Pairs   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 18202
+Total Submissions: 74373
+Difficulty: Hard
+Contributors: Admin
+Given a list of unique words, find all pairs of distinct indices (i, j) in the given list, so that the concatenation of the two words, i.e. words[i] + words[j] is a palindrome.
+
+Example 1:
+Given words = ["bat", "tab", "cat"]
+Return [[0, 1], [1, 0]]
+The palindromes are ["battab", "tabbat"]
+Example 2:
+Given words = ["abcd", "dcba", "lls", "s", "sssll"]
+Return [[0, 1], [1, 0], [3, 2], [2, 4]]
+The palindromes are ["dcbaabcd", "abcddcba", "slls", "llssssll"]
+
+Runtime: O(n*k^2) where k is average length of words
+Space: O(n)
+
+class Solution {
+public:
+    //把所有的word放入set, 以方便之后查询
+    //然后对于每一个word, eg, abcd, 取0...j长度的substr, reverse之后，看他是否在set中
+    //如果在的话，需要看剩下的[j+1...n]是否是回文，是的话两个单词合起来是valid结果
+    vector<vector<int>> palindromePairs(vector<string>& words) {
+        
+        if(words.empty()) return vector<vector<int>>();
+        
+        int n = words.size();
+        
+        unordered_map<string, int> dict;
+        for(int i = 0; i < n; i++)
+        {
+            dict[words[i]] = i;
+        }
+        
+        vector<vector<int>> res;
+        
+        for(int i = 0; i < n; i++)
+        {
+            string word = words[i];
+            int m = word.length();
+            for(int j = 0; j <= m; j++)
+            {
+                string str1 = word.substr(0, j);
+                string str2 = word.substr(j);
+  
+                //if first part is palindorme                
+                if(ispalindrome(word, 0, j-1))
+                {
+                    string str2rev = str2;
+                    reverse(str2rev.begin(), str2rev.end());
+                    
+                    //check if it is in dict
+                    if(dict.find(str2rev) != dict.end() && dict[str2rev] != i)
+                    {
+                        res.push_back({dict[str2rev], i});
+                    }
+                }
+                
+                if(ispalindrome(word,j, m-1))
+                {
+                    string str1rev = str1;
+                    reverse(str1rev.begin(), str1rev.end());
+                    if(dict.find(str1rev) != dict.end() && dict[str1rev] != i && str2.length() != 0)
+                    {
+                        res.push_back({i, dict[str1rev]});
+                    }
+                }
+            }
+                
+        }
+        
+        return res;
+        
+    }
+    
+    bool ispalindrome(string& word, int s, int e)
+    {
+        //cout << "word=" << word << " s=" << s << " e=" << e << endl;
+        while(s < e)
+        {
+            if(word[s] != word[e])
+            {
+               return false;
+            }
+            s++;
+            e--;
+        }
+        return true;
+    }
+};
