@@ -18,7 +18,7 @@ What if elements of nums2 are stored on disk, and the memory is limited such tha
 Show Tags
 Show Similar Problems
 
-//Runtime: o(nlogn)
+//Runtime: o(max(n,m)log(max(n,m))
 //Space : O(1)
 
 
