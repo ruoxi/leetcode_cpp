@@ -1,0 +1,32 @@
+344. Reverse String   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 118888
+Total Submissions: 206674
+Difficulty: Easy
+Contributors: Admin
+Write a function that takes a string as input and returns the string reversed.
+
+Example:
+Given s = "hello", return "olleh".
+
+
+class Solution {
+public:
+    string reverseString(string s) {
+        if(s.empty()) return s;
+        
+        int n = s.length();
+        
+        int left = 0, right = n-1;
+        
+        while(left < right)
+        {
+            char tmp = s[left];
+            s[left] = s[right];
+            s[right] = tmp;
+            left++;
+            right--;
+        }
+        
+        return s;
+    }
+};
