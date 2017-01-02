@@ -16,7 +16,7 @@ Show Tags
 Show Similar Problems
 
 //Two pointers
-//Runtime : O(nlogn)
+//Runtime : O(max(n,m)log(max(n,m)))
 //Space: o(1)
 
 class Solution {
