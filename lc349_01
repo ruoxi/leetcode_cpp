@@ -16,7 +16,7 @@ Show Tags
 Show Similar Problems
 
 //Hashtable
-//runtime: O(max(n, m))
+//runtime: O(n+m)
 //Space: O(n)
 
 class Solution {
