@@ -1,0 +1,86 @@
+234. Palindrome Linked List   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 80851
+Total Submissions: 256515
+Difficulty: Easy
+Contributors: Admin
+Given a singly linked list, determine if it is a palindrome.
+
+Follow up:
+Could you do it in O(n) time and O(1) space?
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isPalindrome(ListNode* head) {
+        
+        if(head == NULL || head->next == NULL) return true;
+        
+        //find mid point
+        ListNode dummy(-1);
+        dummy.next = head;
+        
+        ListNode* middle = findMiddle(&dummy);
+        
+        ListNode dummyhalf(-1);
+        dummyhalf.next = middle->next;
+        middle->next = NULL;
+        
+        reverseList(&dummyhalf);
+        
+        //now compare first half and second half
+        ListNode* first = dummy.next;
+        ListNode* second = dummyhalf.next;
+        
+        while(first != NULL && second != NULL)
+        {
+            if(first->val != second->val)
+            {
+                return false;
+            }
+            first = first->next;
+            second = second->next;
+        }
+        
+        
+        return true;
+    }
+    
+    ListNode* findMiddle(ListNode* head)
+    {
+        ListNode* fast = head;
+        ListNode* slow = head;
+        
+        while(fast != NULL && fast->next != NULL)
+        {
+            fast = fast->next->next;
+            slow = slow->next;
+        }
+        
+        return slow;
+        
+    }
+    
+    void reverseList(ListNode* head)
+    {
+        //reverse the second half then compare to the first half
+        ListNode* prev = head;
+        ListNode* cur = prev->next;
+        
+        while(cur->next != NULL)
+        {
+            ListNode* move = cur->next;
+            cur->next = move->next;
+            move->next = prev->next;
+            prev->next = move;
+        }
+        
+    }
+};
