@@ -1,0 +1,50 @@
+28. Implement strStr()   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 149336
+Total Submissions: 555750
+Difficulty: Easy
+Contributors: Admin
+Implement strStr().
+
+Returns the index of the first occurrence of needle in haystack, or -1 if needle is not part of haystack.
+
+
+class Solution {
+public:
+    int strStr(string haystack, string needle) {
+        
+        if(haystack.empty() && needle.empty()) return 0;
+        
+        if(haystack.empty()) return -1;
+        if(needle.empty()) return 0;
+        if(haystack.size() < needle.size()) return -1;
+        
+        int n = haystack.size();
+        int m = needle.size();
+        
+        int pos = 0;
+        
+        for(int i = 0; i < n; i++)
+        {
+            
+            if(haystack[i] == needle[pos])
+            {
+                while(i+pos < n && pos < m && haystack[i+pos] == needle[pos])
+                {
+                    pos++;
+                }
+                
+                if(pos == m) return i;
+                
+                //note: need to add this to make sure it can terminate earlier
+                if(i+pos >=n) return -1;
+                else pos = 0;
+            }
+            
+        }
+        
+       return -1;
+       
+       
+        
+    }
+};
