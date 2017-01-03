@@ -1,0 +1,54 @@
+345. Reverse Vowels of a String   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 59072
+Total Submissions: 158677
+Difficulty: Easy
+Contributors: Admin
+Write a function that takes a string as input and reverse only the vowels of a string.
+
+Example 1:
+Given s = "hello", return "holle".
+
+Example 2:
+Given s = "leetcode", return "leotcede".
+
+Note:
+The vowels does not include the letter "y".
+
+//Runtime:O(n)
+//Space:O(1)
+
+class Solution {
+public:
+    string reverseVowels(string s) {
+        if(s.empty()) return s;
+    
+        
+        vector<int> dict(256, 0);
+        dict['a'] = 1; dict['A'] = 1;
+        dict['e'] = 1; dict['E'] = 1;
+        dict['i'] = 1; dict['I'] = 1;
+        dict['o'] = 1; dict['O'] = 1;
+        dict['u'] = 1; dict['U'] = 1;
+        
+        int left = 0, right = s.length()-1;
+        
+        while(left < right)
+        {
+            while(left < right && dict[s[left]] ==0)
+            {
+                left++;
+            }
+            
+            while(left < right && dict[s[right]] == 0)
+            {
+                right--;
+            }
+            
+            swap(s[left], s[right]);
+            left++;
+            right--;
+        }
+        
+        return s;
+    }
+};
