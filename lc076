@@ -1,0 +1,70 @@
+76. Minimum Window Substring   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 84686
+Total Submissions: 357091
+Difficulty: Hard
+Contributors: Admin
+Given a string S and a string T, find the minimum window in S which will contain all the characters in T in complexity O(n).
+
+For example,
+S = "ADOBECODEBANC"
+T = "ABC"
+Minimum window is "BANC".
+
+Note:
+If there is no such window in S that covers all characters in T, return the empty string "".
+
+If there are multiple such windows, you are guaranteed that there will always be only one unique minimum window in S.
+
+
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        if(s.empty()) return s;
+        if(t.empty()) return t;
+        
+        int n = s.length();
+        int m = t.length();
+        
+        vector<int> dict(256, 0);
+        
+        for(int i = 0; i <m; i++)
+        {
+            dict[t[i]]++;
+        }
+        
+        int j = 0;
+        int minlen = n+1;
+        string res = "";
+        int cnt = m;
+        for(int i = 0; i < n; i++)
+        {
+            while(j < n && cnt >0)
+            {
+                if(dict[s[j]] > 0)
+                {
+                    cnt--;
+                }
+                dict[s[j]]--;
+                
+                j++;
+                
+            }
+            //cout << "j=" << j << " cnt=" << cnt << endl;
+            //check if cnt== 0
+            if(cnt == 0)
+            {
+                if(minlen > j-i)
+                {
+                    minlen = j-i;
+                    res = s.substr(i, j-i);
+                }
+            }
+            
+            //move left
+            dict[s[i]]++;
+            if(dict[s[i]] > 0) cnt++;
+        }
+        
+        return res;
+    }
+};
