@@ -1,0 +1,55 @@
+142. Linked List Cycle II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 98420
+Total Submissions: 315731
+Difficulty: Medium
+Contributors: Admin
+Given a linked list, return the node where the cycle begins. If there is no cycle, return null.
+
+Note: Do not modify the linked list.
+
+Follow up:
+Can you solve it without using extra space?
+
+Show Tags
+Show Similar Problems
+
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    //fast slow pointers
+    ListNode *detectCycle(ListNode *head) {
+        if(head == NULL || head->next == NULL) return NULL;
+        
+        ListNode* fast = head;
+        ListNode* slow = head;
+        
+        while(fast != NULL && fast->next != NULL)
+        {
+            fast = fast->next->next;
+            slow = slow->next;
+            if(fast == slow) break;
+        }
+        
+        if(fast == NULL || fast->next == NULL) return NULL;
+        
+        //move fast to head
+        fast = head;
+        
+        while(fast != slow)
+        {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        
+        return slow;
+    }
+};
