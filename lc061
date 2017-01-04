@@ -1,0 +1,77 @@
+61. Rotate List   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 92088
+Total Submissions: 383576
+Difficulty: Medium
+Contributors: Admin
+Given a list, rotate the list to the right by k places, where k is non-negative.
+
+For example:
+Given 1->2->3->4->5->NULL and k = 2,
+return 4->5->1->2->3->NULL.
+
+Show Tags
+Show Similar Problems
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+
+    int getLength(ListNode* head)
+    {
+        int res = 0;
+        ListNode* cur = head;
+        while(cur != NULL)
+        {
+            cur = cur->next;
+            res++;
+        }
+        
+        return res;
+        
+    }
+    ListNode* rotateRight(ListNode* head, int k) {
+        if(head == NULL || head->next == NULL) return head;
+        
+        int n = getLength(head);
+        
+        k = k%n;
+        
+        if(k == 0) return head;
+        //find the last k-1th node
+        ListNode dummy(-1);
+        dummy.next = head;
+        
+        ListNode* fast = &dummy;
+        ListNode* slow = &dummy;
+        
+        for(int i = 0; i <k; i++)
+        {
+            fast = fast->next;
+        }
+        
+        while(fast != NULL && fast->next != NULL)
+        {
+            fast = fast->next;
+            slow = slow->next;
+        }
+        
+        //cout << "fast=" << fast->val << " slow=" << slow->val << endl;
+        //now slow points to last k-1th node and fast points to the last node
+        //move last kth to last node to front
+        ListNode* prev = &dummy;
+        fast->next = prev->next;
+        prev->next = slow->next;
+        slow->next = NULL;
+        
+        return dummy.next;
+        
+    }
+};
