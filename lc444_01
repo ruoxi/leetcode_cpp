@@ -1,0 +1,98 @@
+444. Sequence Reconstruction   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 3052
+Total Submissions: 14589
+Difficulty: Medium
+Contributors: Stomach_ache
+Check whether the original sequence org can be uniquely reconstructed from the sequences in seqs. The org sequence is a permutation of the integers from 1 to n, with 1 ≤ n ≤ 104. Reconstruction means building a shortest common supersequence of the sequences in seqs (i.e., a shortest sequence so that all sequences in seqs are subsequences of it). Determine whether there is only one sequence that can be reconstructed from seqs and it is the org sequence.
+
+Example 1:
+
+Input:
+org: [1,2,3], seqs: [[1,2],[1,3]]
+
+Output:
+false
+
+Explanation:
+[1,2,3] is not the only one sequence that can be reconstructed, because [1,3,2] is also a valid sequence that can be reconstructed.
+Example 2:
+
+Input:
+org: [1,2,3], seqs: [[1,2]]
+
+Output:
+false
+
+Explanation:
+The reconstructed sequence can only be [1,2].
+Example 3:
+
+Input:
+org: [1,2,3], seqs: [[1,2],[1,3],[2,3]]
+
+Output:
+true
+
+Explanation:
+The sequences [1,2], [1,3], and [2,3] can uniquely reconstruct the original sequence [1,2,3].
+Example 4:
+
+Input:
+org: [4,1,5,2,6,3], seqs: [[5,2,6,3],[4,1,5,2]]
+
+Output:
+true
+
+//Runtime: O(max(n, mk)) n is size of org, m*k is number of nodes in seqs
+//Space: O(n)
+
+class Solution {
+public:
+    //to make sure it is unique, this graph needs to be a directed acyclic graph 
+    // If a Hamiltonian path exists, the topological sort order is unique;
+    // Hamiltonian path (or traceable path) is a path in an undirected or directed graph that visits each vertex exactly once.
+    //this means any adjecent pairs in org needs to appear in seqs
+    bool sequenceReconstruction(vector<int>& org, vector<vector<int>>& seqs) {
+        
+        if(seqs.empty()) return false;
+        
+        int n = org.size();
+        vector<int> pos(n+1, 0); //this gives map from org[i] to position
+        
+        for(int i = 0; i < n; i++)
+        {
+            pos[org[i]] = i;
+        }
+        
+        //then we iterate through the seqs, and check the adjcent pairs 
+        int toMatch = n-1; // in org, there are n-1 pairs need to be checked
+        vector<bool> checked(n+1, false);
+        for(int i = 0; i < seqs.size(); i++)
+        {
+            for(int j = 0; j < seqs[i].size(); j++)
+            {
+                //remember boundary check
+                if(seqs[i][j] <=0 || seqs[i][j] > n) return false;
+                if(j == 0) continue;
+                
+                int first = seqs[i][j-1];
+                int second = seqs[i][j];
+                
+                if(first >n || second >n) return false;
+                
+                //这里有可能first和second在org中不是相邻的， 那么只要保证pos[first] < pos[second]那么order就正确
+                if(pos[first] >= pos[second]) return false;
+                
+                if(!checked[first] && pos[first]+1 == pos[second])
+                {
+                    checked[first] = true;
+                    toMatch--;
+                }
+                
+            }
+        }
+        
+        return toMatch == 0;
+        
+    }
+};
