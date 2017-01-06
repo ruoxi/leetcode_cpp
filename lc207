@@ -1,0 +1,86 @@
+207. Course Schedule   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 65685
+Total Submissions: 216375
+Difficulty: Medium
+Contributors: Admin
+There are a total of n courses you have to take, labeled from 0 to n - 1.
+
+Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
+
+Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
+
+For example:
+
+2, [[1,0]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0. So it is possible.
+
+2, [[1,0],[0,1]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+Note:
+The input prerequisites is a graph represented by a list of edges, not adjacency matrices. Read more about how a graph is represented.
+
+click to show more hints.
+
+Hints:
+This problem is equivalent to finding if a cycle exists in a directed graph. If a cycle exists, no topological ordering exists and therefore it will be impossible to take all courses.
+Topological Sort via DFS - A great video tutorial (21 minutes) on Coursera explaining the basic concepts of Topological Sort.
+Topological sort could also be done via BFS.
+
+//Runtime: O(V +E) where v is numCourses, E is prerequisites.size() === O(n+m)
+//Space: O(n)
+
+class Solution {
+public:
+    //this one is to use topological sort, make sure no cycle in graph
+    //and the number of nodes in graph is the same as numCourses
+    bool canFinish(int numCourses, vector<pair<int, int>>& prerequisites) {
+        
+        if(prerequisites.empty()) return true;
+        
+        int m = prerequisites.size();
+        
+        //build a directed graph 
+        unordered_map<int, set<int>> graph;
+        vector<int> indegree(numCourses, 0);
+        
+        for(int i = 0; i < m; i++)
+        {
+            int required = prerequisites[i].second;
+            int course = prerequisites[i].first;
+            
+            //there are duplicate pairs
+            if(graph[required].find(course) != graph[required].end()) continue;
+            graph[required].insert(course);
+            indegree[course]++;
+        }
+        
+        queue<int> q;
+        //now find the indegree node
+        for(int i = 0; i < numCourses; i++)
+        {
+            if(indegree[i] == 0)
+            {
+                q.push(i);
+            }
+        }
+        
+        int cnt = 0;
+        while(!q.empty())
+        {
+            int cur = q.front(); q.pop();
+            cnt++;
+            
+            for(auto next : graph[cur])
+            {
+                indegree[next]--;
+                if(indegree[next] == 0)
+                {
+                    q.push(next);
+                }
+            }
+        }
+        
+        return cnt == numCourses;
+    }
+};
