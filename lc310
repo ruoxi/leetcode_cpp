@@ -1,0 +1,136 @@
+310. Minimum Height Trees   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 25930
+Total Submissions: 91192
+Difficulty: Medium
+Contributors: Admin
+For a undirected graph with tree characteristics, we can choose any node as the root. The result graph is then a rooted tree. Among all possible rooted trees, those with minimum height are called minimum height trees (MHTs). Given such a graph, write a function to find all the MHTs and return a list of their root labels.
+
+Format
+The graph contains n nodes which are labeled from 0 to n - 1. You will be given the number n and a list of undirected edges (each edge is a pair of labels).
+
+You can assume that no duplicate edges will appear in edges. Since all edges are undirected, [0, 1] is the same as [1, 0] and thus will not appear together in edges.
+
+Example 1:
+
+Given n = 4, edges = [[1, 0], [1, 2], [1, 3]]
+
+        0
+        |
+        1
+       / \
+      2   3
+return [1]
+
+Example 2:
+
+Given n = 6, edges = [[0, 3], [1, 3], [2, 3], [4, 3], [5, 4]]
+
+     0  1  2
+      \ | /
+        3
+        |
+        4
+        |
+        5
+return [3, 4]
+
+Hint:
+
+How many MHTs can a graph have at most?
+Note:
+
+(1) According to the definition of tree on Wikipedia: “a tree is an undirected graph in which any two vertices are connected by exactly one path. In other words, any connected graph without simple cycles is a tree.”
+
+(2) The height of a rooted tree is the number of edges on the longest downward path between the root and a leaf.
+
+
+(1) A tree is an undirected graph in which any two vertices are
+connected by exactly one path.
+
+(2) Any connected graph who has n nodes with n-1 edges is a tree.
+
+(3) The degree of a vertex of a graph is the number of
+edges incident to the vertex.
+
+(4) A leaf is a vertex of degree 1. An internal vertex is a vertex of
+degree at least 2.
+
+(5) A path graph is a tree with two or more vertices that is not
+branched at all.
+
+(6) A tree is called a rooted tree if one vertex has been designated
+the root.
+
+(7) The height of a rooted tree is the number of edges on the longest
+downward path between root and a leaf.
+
+class Solution {
+public:
+    //undirected graph with tree characteristics说明number of edges = n-1
+    //leaf node has degree == 1
+    //idea is start from leaf node, do bfs search on all leaf nodes
+    //when there is only one or two nodes left, then it is the answer
+    vector<int> findMinHeightTrees(int n, vector<pair<int, int>>& edges) {
+        
+        if(n == 1) return vector<int>{0};
+        
+        int m = edges.size();
+        
+        vector<vector<int>> graph(n, vector<int>());
+        vector<int> degree(n, 0);
+        
+        for(int i = 0; i < m; i++)
+        {
+            graph[edges[i].first].push_back(edges[i].second);
+            graph[edges[i].second].push_back(edges[i].first);
+            degree[edges[i].first]++;
+            degree[edges[i].second]++;
+        }
+        
+        queue<int> q;
+        
+        //find edge nodes
+        for(int i = 0; i < n; i++)
+        {
+            if(degree[i] == 1)
+            {
+                q.push(i);
+            }
+        }
+        
+        int cnt = 0;
+        while(!q.empty() && cnt < n-2)
+        {
+            int size = q.size();
+            //注意这里要一层一层visit以保证q里能剩下最后一层
+            for(int i = 0; i < size; i++)
+            {
+                int cur = q.front(); q.pop();
+            
+                cnt++;
+            
+                for(auto next : graph[cur])
+                {
+                    degree[next]--;
+                    if(degree[next] == 1)
+                    {
+                        q.push(next);
+                    }
+                }
+            }
+            
+        }
+        
+        //now the nodes left in q is the answer
+        vector<int> res;
+        while(!q.empty())
+        {
+            res.push_back(q.front());
+            q.pop();
+        }
+        
+        return res;
+        
+        
+    }
+};
