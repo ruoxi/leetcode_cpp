@@ -1,0 +1,74 @@
+261. Graph Valid Tree   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 27026
+Total Submissions: 74058
+Difficulty: Medium
+Contributors: Admin
+Given n nodes labeled from 0 to n - 1 and a list of undirected edges (each edge is a pair of nodes), write a function to check whether these edges make up a valid tree.
+
+For example:
+
+Given n = 5 and edges = [[0, 1], [0, 2], [0, 3], [1, 4]], return true.
+
+Given n = 5 and edges = [[0, 1], [1, 2], [2, 3], [1, 3], [1, 4]], return false.
+
+Show Hint 
+Note: you can assume that no duplicate edges will appear in edges. Since all edges are undirected, [0, 1] is the same as [1, 0] and thus will not appear together in edges.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+
+class Solution {
+public:
+    //edges.size() == n-1, 
+    //没有环，并且全联通，topological sort. bfs or dfs
+    //注意undirected graph dfs时，需要pass他的parent是谁
+    //这里因为要确认是全连通块，不然就是用directed graph, indegree数组找出indegree是0的node 再dfs
+    //不然就是用undirected graph,但是注意边要存两遍，然后确认cnt == 1
+    bool validTree(int n, vector<pair<int, int>>& edges) {
+        if(n-1 != edges.size()) return false;
+        
+        unordered_map<int, set<int>> graph;
+        
+        for(int i = 0; i < n-1; i++)
+        {
+            graph[edges[i].first].insert(edges[i].second);
+            graph[edges[i].second].insert(edges[i].first);
+        }
+        
+        vector<int> visited(n, 0);
+        
+        int cnt = 0;
+        for(int i = 0; i < n; i++)
+        {
+            if(visited[i] == 0)
+            {
+                bool hasCycle= dfs(graph, visited, i, -1);
+                if(hasCycle) return false;
+                cnt++;
+                
+            }
+        }
+        //cout << "cnt=" << cnt << endl;
+        return cnt == 1;
+    }
+    
+    //this function returns true if has cycle
+    bool dfs(unordered_map<int, set<int>>& graph, vector<int>& visited, int cur,int parent)
+    {
+        visited[cur] = 1;
+        
+        for(auto next : graph[cur])
+        {
+            if(next == parent) continue;
+            if(visited[next] == 1) return true;
+            
+            if(visited[next] == 0 && dfs(graph, visited, next, cur)) return true;
+        }
+        
+        visited[cur] = 2;
+        return false;
+    }
+};
