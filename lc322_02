@@ -1,0 +1,76 @@
+332. Reconstruct Itinerary   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 26327
+Total Submissions: 93957
+Difficulty: Medium
+Contributors: Admin
+Given a list of airline tickets represented by pairs of departure and arrival airports [from, to], reconstruct the itinerary in order. All of the tickets belong to a man who departs from JFK. Thus, the itinerary must begin with JFK.
+
+Note:
+If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string. For example, the itinerary ["JFK", "LGA"] has a smaller lexical order than ["JFK", "LGB"].
+All airports are represented by three capital letters (IATA code).
+You may assume all tickets form at least one valid itinerary.
+Example 1:
+tickets = [["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]]
+Return ["JFK", "MUC", "LHR", "SFO", "SJC"].
+Example 2:
+tickets = [["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
+Return ["JFK","ATL","JFK","SFO","ATL","SFO"].
+Another possible reconstruction is ["JFK","SFO","ATL","JFK","ATL","SFO"]. But it is larger in lexical order.
+
+Credits:
+Special thanks to @dietpepsi for adding this problem and creating all test cases.
+
+//find Euler path/Cycle use DFS backtracking
+//a graph has euler path if 0 or 2 vertex has odd degree, the rest all have even degree, the 2 vertex with odd degree is exit node
+//a graph has euler path if all vertex has even degree
+//algorithm is:
+// tour is stack which holds the result
+//printPath(node u):
+// for each edge(u, v):
+//    remove edge v
+//    printPath(v)
+// tour.push(u);
+
+
+class Solution {
+public:
+    //construct a directed graph,
+    //start from JFK do DFS and post order to get the correct itinerary and reverse it
+    vector<string> findItinerary(vector<pair<string, string>> tickets) {
+        if(tickets.empty()) return vector<string>();
+        
+        int n = tickets.size();
+        
+        unordered_map<string, multiset<string>> graph;
+
+        for(int i = 0; i < n; i++)
+        {
+            string s = tickets[i].first;
+            string d = tickets[i].second;
+            graph[s].insert(d);
+ 
+        }
+        
+        vector<string> res;
+        dfs(graph,res, "JFK");
+        
+        reverse(res.begin(), res.end());
+        
+        return res;
+        
+    }
+    
+    void dfs(unordered_map<string, multiset<string>>& graph, vector<string>& res, string cur)
+    {
+        //visited[cur] = true;
+        
+        while(!graph[cur].empty())
+        {
+            string next = *graph[cur].begin();
+            graph[cur].erase(graph[cur].begin());
+            dfs(graph, res, next);
+        }
+        
+        res.push_back(cur);
+    }
+};
