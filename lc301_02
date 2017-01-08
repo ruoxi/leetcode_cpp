@@ -1,0 +1,82 @@
+301. Remove Invalid Parentheses   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 29350
+Total Submissions: 84941
+Difficulty: Hard
+Contributors: Admin
+Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.
+
+Note: The input string may contain letters other than the parentheses ( and ).
+
+Examples:
+"()())()" -> ["()()()", "(())()"]
+"(a)())()" -> ["(a)()()", "(a())()"]
+")(" -> [""]
+
+//BFS, start from s, try to generate all possible state by removing one of the chars in s
+//check if it is valid
+
+class Solution {
+public:
+    //BFS, put s into queue, 
+    vector<string> removeInvalidParentheses(string s) {
+
+        queue<string> q;
+        q.push(s);
+        vector<string> res;
+        set<string> visited;
+        visited.insert(s);
+        
+        while(!q.empty())
+        {
+            int size = q.size();
+            bool found = false;
+            for(int i = 0; i < size; i++)
+            {
+                string cur = q.front();
+                q.pop();
+                //cout << "cur=" << cur << endl;
+                if(isValid(cur))
+                {
+                    res.push_back(cur);
+                    found = true;
+                }
+                //cout << "found=" << found << endl;
+                if(found) continue;
+                
+                //try to remove any ( or ) to generate possible state
+                for(int j = 0; j < cur.length(); j++)
+                {
+                    if(cur[j] != '(' && cur[j] != ')') continue;
+                    
+                    string next = cur.substr(0, j) + cur.substr(j+1);
+                    
+                    if(visited.find(next) == visited.end())
+                    {
+                        q.push(next);
+                        visited.insert(next);
+                    }
+                }
+            }
+            
+            if(found) break;
+        }
+        
+        return res;
+    }
+    
+    bool isValid(string& s)
+    {
+        if(s.empty()) return true;
+        int cnt = 0;
+
+        for(int i = 0; i < s.length(); i++)
+        {
+            if(s[i] == '(') cnt++;
+            if(s[i] == ')') cnt--;
+ 
+            if(cnt < 0) return false;
+        }
+
+        return cnt == 0;
+    }
+};
