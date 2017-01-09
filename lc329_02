@@ -1,0 +1,98 @@
+329. Longest Increasing Path in a Matrix   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 28361
+Total Submissions: 80127
+Difficulty: Hard
+Contributors: Admin
+Given an integer matrix, find the length of the longest increasing path.
+
+From each cell, you can either move to four directions: left, right, up or down. You may NOT move diagonally or move outside of the boundary (i.e. wrap-around is not allowed).
+
+Example 1:
+
+nums = [
+  [9,9,4],
+  [6,6,8],
+  [2,1,1]
+]
+Return 4
+The longest increasing path is [1, 2, 6, 9].
+
+Example 2:
+
+nums = [
+  [3,4,5],
+  [3,2,6],
+  [2,2,1]
+]
+Return 4
+The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.
+
+Credits:
+Special thanks to @dietpepsi for adding this problem and creating all test cases.
+
+
+//注意这里并不需要一个visited数组，因为每次判断matrix[nextx][nexty] > matrix[cx][cy]时就已经确定了不能走回头路， 不会有loop
+//需要一个dp数组是因为有很多点会被重复计算，dp[i][j]是表示从这个点出发的longest increasing subsequence是多长
+//注意这里需要枚举开始的点
+
+class Solution {
+public:
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        if(matrix.empty() || matrix.at(0).empty()) return 0;  
+        
+        int n = matrix.size();
+        int m = matrix.at(0).size();
+        
+        vector<vector<int>> dp(n, vector<int>(m, 0));
+        //vector<vector<bool>> visited(n, vector<bool>(m, false));
+        
+        int res = 0;
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                res = max(res, dfs(matrix, dp, i, j));
+
+            }
+        }
+        return res;
+        
+        
+    }
+    
+    
+    int dfs(vector<vector<int>>& matrix, vector<vector<int>>& dp, int cx, int cy)
+    {
+        int n = matrix.size(), m = matrix.at(0).size();
+        
+        if(dp[cx][cy] != 0) return dp[cx][cy];
+        
+        
+        int res = 0;
+        
+        if(cx-1 >=0 && matrix[cx-1][cy] > matrix[cx][cy])
+        {
+            res = max(res, dfs(matrix, dp, cx-1, cy));
+        }
+        
+        if(cx+1 < n && matrix[cx+1][cy] > matrix[cx][cy])
+        {
+            res = max(res, dfs(matrix, dp, cx+1, cy));
+        }
+        
+        if(cy-1 >=0 && matrix[cx][cy-1] > matrix[cx][cy])
+        {
+            res = max(res, dfs(matrix, dp,cx, cy-1));
+        }
+        
+        if(cy+1 < m && matrix[cx][cy+1] > matrix[cx][cy])
+        {
+            res = max(res, dfs(matrix, dp,cx, cy+1));
+        }
+      
+        
+        dp[cx][cy] = res+1;
+        return res+1;
+        
+    }
+};
