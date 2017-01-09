@@ -1,0 +1,75 @@
+394. Decode String   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 17794
+Total Submissions: 44325
+Difficulty: Medium
+Contributors: Admin
+Given an encoded string, return it's decoded string.
+
+The encoding rule is: k[encoded_string], where the encoded_string inside the square brackets is being repeated exactly k times. Note that k is guaranteed to be a positive integer.
+
+You may assume that the input string is always valid; No extra white spaces, square brackets are well-formed, etc.
+
+Furthermore, you may assume that the original data does not contain any digits and that digits are only for those repeat numbers, k. For example, there won't be input like 3a or 2[4].
+
+Examples:
+
+s = "3[a]2[bc]", return "aaabcbc".
+s = "3[a2[c]]", return "accaccacc".
+s = "2[abc]3[cd]ef", return "abcabccdcdcdef".
+
+
+class Solution {
+public:
+    string decodeString(string s) {
+        if(s.empty()) return s;
+        
+        int n = s.length();
+        stack<int> count;
+        stack<string> stk;
+        
+        int idx = 0;
+        string res = "";
+        while(idx < n)
+        {
+            if(isdigit(s[idx]))
+            {
+                int times = 0;
+                while(s[idx] != '[')
+                {
+                    times = times*10 + s[idx]-'0';
+                    idx++;
+                }
+                count.push(times);
+            }
+            else if(s[idx] == '[')
+            {
+                //push previous result into stk
+                stk.push(res);
+                res="";
+                idx++;
+            }
+            else if(s[idx] == ']')
+            {
+                //get count from count stk, repeat res count times 
+                int times = count.top(); count.pop();
+                
+                //get previous result from stk
+                string tmp = stk.top(); stk.pop();
+                for(int i = 0; i < times; i++)
+                {
+                    tmp += res;
+                }
+                
+                res = tmp;
+                idx++;
+                
+            }
+            else
+            {
+                res += s[idx];
+                idx++;
+            }
+        }
+        return res;
+    }
+};
