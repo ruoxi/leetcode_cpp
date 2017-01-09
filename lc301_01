@@ -1,0 +1,78 @@
+301. Remove Invalid Parentheses   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 29350
+Total Submissions: 84941
+Difficulty: Hard
+Contributors: Admin
+Remove the minimum number of invalid parentheses in order to make the input string valid. Return all possible results.
+
+Note: The input string may contain letters other than the parentheses ( and ).
+
+Examples:
+"()())()" -> ["()()()", "(())()"]
+"(a)())()" -> ["(a)()()", "(a())()"]
+")(" -> [""]
+Credits:
+Special thanks to @hpplayer for adding this problem and creating all test cases.
+
+
+class Solution {
+public:
+    //DFS, given s, how to find if it is valid?
+    //when see s[i] =='(' cnt++, s[i] == ')' cnt--
+    //when cnt <0, we find the first place that number of ( < number of )
+    // to make it valid, we need to remove one of ) --> any one of )
+    //but if we have consecutive ) g ()), remove first ) will have same result as remove second )
+    //so we only remove the first one
+    //then we calling recursion function to solve the s[i...n]
+    //what if number of ( > number of ) eg (()
+    //we can reverse it and apply the same thing
+    vector<string> removeInvalidParentheses(string s) {
+        
+        vector<char> p = {'(', ')'};
+        vector<char> rp = {')', '('};
+        
+        vector<string> res;
+        dfs(s, 0, 0, p, res);
+
+        return res;
+    }
+    
+    void dfs(string s, int curPos, int lastRemoved, vector<char> p, vector<string>& res)
+    {
+        int cnt = 0;
+        //cout << "s=" << s<< endl;
+        for(int i = curPos; i < s.length(); i++)
+        {
+            if(s[i] == p[0]) cnt++;
+            if(s[i] == p[1]) cnt--;
+            
+            //find first illegal position, remove pos[1]
+            if(cnt <0)
+            {
+                for(int j = lastRemoved; j <=i; j++)
+                {
+                    if(s[j] == p[1] && (j == lastRemoved || s[j-1] != p[1]))
+                    {
+                        string next = s.substr(0, j) + s.substr(j+1);
+                        //cout << "i=" << i << " j=" << j << " next=" << next << endl;
+                        dfs(next, i, j, p, res);
+                    }
+                }
+                return;
+            }
+        }
+        
+        reverse(s.begin(), s.end());
+        
+        if(p[0] == '(')
+        {
+            //finish left to right, start from right
+            p[0] = ')'; p[1] = '(';
+            dfs(s, 0, 0, p, res);
+        }
+        else
+        {
+            res.push_back(s);
+        }
+    }
+};
