@@ -1,0 +1,99 @@
+401. Binary Watch   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 18121
+Total Submissions: 41609
+Difficulty: Easy
+Contributors: Admin
+A binary watch has 4 LEDs on the top which represent the hours (0-11), and the 6 LEDs on the bottom represent the minutes (0-59).
+
+Each LED represents a zero or one, with the least significant bit on the right.
+
+For example, the above binary watch reads "3:25".
+
+Given a non-negative integer n which represents the number of LEDs that are currently on, return all possible times the watch could represent.
+
+Example:
+
+Input: n = 1
+Return: ["1:00", "2:00", "4:00", "8:00", "0:01", "0:02", "0:04", "0:08", "0:16", "0:32"]
+Note:
+The order of output does not matter.
+The hour must not contain a leading zero, for example "01:00" is not valid, it should be "1:00".
+The minute must be consist of two digits and may contain a leading zero, for example "10:2" is not valid, it should be "10:02".
+
+class Solution {
+public:
+    //分成两个array hours and minutes
+    //hours = {8,4,2,1} //如果num>=2 选hours时候8，4不能同时选
+    //minutes = {32, 16, 8 ,4, 2, 1} //注意如果num >=4 选minutes的时候如果选了32+16+8+4 = 58 就不能再选2，1
+    vector<string> readBinaryWatch(int num) {
+        if(num == 0) return vector<string>{"0:00"};
+        
+        vector<int> hours = {8,4,2,1};
+        vector<int> minutes = {32, 16, 8, 4,2,1};
+        
+        vector<string> res;
+        
+        for(int i = 0; i <= num; i++)
+        {
+            vector<int> hcand = generateDigit(hours, i, 12);
+            vector<int> mcand = generateDigit(minutes, num-i, 60);
+            
+            for(int j = 0; j < hcand.size(); j++)
+            {
+                string h = to_string(hcand[j]);
+                for(int k = 0; k < mcand.size(); k++)
+                {
+                    string m = processMin(mcand[k]);
+                    
+                    string hm = h + ":"+m;
+                    res.push_back(hm);
+                    
+                }
+            }
+        }
+        
+        return res;
+    }
+    
+    
+    string processMin(int cur)
+    {
+        string min = "";
+        if(cur < 10)
+        {
+            min += "0";
+        }
+        min += to_string(cur);
+        return min;
+    }
+    
+
+    vector<int> generateDigit(vector<int>& nums, int count, int maxTarget)
+    {
+        vector<int> res;
+        dfs(nums, count, 0, res, maxTarget, 0);
+        
+        return res;
+    }
+    
+    void dfs(vector<int>& nums, int count, int idx, vector<int>& res, int maxTarget, int sum)
+    {
+        if(count == 0)
+        {
+            res.push_back(sum);
+            return;
+        }
+        for(int i = idx; i < nums.size(); i++)
+        {
+            if(sum + nums[i] >= maxTarget) continue;
+           
+            sum += nums[i];
+
+            dfs(nums, count-1, i+1, res, maxTarget, sum);
+            
+            sum -= nums[i];
+
+        }
+        
+    }
+};
