@@ -1,0 +1,99 @@
+317. Shortest Distance from All Buildings   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 12236
+Total Submissions: 36796
+Difficulty: Hard
+Contributors: Admin
+You want to build a house on an empty land which reaches all buildings in the shortest amount of distance. You can only move up, down, left and right. You are given a 2D grid of values 0, 1 or 2, where:
+
+Each 0 marks an empty land which you can pass by freely.
+Each 1 marks a building which you cannot pass through.
+Each 2 marks an obstacle which you cannot pass through.
+For example, given three buildings at (0,0), (0,4), (2,2), and an obstacle at (0,2):
+
+1 - 0 - 2 - 0 - 1
+|   |   |   |   |
+0 - 0 - 0 - 0 - 0
+|   |   |   |   |
+0 - 0 - 1 - 0 - 0
+The point (1,2) is an ideal empty land to build a house, as the total travel distance of 3+3+1=7 is minimal. So return 7.
+
+Note:
+There will be at least one building. If it is not possible to build such house according to the above rules, return -1.
+
+
+class Solution {
+public:
+    //BFS from each building, mark the distance from building to each reachable empty space
+    //here we can mark the reachable cell from first building to -1
+    //and then when we bfs all the reachable cell from second building, we only check the one marked as -1
+    int shortestDistance(vector<vector<int>>& grid) {
+        if(grid.empty() || grid.at(0).empty()) return -1;
+        
+        int n = grid.size(); int m = grid.at(0).size();
+        
+        int target = 0;
+        vector<vector<int>> totalDistance(n, vector<int>(m, 0));
+        int res = -1;
+        for(int i = 0; i <n; i++)
+        {
+            for(int j = 0; j <m; j++)
+            {
+                if(grid[i][j] == 1)
+                {
+                    cout << "bfs i=" << i << " j=" << j << endl;
+                    res = bfs(grid, i, j, target, totalDistance);
+                    target--;
+                }
+            }
+        }
+        return res;
+    }
+    
+    //return current smallest distance
+    vector<int> dx = {1, -1, 0, 0};
+    vector<int> dy = {0, 0, 1, -1};
+    int bfs(vector<vector<int>>& grid, int x, int y, int target, vector<vector<int>>& totalDistance)
+    {
+        int n = grid.size();
+        int m =grid.at(0).size();
+        
+        vector<vector<int>> distance(n, vector<int>(m, 0));
+        int minDist = -1;
+        queue<pair<int, int>> q;
+        q.push(make_pair(x, y));
+    
+
+        int level = 0;
+        while(!q.empty())
+        {
+            int size = q.size();
+            for(int i = 0; i < size; i++)
+            {
+                int cx = q.front().first;
+                int cy = q.front().second;
+                q.pop();
+                for(int j = 0; j < 4; j++)
+                {
+                    int nx = cx + dx[j];
+                    int ny = cy + dy[j];
+                    //cout << "nx=" << nx << " ny=" << ny << " target=" << target <<endl;
+                    if(nx < 0 || nx >=n || ny <0 || ny >=m || grid[nx][ny] != target) continue;
+                    //cout << "grid[i][j]=" <<grid[i][j]<< endl;
+                    q.push(make_pair(nx, ny));
+                    grid[nx][ny]--;
+                    
+                    distance[nx][ny] = distance[cx][cy]+1;
+                    
+                    totalDistance[nx][ny] += distance[nx][ny];
+                    
+                    if(minDist == -1 || minDist > totalDistance[nx][ny])
+                    {
+                        minDist = totalDistance[nx][ny];
+                    }
+                }
+            }
+        }
+        
+        return minDist;
+    }
+};
