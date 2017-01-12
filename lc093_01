@@ -1,0 +1,67 @@
+93. Restore IP Addresses   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 74082
+Total Submissions: 286437
+Difficulty: Medium
+Contributors: Admin
+Given a string containing only digits, restore it by returning all possible valid IP address combinations.
+
+For example:
+Given "25525511135",
+
+return ["255.255.11.135", "255.255.111.35"]. (Order does not matter)
+
+
+class Solution {
+public:
+    //可以一层一层选
+    vector<string> restoreIpAddresses(string s) {
+        
+        if(s.empty()) return vector<string>();
+        
+        int n = s.length();
+        vector<string> res;
+        //第一层s[0...i]
+        for(int i = 0; i<3; i++)
+        {
+            string first = s.substr(0, i+1);
+            if(!isValid(first)) break;
+            //第二层
+            for(int j = i+1; j <i+4 && j < n; j++)
+            {
+                string second = s.substr(i+1, j-i);
+ 
+                if(!isValid(second)) break;
+                //第三层
+                for(int k = j+1; k < j+4 && k < n-1;k++)
+                {
+                    string third = s.substr(j+1, k-j);
+
+                    if(!isValid(third)) break;
+                    
+                    //因为第四层的length没有check,所以invalid得时候应该让第三层再继续尝试
+                    string last = s.substr(k+1);
+                    if(!isValid(last)) continue;
+                    
+                    string ans = first + "." + second +"."+third +"."+last;
+                    res.push_back(ans);
+                    
+                }
+            }
+        }
+        
+        return res;
+    }
+    
+    bool isValid(string str)
+    {
+        if(str.empty() || str.length() > 3) return false;
+        
+        
+        if(str.length() > 1 && str[0] == '0') return false;
+        
+        int num = stoi(str);
+        if(num > 255) return false;
+        
+        return true;
+    }
+};
