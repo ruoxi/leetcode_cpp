@@ -1,0 +1,71 @@
+254. Factor Combinations   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 19311
+Total Submissions: 47704
+Difficulty: Medium
+Contributors: Admin
+Numbers can be regarded as product of its factors. For example,
+
+8 = 2 x 2 x 2;
+  = 2 x 4.
+Write a function that takes an integer n and return all possible combinations of its factors.
+
+Note: 
+You may assume that n is always positive.
+Factors should be greater than 1 and less than n.
+Examples: 
+input: 1
+output: 
+[]
+input: 37
+output: 
+[]
+input: 12
+output:
+[
+  [2, 6],
+  [2, 2, 3],
+  [3, 4]
+]
+input: 32
+output:
+[
+  [2, 16],
+  [2, 2, 8],
+  [2, 2, 2, 4],
+  [2, 2, 2, 2, 2],
+  [2, 4, 4],
+  [4, 8]
+]
+
+
+class Solution {
+public:
+    vector<vector<int>> getFactors(int n) {
+        if(n ==1) return vector<vector<int>>();
+        
+        vector<int> sol;
+        vector<vector<int>> res;
+        
+        dfs(n, 2, sol, res);
+        
+        return res;
+    }
+    
+    void dfs(int n, int start, vector<int>& sol, vector<vector<int>>& res)
+    {
+        
+        for(int i = start; i*i <= n; i++)
+        {
+            if(n%i == 0)
+            {
+                sol.push_back(i);
+                sol.push_back(n/i);
+                
+                res.push_back(sol);
+                sol.pop_back();
+                dfs(n/i, i, sol, res);
+                sol.pop_back();
+            }
+        }
+    }
+};
