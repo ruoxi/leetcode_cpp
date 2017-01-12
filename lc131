@@ -1,0 +1,79 @@
+131. Palindrome Partitioning   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 83992
+Total Submissions: 272261
+Difficulty: Medium
+Contributors: Admin
+Given a string s, partition s such that every substring of the partition is a palindrome.
+
+Return all possible palindrome partitioning of s.
+
+For example, given s = "aab",
+Return
+
+[
+  ["aa","b"],
+  ["a","a","b"]
+]
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+//Runtime: O(2^n) ????
+
+class Solution {
+public:
+    vector<vector<string>> partition(string s) {
+        if(s.empty()) return vector<vector<string>>();
+        
+        int n = s.length();
+        //use dp to build isPalindrome array
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        
+        for(int i = 0; i <n; i++)
+        {
+            dp[i][i] = true;
+            if(i < n-1)
+            {
+                dp[i][i+1] = s[i] == s[i+1];
+            }
+        }
+        
+        for(int len = 2; len < n; len++)
+        {
+            for(int i = 0; i < n-len; i++)
+            {
+                if(s[i] == s[i+len])
+                {
+                    dp[i][i+len] = dp[i+1][i+len-1];
+                }
+            }
+        }
+        
+        vector<string> sol;
+        vector<vector<string>> res;
+        
+        dfs(s, 0, sol,res, dp);
+        
+        return res;
+    }
+    
+    void dfs(string s, int idx, vector<string>& sol, vector<vector<string>>& res, vector<vector<bool>>& dp)
+    {
+        if(s.length() == idx)
+        {
+            res.push_back(sol);
+            return;
+        }
+        
+        for(int i = idx; i < s.length(); i++)
+        {
+            if(!dp[idx][i]) continue;
+            
+            sol.push_back(s.substr(idx, i-idx+1));
+            dfs(s, i+1, sol, res, dp);
+            sol.pop_back();
+        }
+    }
+    
+
+};
