@@ -1,0 +1,59 @@
+90. Subsets II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 93331
+Total Submissions: 275408
+Difficulty: Medium
+Contributors: Admin
+Given a collection of integers that might contain duplicates, nums, return all possible subsets.
+
+Note: The solution set must not contain duplicate subsets.
+
+For example,
+If nums = [1,2,2], a solution is:
+
+[
+  [2],
+  [1],
+  [1,2,2],
+  [2,2],
+  [1,2],
+  []
+]
+Show Company Tags
+Show Tags
+
+
+
+class Solution {
+public:
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        if(nums.empty()) return vector<vector<int>>();
+        
+        vector<int> sol;
+        vector<vector<int>> res;
+        sort(nums.begin(), nums.end());
+        
+        dfs(nums, 0, sol, res);
+        
+        return res;
+        
+    }
+    
+    void dfs(vector<int>& nums, int idx, vector<int>& sol, vector<vector<int>>& res)
+    {
+        res.push_back(sol);
+        if(idx == nums.size())
+        {
+            return;
+        }
+        
+        for(int i = idx; i < nums.size(); i++)
+        {
+            if(i > idx && nums[i] == nums[i-1]) continue;
+            
+            sol.push_back(nums[i]);
+            
+            dfs(nums, i+1, sol, res);
+            sol.pop_back();
+        }
+    }
+};
