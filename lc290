@@ -1,0 +1,71 @@
+290. Word Pattern   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 63525
+Total Submissions: 198154
+Difficulty: Easy
+Contributors: Admin
+Given a pattern and a string str, find if str follows the same pattern.
+
+Here follow means a full match, such that there is a bijection between a letter in pattern and a non-empty word in str.
+
+Examples:
+pattern = "abba", str = "dog cat cat dog" should return true.
+pattern = "abba", str = "dog cat cat fish" should return false.
+pattern = "aaaa", str = "dog cat cat dog" should return false.
+pattern = "abba", str = "dog dog dog dog" should return false.
+Notes:
+You may assume pattern contains only lowercase letters, and str contains lowercase letters separated by a single space.
+
+Credits:
+Special thanks to @minglotus6 for adding this problem and creating all test cases.
+class Solution {
+public:
+    //use pdict to store pattern[pidx]上一次在p里match的index
+    //use sdict to store str[sidx]上一次在str里match的index
+    //要注意这里p = abcde和 str= abced的情况，最后要看pindex是否走到pattern.length()-1
+    bool wordPattern(string pattern, string str) {
+        if(pattern.empty() || str.empty()) return false;
+        int m = pattern.length();
+        int pidx = 0;
+        int sidx = 0;
+        unordered_map<char, int> pdict;
+        unordered_map<string, int> sdict;
+        
+        int n = str.length();
+        string cur = "";
+        for(int i = 0; i <= n; i++)
+        {
+            if(i == n || str[i] == ' ')
+            {
+                if(i == n && pidx != m-1)
+                {
+                    return false;
+                }
+                //try to match cur with pattern
+                char p = pattern[pidx];
+                
+                
+                if(pdict.count(p) != sdict.count(cur)) return false;
+                if(pdict[p] != sdict[cur])
+                {
+                    return false;
+                }
+                
+                pdict[p] = pidx;
+                sdict[cur] = sidx;
+                
+                pidx++;
+                sidx++;
+                cur= "";
+            }
+            else
+            {
+                cur += str[i];
+            }
+        }
+        
+        
+
+        return true;
+        
+    }
+};
