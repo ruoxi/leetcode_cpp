@@ -1,0 +1,85 @@
+291. Word Pattern II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 11749
+Total Submissions: 31148
+Difficulty: Hard
+Contributors: Admin
+Given a pattern and a string str, find if str follows the same pattern.
+
+Here follow means a full match, such that there is a bijection between a letter in pattern and a non-empty substring in str.
+
+Examples:
+pattern = "abab", str = "redblueredblue" should return true.
+pattern = "aaaa", str = "asdasdasdasd" should return true.
+pattern = "aabb", str = "xyzabcxzyabc" should return false.
+Notes:
+You may assume both pattern and str contains only lowercase letters.
+
+//这道题需要注意的是：
+//首先可以用跟word pattern i一样的解法，建立pdict[p] = pidx和sdict[sub]=sidx然后每一层枚举可以从str中取出的长度，
+//但是这样比较慢因为之前a,b已经match过substr后，之后只需要接着check是否能看到同样的substr就好，不需要再枚举长度
+
+//所以这里采用了psdict来记录pattern中每一个char 对应的str中的substr
+//如果pattern[pidx]已经match过一个substr,我们只需要看当前的s[start...]是否是以同样的substr开头就可以
+
+//如果pattern[pidx]没有match过一个substr,那我们可以枚举能够match的string的长度，
+//这里需要注意的是因为要防止同一个string match到不同的char上，我们需要一个visited set 来记录之前已经match过得string
+class Solution {
+public:
+    bool wordPatternMatch(string pattern, string str) {
+        if(pattern.empty() && str.empty()) return true;
+        if(pattern.empty() || str.empty()) return false;
+        
+ 
+        unordered_map<char, string> psdict;
+        set<string> visited; //tracking the string we have already matched, so that we do not match same string to different chars
+        return dfs(pattern, str, psdict, 0, 0, 0, visited);
+    }
+    
+    
+    bool dfs(string pattern, string str, unordered_map<char,string>& psdict, int sidx, int start, int pidx, set<string>& visited)
+    {
+        if(start == str.length() && pidx == pattern.length())
+        {
+            return true;
+        }
+        
+        //枚举选的substr的长度
+   
+        char p = pattern[pidx];
+        //如果p之前已经match上了substr,直接看现在的str是否从str[start...]开始是match上的substr
+        if(psdict.count(p) > 0)
+        {
+            string matchSub = psdict[p];
+            if(str.substr(start, matchSub.length()) != matchSub )
+            {
+                return false;
+            }
+            
+            //if matched, continue to search
+            return dfs(pattern, str,psdict,sidx+1, start + matchSub.length(), pidx+1, visited);
+            
+        }
+        
+        //p没有match过
+        for(int i = 1; i <= str.length() && start+i <= str.length(); i++)
+        {
+            string sub = str.substr(start, i);
+            //cout << "sidx = " << sidx << " pidx=" << pidx << " start=" << start <<" i=" <<i << " i" << " sub=" << sub << " p=" << p <<endl;
+            if(visited.find(sub) != visited.end()) continue;
+            
+            psdict[p] = sub;
+            visited.insert(sub);
+            if(dfs(pattern, str, psdict, sidx+1, start+i, pidx+1, visited))
+            {
+                return true;
+            }
+            
+            psdict.erase(p);
+            visited.erase(sub);
+        }
+        
+        return false;
+        
+        
+    }
+};
