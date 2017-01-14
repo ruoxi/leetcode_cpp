@@ -1,0 +1,95 @@
+37. Sudoku Solver   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 65398
+Total Submissions: 232445
+Difficulty: Hard
+Contributors: Admin
+Write a program to solve a Sudoku puzzle by filling the empty cells.
+
+Empty cells are indicated by the character '.'.
+
+You may assume that there will be only one unique solution.
+
+
+A sudoku puzzle...
+
+
+...and its solution numbers marked in red.
+
+
+class Solution {
+public:
+    //每看到一空格尝试往里面填数字，check是否valid
+    //valid代表这一行， 一列以及对应的一小块都没有重复的数字
+    void solveSudoku(vector<vector<char>>& board) {
+        if(board.empty() || board.at(0).empty()) return;
+        
+        dfs(board);
+        
+    }
+    
+    
+    bool dfs(vector<vector<char>>& board)
+    {
+        int n = board.size();
+        int m = board.at(0).size();
+        
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                if(board[i][j] != '.') continue;
+                
+                //try different numbers
+                for(char k = '1'; k <= '9'; k++)
+                {
+                    if(!isValid(board, i, j, k)) continue;
+                    
+                    board[i][j] = k;
+                    if(dfs(board))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        board[i][j] = '.';
+                    }
+                }
+                
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    
+    bool isValid(vector<vector<char>>& board, int cx, int cy, char target)
+    {
+        //check same row and col
+        int n = board.size();
+        int m = board.at(0).size();
+        for(int i = 0; i < n; i++)
+        {
+            if(board[i][cy] == target) return false;
+        }
+        
+        for(int j = 0; j < m; j++)
+        {
+            if(board[cx][j] == target) return false;
+        }
+        
+        //check sudoku上的一小块
+        int blockX = cx/3;
+        int blockY = cy/3;
+        
+        for(int i = blockX*3; i < blockX*3+3; i++)
+        {
+            for(int j = blockY*3; j < blockY*3+3; j++)
+            {
+                if(board[i][j] == target) return false;
+            }
+        }
+        
+        return true;
+    }
+};
