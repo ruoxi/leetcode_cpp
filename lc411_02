@@ -1,0 +1,185 @@
+411. Minimum Unique Word Abbreviation   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 2844
+Total Submissions: 9149
+Difficulty: Hard
+Contributors: Admin
+A string such as "word" contains the following abbreviations:
+
+["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+Given a target string and a set of strings in a dictionary, find an abbreviation of this target string with the smallest possible length such that it does not conflict with abbreviations of the strings in the dictionary.
+
+Each number or letter in the abbreviation is considered length = 1. For example, the abbreviation "a32bc" has length = 4.
+
+Note:
+In the case of multiple answers as shown in the second example below, you may return any one of them.
+Assume length of target string = m, and dictionary size = n. You may assume that m ≤ 21, n ≤ 1000, and log2(n) + m ≤ 20.
+Examples:
+"apple", ["blade"] -> "a4" (because "5" or "4e" conflicts with "blade")
+
+"apple", ["plain", "amber", "blade"] -> "1p3" (other valid answers include "ap3", "a3e", "2p2", "3le", "3l1").
+
+
+class Solution {
+public:
+    //思路：是看dict中每一个string和target有哪些字母不一向，用bit sequence来表示
+    //eg: target = abced, dict = {abcxd, xeced} ==> {00010, 11000}, 然后找一个mask能使得与每一个bit sequence的&的结果都>1
+    //用dfs找这个mask,可以把之前的bit sequence or一下， 出来结果是1的bit就是需要check的bit,
+    //每一层枚举可以由哪个bit开始，向下dfs加入新的bit
+    string minAbbreviation(string target, vector<string>& dictionary) {
+        
+        
+        int n = target.size();
+        
+        int maxBit = 1 << n;
+        
+        //go through the dictionary to calculate the bit sequence
+        vector<int> bitDict;
+        
+        //this gives the bits that we need to check in dfs
+        int cand = 0;
+        
+        for(int i = 0; i < dictionary.size(); i++)
+        {
+            if(dictionary[i].length() != n) continue;
+            int bitseq = 0;
+            for(int j =n-1, bit = 1 ; j>=0; j--, bit <<=1)
+            {
+                if(dictionary[i][j] != target[j])
+                {
+                    bitseq += bit;
+                }
+            }
+            
+            bitDict.push_back(bitseq);
+            cand |= bitseq;
+        }
+        //cout << "cand=" << cand << endl;
+        if(bitDict.empty()) return to_string(n);
+        
+        int minMask = 1 <<n;
+        int minLen = n+1;
+        dfs(bitDict, cand, 0, 1, minMask, minLen, maxBit, n);
+        
+        
+        //now have minMask, reconstruct the result
+        // 001010
+        string res = "";
+        int zero = 0;
+        for(int i = n-1, bit = 1; i >=0; i--, bit<<=1)
+        {
+            if((bit&minMask) ==0 )
+            {
+                zero++;
+            }
+            else
+            {
+                if(zero > 0)
+                {
+                    res = to_string(zero) + res;
+                    zero = 0;
+                }
+                res = target[i] + res;
+            }
+        }
+        
+        if(zero > 0) res = to_string(zero) + res;
+        return res;
+        
+        
+    }
+    
+    
+    //check当前的mask是否能满足条件:mask & bitDict[0...n-1]都>0
+    //同时要check mask代表的abbr长度
+    void dfs(vector<int>& bitDict, int& cand, int mask, int bit, int& minMask, int& minLen, int& maxBit, int n)
+    {
+        int abbrLen = getAbbrLen(mask, n);
+        //cout << "abbrlen=" << abbrLen << " mask=" << mask << " minlen=" << minLen <<  endl;
+        if(abbrLen >= minLen) return;
+        //cout << " try match\n";
+        bool match = true;
+        for(int i =0; i < bitDict.size(); i++)
+        {
+            if((mask & bitDict[i]) == 0)
+            {
+                //cout << "not match mask=" << mask;
+                match = false;
+                break;
+            }
+        }
+        
+        //if not match means this mask is not good to distinguish target from bitDict
+        if(!match)
+        {
+            //需要接着增加mask
+            //cout <<"bit=" << bit << endl;
+            for(int b = bit; b < maxBit; b <<=1)
+            {
+                //cout << "b=" << b <<" cand=" << cand << " &=" << (cand&b)<< endl;
+                if((cand & b) >0)
+                {
+                    //cout << "not macth, add to mask " << mask+b << endl;
+                    dfs(bitDict, cand, mask+b, b<<1, minMask, minLen, maxBit, n);
+                }
+            }
+        }
+        else
+        {
+            ///cout << "minlen = " << minLen << endl;
+            minLen  = abbrLen;
+            minMask = mask;
+        }
+    }
+    
+    
+    int getAbbrLen(int mask, int n)
+    {
+        //if 1 ->add length
+        //if consecutive 0, count as 1
+
+        int res = 0;
+        int zero =0;
+        for(int bit = 1; bit < (1<<n); bit<<=1)
+        {
+            if((bit & mask) >0)
+            {
+                if(zero >0)
+                {
+                    res+=1;
+                    zero = 0;
+                }
+
+                res++;
+            }
+            else
+            {
+
+                zero++;
+            }
+        }
+        if(zero > 0) res+=1;
+        return res;
+    }
+    
+    
+    /* another way to count abbr len
+        int getAbbrLen(int mask, int n)
+    {
+        //if 1 ->add length
+        //if consecutive 0, count as 1
+
+        int res = 0;
+        for(int bit = 3; bit < (1<<n); bit<<=1)
+        {
+            if((bit & mask) == 0)
+            {
+                res--;
+            }
+            
+        }
+        
+        return res;
+    }
+    
+    */
+};
