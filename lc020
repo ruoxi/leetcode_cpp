@@ -1,0 +1,58 @@
+20. Valid Parentheses   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 164765
+Total Submissions: 510767
+Difficulty: Easy
+Contributors: Admin
+Given a string containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
+
+The brackets must close in the correct order, "()" and "()[]{}" are all valid but "(]" and "([)]" are not.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+//Runtime: O(n)
+//Space: O(n)
+
+
+class Solution {
+public:
+    //思路：一个open bracket要对应一个close bracket,如果是open bracket放入stack中
+    //      看到close bracket的时候从stack中pop出一个open bracket看是否对的上
+    bool isValid(string s) {
+        if(s.empty()) return true;
+        
+        int n = s.length();
+        
+        stack<char> stk;
+        
+        for(int i = 0; i < n; i++)
+        {
+            char cur = s[i];
+            if(cur == '(' || cur == '[' || cur == '{')
+            {
+                stk.push(cur);
+            }
+            else
+            {
+                if(stk.empty()) return false;
+                char open = stk.top(); stk.pop();
+                if(cur == ')' && open != '(')
+                {
+                    return false;
+                }
+                else if(cur ==']' && open != '[')
+                {
+                    return false;
+                }
+                else if(cur =='}' && open != '{')
+                {
+                    return false;
+                }
+                
+            }
+        }
+        
+        return stk.empty();
+    }
+};
