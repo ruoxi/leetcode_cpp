@@ -1,0 +1,51 @@
+346. Moving Average from Data Stream   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 17101
+Total Submissions: 29651
+Difficulty: Easy
+Contributors: Admin
+Given a stream of integers and a window size, calculate the moving average of all integers in the sliding window.
+
+For example,
+MovingAverage m = new MovingAverage(3);
+m.next(1) = 1
+m.next(10) = (1 + 10) / 2
+m.next(3) = (1 + 10 + 3) / 3
+m.next(5) = (10 + 3 + 5) / 3
+Show Company Tags
+Show Tags
+
+
+
+class MovingAverage {
+public:
+    /** Initialize your data structure here. */
+    MovingAverage(int size) {
+        k = size;
+        sum = 0;
+    }
+    
+    double next(int val) {
+        if(q.size() == k)
+        {
+            int left = q.front();
+            q.pop();
+            sum -= left;
+        }
+        
+        q.push(val);
+        sum+=val;
+        
+        double res = (double)sum/q.size();
+        return res;
+    }
+    
+    int k;
+    queue<int> q; //size of k
+    int sum;
+};
+
+/**
+ * Your MovingAverage object will be instantiated and called as such:
+ * MovingAverage obj = new MovingAverage(size);
+ * double param_1 = obj.next(val);
+ */
