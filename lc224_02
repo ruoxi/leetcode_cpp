@@ -1,0 +1,84 @@
+224. Basic Calculator   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 42833
+Total Submissions: 166945
+Difficulty: Hard
+Contributors: Admin
+Implement a basic calculator to evaluate a simple expression string.
+
+The expression string may contain open ( and closing parentheses ), the plus + or minus sign -, non-negative integers and empty spaces .
+
+You may assume that the given expression is always valid.
+
+Some examples:
+"1 + 1" = 2
+" 2-1 + 2 " = 3
+"(1+(4+5+2)-3)+(6+8)" = 23
+Note: Do not use the eval built-in library function.
+
+
+class Solution {
+public:
+    int calculate(string s) {
+        if(s.empty()) return 0;
+        
+        //remove leading empty space
+        int idx = 0;
+        while(s[idx] == ' ')
+        {
+            idx++;
+        }
+        int n = s.length();
+        
+        int cur = 0;
+        stack<int> stk;
+        stack<int> flag;
+        int neg = 1;
+        int res = 0;
+        for(; idx < n; idx++)
+        {
+            if(s[idx] == ' ') continue;
+            if(isdigit(s[idx]))
+            {
+                cur = cur*10 + s[idx]-'0';
+            }
+            else if(s[idx] == '(')
+            {
+                stk.push(res);
+                flag.push(neg);
+                res = 0;
+                neg = 1;
+            }
+            else if(s[idx] == ')')
+            {
+                res += cur*neg;
+                
+                res = res*flag.top();
+                flag.pop();
+                
+                res += stk.top();
+                stk.pop();
+                cur = 0;
+                neg = 1;
+            }
+            else if(s[idx] == '+')
+            {
+                res += cur*neg;
+                neg = 1;
+                cur = 0;
+            }
+            else if(s[idx] == '-')
+            {
+                res+= cur*neg;
+                neg = -1;
+                cur = 0;
+            }
+            
+            
+        }
+        
+        //add the last number
+        res += cur*neg;
+        
+        return res;
+    }
+};
