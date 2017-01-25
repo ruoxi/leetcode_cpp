@@ -1,0 +1,46 @@
+84. Largest Rectangle in Histogram   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 80076
+Total Submissions: 311424
+Difficulty: Hard
+Contributors: Admin
+Given n non-negative integers representing the histogram's bar height where the width of each bar is 1, find the area of largest rectangle in the histogram.
+
+
+class Solution {
+public:
+    //思路：一个rectangle的面积是靠它左边第一个小于它的柱子和右边第一个大于它的柱子卡住的
+    //所以用单调递增栈，当cur < stk.top(), 就表示右边的边界找到了
+    //对于stk.top()的左边的边界就是stack中他的前一个
+    int largestRectangleArea(vector<int>& heights) {
+        if(heights.empty()) return 0;
+        
+        heights.push_back(-1);
+        int n = heights.size();
+        
+        stack<int> stk;
+        int res = 0;
+        int idx = 0;
+        while(idx < n)
+        {
+            if(stk.empty() || heights[stk.top()] <= heights[idx])
+            {
+                stk.push(idx);
+                idx++;
+            }
+            else
+            {
+                int index = stk.top(); stk.pop();
+                
+                int h = heights[index];
+                
+                int left = stk.empty() ? -1 : stk.top();
+                int width = idx - left-1;
+                
+                int area = h*width;
+                res = max(res, area);
+            }
+        }
+        
+        return res;
+    }
+};
