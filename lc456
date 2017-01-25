@@ -1,0 +1,60 @@
+456. 132 Pattern   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 5243
+Total Submissions: 18806
+Difficulty: Medium
+Contributors: love_FDU_llp
+Given a sequence of n integers a1, a2, ..., an, a 132 pattern is a subsequence ai, aj, ak such that i < j < k and ai < ak < aj. Design an algorithm that takes a list of n numbers as input and checks whether there is a 132 pattern in the list.
+
+Note: n will be less than 15,000.
+
+Example 1:
+Input: [1, 2, 3, 4]
+
+Output: False
+
+Explanation: There is no 132 pattern in the sequence.
+Example 2:
+Input: [3, 1, 4, 2]
+
+Output: True
+
+Explanation: There is a 132 pattern in the sequence: [1, 4, 2].
+Example 3:
+Input: [-1, 3, 2, 0]
+
+Output: True
+
+Explanation: There are three 132 patterns in the sequence: [-1, 3, 2], [-1, 3, 0] and [-1, 2, 0].
+Hide Tags
+
+
+class Solution {
+public:
+    //思路：需要找的是s2>s3>s1,从后向前找可以保证s2>s3,用一个stack记录s2 candidates,(单调递减栈)
+    //当cur>stk.top, 把stk中小于cur的都pop
+    //出去，意味着我们找到了新的最大值，而s3的candidate就是pop出去的值中的最大的一个，这样就可以给s1留足空间
+    //当找到cur < s2的时候就意味着找到了答案
+    bool find132pattern(vector<int>& nums) {
+        if(nums.size() < 3) return false;
+        
+        int n = nums.size();
+        stack<int> stk;
+        int s3 = INT_MIN;
+
+        for(int i = n-1; i >=0; i--)
+        {
+            int cur = nums[i];
+            if(cur < s3) return true;
+            
+            while(!stk.empty() && stk.top() < cur)
+            {
+                s3 = stk.top();
+                stk.pop();
+            }
+            
+            stk.push(cur);
+        }
+        
+        return false;
+    }
+};
