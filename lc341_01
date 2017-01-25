@@ -1,0 +1,98 @@
+341. Flatten Nested List Iterator   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 27172
+Total Submissions: 69773
+Difficulty: Medium
+Contributors: Admin
+Given a nested list of integers, implement an iterator to flatten it.
+
+Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+
+Example 1:
+Given the list [[1,1],2,[1,1]],
+
+By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,1,2,1,1].
+
+Example 2:
+Given the list [1,[4,[6]]],
+
+By calling next repeatedly until hasNext returns false, the order of elements returned by next should be: [1,4,6].
+
+
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * class NestedInteger {
+ *   public:
+ *     // Return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     bool isInteger() const;
+ *
+ *     // Return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // The result is undefined if this NestedInteger holds a nested list
+ *     int getInteger() const;
+ *
+ *     // Return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // The result is undefined if this NestedInteger holds a single integer
+ *     const vector<NestedInteger> &getList() const;
+ * };
+ */
+class NestedIterator {
+public:
+    //思路：每次需要先flatten最前面的list,同时把list差分之后，放回这个数据结构中，下一次还是要优先拿到这个最近拆分的element==>stack, 
+    //所以constructor中从后向前放入stack中，每次从stack 顶端取一个element,如果是integer, 就返回，如果不是，需要继续拆分这个element,放回stack中
+    //这里需要注意的是flattenTop function, keep flatten the stack top until you find a interger
+    NestedIterator(vector<NestedInteger> &nestedList) {
+        if(nestedList.empty()) return;
+        
+        int n = nestedList.size();
+
+        for(int i = n-1; i >=0 ; i--)
+        {
+
+            stk.push(nestedList[i]);
+        }
+    }
+
+    int next() {
+        flattenTop();
+        
+        NestedInteger cur = stk.top();
+        stk.pop();
+        return cur.getInteger();
+    }
+
+    bool hasNext() {
+        flattenTop();
+        return !stk.empty();
+    }
+    
+    void flattenTop()
+    {
+        if(stk.empty()) return;
+        
+        while(!stk.empty())
+        {
+            NestedInteger cur = stk.top();
+            if(cur.isInteger())
+            {
+                break;
+            }
+            
+            stk.pop();
+            const vector<NestedInteger>& list = cur.getList();
+            int n = list.size();
+            for(int i = n-1; i >=0; i--)
+            {
+                stk.push(list[i]);
+            }
+            
+        }
+    }
+    
+    stack<NestedInteger> stk;
+};
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i(nestedList);
+ * while (i.hasNext()) cout << i.next();
+ */
