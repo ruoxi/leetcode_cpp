@@ -1,0 +1,44 @@
+219. Contains Duplicate II   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 93631
+Total Submissions: 296266
+Difficulty: Easy
+Contributors: Admin
+Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k.
+
+//Runtime:O(n)
+//Space: O(k)
+
+class Solution {
+public:
+    //use a sliding window k to make sure diff between i and j <=k
+    //use hash table: key is nums[i] and value is index in nums
+    bool containsNearbyDuplicate(vector<int>& nums, int k) {
+        
+        if(nums.empty()) return false;
+        
+        int n = nums.size();
+        
+        unordered_map<int, int> table;
+        
+        int j = 0;
+        for(int i = 0; i < n; i++)
+        {
+            while(j < n && j-i<=k)
+            {
+                if(table.find(nums[j]) != table.end())
+                {
+                    return true;
+                }
+                table[nums[j]] = j;
+                j++;
+                
+            }
+            
+            //remove left one
+            table.erase(nums[i]);
+        }
+        
+        return false;
+        
+    }
+};
