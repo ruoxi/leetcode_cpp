@@ -1,0 +1,46 @@
+66. Plus One   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 146528
+Total Submissions: 395575
+Difficulty: Easy
+Contributors: Admin
+Given a non-negative integer represented as a non-empty array of digits, plus one to the integer.
+
+You may assume the integer do not contain any leading zero, except the number 0 itself.
+
+The digits are stored such that the most significant digit is at the head of the list.
+
+//Runtime:O(n)
+//Space:O(n)
+
+
+class Solution {
+public:
+    vector<int> plusOne(vector<int>& digits) {
+        int n = digits.size();
+        
+        vector<int> res(n+1, 0);
+        
+        int carry = 1;
+        int k = n;
+        for(int i = n -1; i>=0; i--)
+        {
+            int sum = carry + digits[i];
+            res[k] = sum%10;
+            
+            carry = sum/10;
+            k--;
+        }
+        
+        if(carry>0) 
+        {
+            res[k] = carry;
+        }
+        else
+        {
+            //remove the head
+            res.erase(res.begin());
+        }
+        
+        return res;
+    }
+};
