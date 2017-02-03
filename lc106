@@ -1,0 +1,50 @@
+106. Construct Binary Tree from Inorder and Postorder Traversal   Add to List QuestionEditorial Solution  My Submissions
+Total Accepted: 75223
+Total Submissions: 242055
+Difficulty: Medium
+Contributors: Admin
+Given inorder and postorder traversal of a tree, construct the binary tree.
+
+Note:
+You may assume that duplicates do not exist in the tree.
+
+Show Company Tags
+Show Tags
+Show Similar Problems
+
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    //idea, post order always has root as last node
+    //use root from post order to find the left subtree of root in inorder
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        if(inorder.empty()) return NULL;
+        
+        return helper(inorder, 0, inorder.size()-1, postorder, 0, postorder.size()-1);
+    }
+    
+    TreeNode* helper(vector<int>& inorder, int istart, int iend, vector<int>& postorder, int pstart, int pend)
+    {
+        if(istart > iend ) return NULL;
+        
+        TreeNode* root = new TreeNode(postorder[pend]);
+        
+        vector<int>::iterator it = find(inorder.begin()+istart, inorder.begin()+iend, postorder[pend]);
+        
+        int leftSize = it - (inorder.begin()+istart);
+        
+        root->left = helper(inorder, istart, istart+leftSize-1, postorder, pstart, pstart+leftSize-1);
+        root->right = helper(inorder, istart+leftSize+1, iend, postorder, pstart+leftSize, pend-1);
+        
+        return root;
+    }
+};
