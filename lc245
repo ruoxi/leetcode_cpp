@@ -1,0 +1,69 @@
+245. Shortest Word Distance III
+Description  Submission  Solutions  Add to List
+Total Accepted: 16419
+Total Submissions: 33169
+Difficulty: Medium
+Contributors: Admin
+This is a follow up of Shortest Word Distance. The only difference is now word1 could be the same as word2.
+
+Given a list of words and two words word1 and word2, return the shortest distance between these two words in the list.
+
+word1 and word2 may be the same and they represent two individual words in the list.
+
+For example,
+Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+
+Given word1 = “makes”, word2 = “coding”, return 1.
+Given word1 = "makes", word2 = "makes", return 3.
+
+Note:
+
+
+class Solution {
+public:
+    //if word1 == word2, then idx1 means the prev idx == word1
+    //idx2 means the latest one
+    int shortestWordDistance(vector<string>& words, string word1, string word2) {
+        int n = words.size();
+        
+        bool isSame = false;
+        if(word1 == word2)
+        {
+            isSame = true;
+        }
+        
+        
+        int res = n+1;
+        int idx1 = -1;
+        int idx2 = -1;
+        for(int i = 0; i < n; i++)
+        {
+            if(words[i] == word1)
+            {
+                if(isSame)
+                {
+                    idx1 = idx2;
+                    idx2 = i;
+                }
+                else
+                {
+                    idx1 = i;
+                }
+                
+            }
+            else if( words[i] == word2)
+            {
+                idx2 = i;
+            }
+            
+            
+            
+            if(idx1 != -1 && idx2 != -1)
+            {
+                res = min(res, abs(idx1-idx2));
+            }
+        }
+        
+        return res;
+    }
+};
