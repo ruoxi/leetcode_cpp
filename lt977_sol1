@@ -1,0 +1,80 @@
+977. Squares of a Sorted Array
+Easy
+
+666
+
+65
+
+Add to List
+
+Share
+Given an array of integers A sorted in non-decreasing order, return an array of the squares of each number, also in sorted non-decreasing order.
+
+ 
+
+Example 1:
+
+Input: [-4,-1,0,3,10]
+Output: [0,1,9,16,100]
+Example 2:
+
+Input: [-7,-3,2,3,11]
+Output: [4,9,9,49,121]
+ 
+
+Note:
+
+1 <= A.length <= 10000
+-10000 <= A[i] <= 10000
+A is sorted in non-decreasing order.
+
+
+
+class Solution {
+public:
+    vector<int> sortedSquares(vector<int>& A) {
+        int start = 0, end = A.size()-1;
+        findZero(A, start, end);
+        vector<int> res;
+        while(start >=0 || end < A.size()) {
+            int cur_min = INT_MAX;
+            if (start >=0) {
+                cur_min = A[start]*A[start];
+            }
+            if (end < A.size()) {
+                cur_min = min(cur_min, A[end]*A[end]);
+            }
+            
+            if (start == end) {
+                res.push_back(cur_min);
+                start--;
+                end++;
+            }
+            if (start >=0 && cur_min == A[start]*A[start]) {
+                res.push_back(cur_min);
+                start--;
+            }
+            if (end < A.size() && cur_min == A[end]*A[end]) {
+                res.push_back(cur_min);
+                end++;
+            }
+        }
+        return res;
+        
+    }
+    
+    void findZero(vector<int>& A, int& start, int& end) {
+        while(start +1 < end) {
+            int mid = (start+end)/2;
+            if (A[mid] == 0) {
+                start = mid;
+                end = mid;
+                break;
+            } else if (A[mid] > 0) {
+                end = mid;
+            } else if (A[mid] < 0) {
+                start = mid;
+            }
+        }
+    }
+};
